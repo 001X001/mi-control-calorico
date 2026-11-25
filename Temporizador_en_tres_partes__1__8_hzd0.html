@@ -1,0 +1,2213 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Temporizador y cronómetro</title>
+    <style>
+      :root {
+        --bg: #f4f1ec;
+        --panel: #ffffff;
+        --ink: #1c1a17;
+        --ink-soft: #5c564d;
+        --line: #ddd5c8;
+        --accent: #e4572e;
+        --accent-ink: #ffffff;
+        --green: #1f7a5c;
+        --alarm: #c81e1e;
+        --alarm-soft: #fdeaea;
+        --chip: #efe9df;
+        --chip-on: #1c1a17;
+        --chip-on-ink: #ffffff;
+        --shadow: 0 1px 2px rgba(28, 26, 23, .06), 0 8px 24px rgba(28, 26, 23, .06);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14120f;
+          --panel: #1e1b17;
+          --ink: #f2ede4;
+          --ink-soft: #a89f92;
+          --line: #38322a;
+          --accent: #ff6b3d;
+          --accent-ink: #1c1009;
+          --green: #3ec79b;
+          --alarm: #ff5a5a;
+          --alarm-soft: #381b1b;
+          --chip: #2b261f;
+          --chip-on: #f2ede4;
+          --chip-on-ink: #1c1a17;
+          --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-sans-system, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.45;
+      }
+
+      .wrap {
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 6px 10px 10px;
+      }
+
+      section.panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 6px 10px 8px;
+      }
+
+      /* Cronómetro / temporizador fijo al deslizar */
+      #panel {
+        position: sticky;
+        top: 6px;
+        z-index: 30;
+      }
+
+      /* Selector de modo: Cronómetro / Temporizador */
+      .mode-switch {
+        display: flex;
+        gap: 4px;
+        background: var(--chip);
+        border-radius: 9px;
+        padding: 3px;
+        margin-bottom: 0;
+      }
+      .mode-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: var(--ink-soft);
+        border-radius: 7px;
+        min-height: 30px;
+        padding: 3px 8px;
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 800;
+        cursor: pointer;
+        flex: 1;
+      }
+      .mode-btn[aria-pressed="true"] {
+        background: var(--chip-on);
+        color: var(--chip-on-ink);
+        box-shadow: 0 1px 3px rgba(0,0,0,.18);
+      }
+      .mode-btn:active { transform: scale(.985); }
+
+      .display {
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(28px, 8.5vw, 38px);
+        font-weight: 700;
+        text-align: center;
+        letter-spacing: -.02em;
+        line-height: 1.05;
+        padding: 2px 0 0;
+        user-select: none;
+      }
+      .display .cs { font-size: .42em; font-weight: 600; color: var(--ink-soft); }
+      /* Los números del cronómetro, exactamente del mismo tamaño
+         que los números del temporizador. */
+      #swDisplay { font-size: clamp(28px, 8.5vw, 38px); }
+
+      .progress {
+        height: 5px;
+        border-radius: 99px;
+        background: var(--chip);
+        overflow: hidden;
+        margin: 4px 2px 6px;
+      }
+      .progress > div {
+        height: 100%;
+        width: 100%;
+        background: var(--accent);
+        border-radius: 99px;
+        transition: width .12s linear;
+      }
+
+      .presets {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        margin: 4px 0 0;
+      }
+      .preset {
+        appearance: none;
+        border: 1.5px solid transparent;
+        background: var(--chip);
+        color: var(--ink);
+        border-radius: 9px;
+        min-height: 32px;
+        padding: 3px 3px;
+        font: inherit;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+      }
+      .preset b { font-size: 14px; font-weight: 800; line-height: 1.1; }
+      .preset span { font-size: 9.5px; color: var(--ink-soft); font-weight: 600; }
+      .preset[aria-pressed="true"] {
+        background: var(--chip-on);
+        color: var(--chip-on-ink);
+      }
+      .preset[aria-pressed="true"] span { color: inherit; opacity: .75; }
+
+      /* Tiempo personalizado, compacto */
+      .custom-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 5px 0 0;
+        color: var(--ink-soft);
+        font-size: 11.5px;
+        font-weight: 700;
+      }
+      .custom-row input {
+        width: 46px;
+        min-height: 30px;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--ink);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        padding: 2px;
+      }
+      .custom-row input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+
+      .controls {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .btn {
+        appearance: none;
+        border: none;
+        border-radius: 10px;
+        min-height: 34px;
+        padding: 5px 10px;
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        flex: 1;
+      }
+      .btn:active { transform: scale(.985); }
+      .btn-main { background: var(--accent); color: var(--accent-ink); }
+      .btn-main.sw { background: var(--green); color: #fff; }
+      @media (prefers-color-scheme: dark) {
+        .btn-main.sw { color: #0c1712; }
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        flex: 0 0 auto;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .btn[disabled] { opacity: .45; cursor: default; }
+      .btn[disabled]:active { transform: none; }
+
+      /* Alarma sonando */
+      .alarm-bar {
+        display: none;
+        margin-top: 6px;
+        background: var(--alarm-soft);
+        border: 1.5px solid var(--alarm);
+        border-radius: 10px;
+        padding: 6px 8px;
+        align-items: center;
+        gap: 8px;
+      }
+      .alarm-bar.show { display: flex; }
+      .alarm-bar p {
+        margin: 0;
+        flex: 1;
+        font-weight: 800;
+        color: var(--alarm);
+        font-size: 13px;
+      }
+      .btn-alarm {
+        background: var(--alarm);
+        color: #fff;
+        flex: 0 0 auto;
+        min-height: 32px;
+      }
+      section.ringing { border-color: var(--alarm); }
+      section.ringing .display { color: var(--alarm); }
+
+      /* Destello blanco de toda la pantalla mientras suena la alarma */
+      #flashOverlay {
+        position: fixed;
+        inset: 0;
+        background: #ffffff;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 999;
+        display: none;
+      }
+      body.flashing #flashOverlay { display: block; opacity: .3; }
+      @media (prefers-reduced-motion: no-preference) {
+        body.flashing #flashOverlay { animation: flash-white .8s ease-in-out infinite; }
+        @keyframes flash-white {
+          0%, 100% { opacity: 0; }
+          50% { opacity: .92; }
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        section.ringing { animation: ring-pulse 1s ease-in-out infinite; }
+        @keyframes ring-pulse {
+          0%, 100% { box-shadow: var(--shadow); }
+          50% { box-shadow: 0 0 0 5px var(--alarm-soft), var(--shadow); }
+        }
+      }
+
+      .status {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 11.5px;
+        font-weight: 600;
+        min-height: 15px;
+        margin: 4px 0 0;
+      }
+
+      /* Vueltas del cronómetro */
+      .laps {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        max-height: 72px;
+        overflow-y: auto;
+      }
+      .laps li {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 4px 3px;
+        border-top: 1px solid var(--line);
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-variant-numeric: tabular-nums;
+        font-size: 13px;
+      }
+      .laps li .lap-name { font-family: inherit; font-weight: 700; color: var(--ink-soft); font-size: 12px; align-self: center; }
+      .laps:empty { display: none; }
+
+      /* Ejercicios del día */
+      .exercises-panel { margin-top: 10px; padding-top: 10px; }
+      .exercises-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 2px 6px;
+      }
+      .exercises-head h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+      }
+      .exercises-head span {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .ex-list { list-style: none; margin: 0; padding: 0; }
+      .ex-item {
+        padding: 8px 2px 9px;
+        border-top: 1px solid var(--line);
+      }
+      .ex-item:first-child { border-top: none; padding-top: 2px; }
+      .ex-name {
+        margin: 0;
+        font-size: 13.5px;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+      .ex-name .ex-num {
+        color: var(--ink-soft);
+        font-weight: 800;
+        margin-right: 4px;
+      }
+      .series-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        margin-top: 6px;
+      }
+      .serie-btn {
+        appearance: none;
+        border: 1.5px solid var(--line);
+        background: var(--chip);
+        color: var(--ink);
+        border-radius: 9px;
+        min-height: 34px;
+        padding: 4px 4px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .serie-btn:active { transform: scale(.985); }
+      .serie-btn[aria-pressed="true"] {
+        background: var(--green);
+        border-color: transparent;
+        color: #fff;
+      }
+      @media (prefers-color-scheme: dark) {
+        .serie-btn[aria-pressed="true"] { color: #0c1712; }
+      }
+      .serie-btn[aria-pressed="true"]::before { content: "✓ "; font-weight: 900; }
+      .clear-series {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 32px;
+        font-size: 12.5px;
+      }
+
+      /* Fila de acciones al final de cada ejercicio: borrar (✕) y editar nombre */
+      .ex-edit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 5px;
+      }
+      .ex-del-btn {
+        appearance: none;
+        border: 1.5px solid var(--line);
+        background: transparent;
+        color: var(--ink-soft);
+        border-radius: 8px;
+        width: 30px;
+        min-height: 26px;
+        padding: 0;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .ex-del-btn:active { transform: scale(.95); color: var(--alarm); border-color: var(--alarm); }
+      .ex-edit-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: var(--ink-soft);
+        border-radius: 7px;
+        min-height: 26px;
+        padding: 2px 6px;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .ex-edit-btn:active { transform: scale(.97); }
+
+      /* Formulario para editar el nombre */
+      .ex-edit-form { margin-top: 6px; }
+      .ex-edit-input {
+        width: 100%;
+        min-height: 34px;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--ink);
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 5px 8px;
+      }
+      .ex-edit-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+      .ex-edit-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .ex-save-btn, .ex-cancel-btn {
+        appearance: none;
+        border-radius: 9px;
+        min-height: 32px;
+        padding: 4px 10px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        flex: 1;
+      }
+      .ex-save-btn { border: none; background: var(--accent); color: var(--accent-ink); }
+      .ex-cancel-btn {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        flex: 0 0 auto;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .ex-save-btn:active, .ex-cancel-btn:active { transform: scale(.985); }
+
+      /* Confirmación para borrar un ejercicio */
+      .ex-del-confirm {
+        margin-top: 6px;
+        background: var(--alarm-soft);
+        border: 1.5px solid var(--alarm);
+        border-radius: 10px;
+        padding: 7px 8px;
+      }
+      .ex-del-confirm p {
+        margin: 0 0 6px;
+        font-weight: 800;
+        color: var(--alarm);
+        font-size: 13px;
+      }
+      .ex-del-actions { display: flex; gap: 6px; }
+      .ex-del-yes, .ex-del-no {
+        appearance: none;
+        border-radius: 9px;
+        min-height: 32px;
+        padding: 4px 10px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        flex: 1;
+      }
+      .ex-del-yes { border: none; background: var(--alarm); color: #fff; }
+      .ex-del-no {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        flex: 0 0 auto;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .ex-del-yes:active, .ex-del-no:active { transform: scale(.985); }
+
+      /* Agregar ejercicio, hasta abajo de la lista */
+      .add-ex-btn {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 38px;
+        font-size: 14px;
+      }
+      .add-ex-form { margin-top: 8px; }
+
+      /* Registro del día */
+      .log-panel { margin-top: 10px; padding-top: 10px; }
+      .log-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 2px 2px;
+      }
+      .log-head h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+      }
+      .log-date {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+      .log-date-full {
+        margin: 0;
+        padding: 0 2px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        text-transform: capitalize;
+      }
+      .log-save-btn {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 38px;
+        font-size: 14px;
+      }
+      .log-view-btn {
+        width: 100%;
+        margin-top: 6px;
+        min-height: 38px;
+        font-size: 14px;
+      }
+      .log-history { margin-top: 2px; }
+      /* Confirmación para guardar el registro del día */
+      .log-confirm {
+        margin-top: 8px;
+        background: var(--chip);
+        border: 1.5px solid var(--green);
+        border-radius: 10px;
+        padding: 7px 8px;
+      }
+      .log-confirm p {
+        margin: 0 0 6px;
+        font-weight: 800;
+        color: var(--ink);
+        font-size: 13px;
+      }
+      .log-confirm-actions { display: flex; gap: 6px; }
+      .log-confirm-yes, .log-confirm-no {
+        appearance: none;
+        border-radius: 9px;
+        min-height: 32px;
+        padding: 4px 10px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        flex: 1;
+      }
+      .log-confirm-yes { border: none; background: var(--green); color: #fff; }
+      @media (prefers-color-scheme: dark) {
+        .log-confirm-yes { color: #0c1712; }
+      }
+      .log-confirm-no {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        flex: 0 0 auto;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .log-confirm-yes:active, .log-confirm-no:active { transform: scale(.985); }
+      .log-status {
+        text-align: center;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 700;
+        min-height: 15px;
+        margin: 5px 0 0;
+      }
+      .log-list { list-style: none; margin: 6px 0 0; padding: 0; }
+      .log-item {
+        padding: 8px 2px 9px;
+        border-top: 1px solid var(--line);
+      }
+      .log-item-date {
+        margin: 0 0 4px;
+        font-size: 13.5px;
+        font-weight: 800;
+      }
+      .log-item-date span {
+        color: var(--ink-soft);
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: capitalize;
+      }
+      .log-ex-list { list-style: none; margin: 0; padding: 0; }
+      .log-ex-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        padding: 2px 0;
+        font-size: 12.5px;
+      }
+      .log-ex-name { font-weight: 600; line-height: 1.3; }
+      .log-ex-series {
+        flex: 0 0 auto;
+        font-weight: 800;
+        color: var(--green);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .log-ex-series.none { color: var(--ink-soft); font-weight: 600; }
+      .log-empty {
+        margin: 6px 0 2px;
+        padding: 0 2px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--ink-soft);
+      }
+
+      /* Configuración, hasta abajo */
+      .config-panel { margin-top: 10px; padding-top: 8px; padding-bottom: 8px; }
+      .config-btn {
+        width: 100%;
+        min-height: 38px;
+        font-size: 14px;
+      }
+
+      /* Página de Configuración */
+      .config-view-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 2px 8px;
+      }
+      .config-view-head h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+        flex: 1;
+      }
+      .config-back-btn {
+        flex: 0 0 auto;
+        min-height: 32px;
+        font-size: 13px;
+      }
+
+      /* Página de inicio: elegir perfil */
+      .home-panel { margin-top: 10px; padding-top: 14px; padding-bottom: 14px; text-align: center; }
+      .home-title { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+      .home-sub { margin: 4px 0 12px; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+      .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .profile-card {
+        appearance: none;
+        border: 1.5px solid var(--line);
+        background: var(--chip);
+        border-radius: 14px;
+        padding: 16px 8px 12px;
+        font: inherit;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        box-shadow: var(--shadow);
+      }
+      .profile-card:active { transform: scale(.98); }
+      .profile-card svg { width: 72px; height: 86px; display: block; }
+      .profile-card.male svg { color: var(--green); }
+      .profile-card.female svg { color: var(--accent); }
+      .profile-label { font-size: 15px; font-weight: 800; color: var(--ink); }
+
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="flashOverlay" aria-hidden="true"></div>
+    <main class="wrap">
+      <div id="homeView" hidden>
+        <section class="panel home-panel" aria-label="Elige tu perfil">
+          <h2 class="home-title">Elige tu perfil</h2>
+          <p class="home-sub">Toca un perfil para ver sus ejercicios.</p>
+          <div class="profile-grid">
+            <button type="button" class="profile-card male" id="profileMale" aria-label="Perfil masculino">
+              <svg viewBox="0 0 100 120" aria-hidden="true" focusable="false">
+                <circle cx="50" cy="22" r="11" fill="currentColor"/>
+                <path d="M30 38 L70 38 L66 70 L64 112 L54 112 L50 80 L46 112 L36 112 L34 70 Z" fill="currentColor"/>
+              </svg>
+              <span class="profile-label">Masculino</span>
+            </button>
+            <button type="button" class="profile-card female" id="profileFemale" aria-label="Perfil femenino">
+              <svg viewBox="0 0 100 120" aria-hidden="true" focusable="false">
+                <circle cx="50" cy="9" r="5" fill="currentColor"/>
+                <circle cx="50" cy="22" r="11" fill="currentColor"/>
+                <path d="M32 38 L68 38 L70 60 L76 112 L24 112 L30 60 Z" fill="currentColor"/>
+              </svg>
+              <span class="profile-label">Femenino</span>
+            </button>
+          </div>
+        </section>
+      </div>
+      <div id="mainView">
+
+      <!-- Todo en un solo panel: cronómetro y temporizador -->
+      <section class="panel" id="panel" aria-label="Cronómetro y temporizador">
+
+        <div class="mode-switch" role="group" aria-label="Modo">
+          <button type="button" class="mode-btn" id="modeSw" aria-pressed="false">Cronómetro</button>
+          <button type="button" class="mode-btn" id="modeTimer" aria-pressed="true">Temporizador</button>
+        </div>
+
+        <!-- ===== TEMPORIZADOR ===== -->
+        <div id="timerView">
+          <div class="presets" role="group" aria-label="Tiempos rápidos">
+            <button type="button" class="preset" data-secs="30" aria-pressed="false"><b>0:30</b><span>30 seg</span></button>
+            <button type="button" class="preset" data-secs="45" aria-pressed="false"><b>0:45</b><span>45 seg</span></button>
+            <button type="button" class="preset" data-secs="60" aria-pressed="true"><b>1:00</b><span>1 min</span></button>
+            <button type="button" class="preset" data-secs="120" aria-pressed="false"><b>2:00</b><span>2 min</span></button>
+          </div>
+
+          <div class="display" id="timerDisplay" role="timer" aria-label="Tiempo restante">1:00<span class="cs">.0</span></div>
+          <div class="progress" aria-hidden="true"><div id="timerBar"></div></div>
+
+          <div class="controls">
+            <button type="button" class="btn btn-main" id="timerToggle">Iniciar</button>
+            <button type="button" class="btn btn-ghost" id="timerReset">Reiniciar</button>
+          </div>
+
+          <div class="custom-row">
+            <label for="inMin">Otro tiempo:</label>
+            <input id="inMin" type="number" inputmode="numeric" min="0" max="999" value="5" aria-label="Minutos" />
+            <span aria-hidden="true">min</span>
+            <input id="inSec" type="number" inputmode="numeric" min="0" max="59" value="0" aria-label="Segundos" />
+            <span aria-hidden="true">seg</span>
+          </div>
+
+          <div class="alarm-bar" id="timerAlarm" role="alert">
+            <p>¡Se acabó el tiempo!</p>
+            <button type="button" class="btn btn-alarm" id="timerStopAlarm">Detener alarma</button>
+          </div>
+          <p class="status" id="timerStatus">Listo: 1 minuto seleccionado</p>
+        </div>
+
+        <!-- ===== CRONÓMETRO ===== -->
+        <div id="swView" hidden>
+          <div class="display" id="swDisplay" role="timer" aria-label="Tiempo del cronómetro">0:00<span class="cs">.00</span></div>
+          <div class="progress" aria-hidden="true" style="visibility:hidden"><div></div></div>
+
+          <div class="controls">
+            <button type="button" class="btn btn-main sw" id="swToggle">Iniciar</button>
+            <button type="button" class="btn btn-ghost" id="swLap" disabled>Vuelta</button>
+            <button type="button" class="btn btn-ghost" id="swReset">Reiniciar</button>
+          </div>
+          <ol class="laps" id="swLaps" aria-label="Vueltas"></ol>
+        </div>
+
+      </section>
+
+      <!-- ===== EJERCICIOS DEL 24/11/26 ===== -->
+      <section class="panel exercises-panel" aria-label="Ejercicios del 24 de noviembre">
+        <div class="exercises-head">
+          <h2>V&amp;U</h2>
+          <span>24/11/26</span>
+        </div>
+        <ol class="ex-list" id="exListMasculino">
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">1.</span><span class="ex-text">Puente de gluteo con talon 3x40 seg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Puente de gluteo con talon">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">2.</span><span class="ex-text">Elevacion de rodillas en barra 3x6</span></p>
+            <div class="series-row" role="group" aria-label="Series de Elevacion de rodillas en barra">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">3.</span><span class="ex-text">Elevacion de oblicuos en barra 3x6</span></p>
+            <div class="series-row" role="group" aria-label="Series de Elevacion de oblicuos en barra">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">4.</span><span class="ex-text">Elevaciones talón un pie 3x6 +Ch20kg +12.25Kg 3era x30</span></p>
+            <div class="series-row" role="group" aria-label="Series de Elevaciones talón un pie">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">5.</span><span class="ex-text">Flexiones con elevacion de pies a 63 cm 3x12 (3ra al fallo:20) +Ch20kg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Flexiones con elevacion de pies a 63 cm">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">6.</span><span class="ex-text">Sentadillas normales 3x6 +Ch20kg +12.25kg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Sentadillas normales">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">7.</span><span class="ex-text">Flexiones puño 3x12+Ch20kg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Flexiones puño">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">8.</span><span class="ex-text">Crunch con liga en barra 3x12 (Con Pesas)</span></p>
+            <div class="series-row" role="group" aria-label="Series de Crunch con liga en barra">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">9.</span><span class="ex-text">Curl de biceps 3x4 18kg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Curl de biceps">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">10.</span><span class="ex-text">Curl de hombros 3x4 12.25kg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Curl de hombros">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">11.</span><span class="ex-text">Dominadas 8 neutro 7 prono 8 neutro</span></p>
+            <div class="series-row" role="group" aria-label="Series de Dominadas">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">12.</span><span class="ex-text">Colgado prono 3x30 seg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Colgado prono">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+        </ol>
+        <ol class="ex-list" id="exListFemenino" hidden>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">1.</span><span class="ex-text">Puente de isquios 3x40seg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Puente de isquios 3x40seg">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">2.</span><span class="ex-text">Elevacion de talones en un pie 3x12</span></p>
+            <div class="series-row" role="group" aria-label="Series de Elevacion de talones en un pie 3x12">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">3.</span><span class="ex-text">Elevacion de rodillas en barra 3x2</span></p>
+            <div class="series-row" role="group" aria-label="Series de Elevacion de rodillas en barra 3x2">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">4.</span><span class="ex-text">Elevacion de oblicuos en barra 3x4</span></p>
+            <div class="series-row" role="group" aria-label="Series de Elevacion de oblicuos en barra 3x4">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">5.</span><span class="ex-text">Sentadillas búlgaras 3x9</span></p>
+            <div class="series-row" role="group" aria-label="Series de Sentadillas búlgaras 3x9">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">6.</span><span class="ex-text">Curl de biceps 5kg 3x6</span></p>
+            <div class="series-row" role="group" aria-label="Series de Curl de biceps 5kg 3x6">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">7.</span><span class="ex-text">Curl de hombros 80lbs 3x8</span></p>
+            <div class="series-row" role="group" aria-label="Series de Curl de hombros 80lbs 3x8">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">8.</span><span class="ex-text">Flexiones 3x5</span></p>
+            <div class="series-row" role="group" aria-label="Series de Flexiones 3x5">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">9.</span><span class="ex-text">Sentadillas 12.25 3x6</span></p>
+            <div class="series-row" role="group" aria-label="Series de Sentadillas 12.25 3x6">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">10.</span><span class="ex-text">Crunch en barra con liga 3x6</span></p>
+            <div class="series-row" role="group" aria-label="Series de Crunch en barra con liga 3x6">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+          <li class="ex-item">
+            <p class="ex-name"><span class="ex-num">11.</span><span class="ex-text">Colgado en barra prono 3x8seg</span></p>
+            <div class="series-row" role="group" aria-label="Series de Colgado en barra prono 3x8seg">
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
+              <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
+            </div>
+            <div class="ex-edit-row">
+              <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
+              <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-edit-form" hidden>
+              <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
+              <div class="ex-edit-actions">
+                <button type="button" class="ex-save-btn">Guardar</button>
+                <button type="button" class="ex-cancel-btn">Cancelar</button>
+              </div>
+            </div>
+            <div class="ex-del-confirm" hidden>
+              <p>¿Borrar este ejercicio?</p>
+              <div class="ex-del-actions">
+                <button type="button" class="ex-del-yes">Sí, borrar</button>
+                <button type="button" class="ex-del-no">Cancelar</button>
+              </div>
+            </div>
+          </li>
+        </ol>
+        <button type="button" class="btn btn-ghost clear-series" id="clearSeries">Limpiar marcas</button>
+        <button type="button" class="btn btn-main add-ex-btn" id="addExerciseBtn">＋ Agregar ejercicio</button>
+        <div class="add-ex-form" id="addExerciseForm" hidden>
+          <input type="text" class="ex-edit-input" id="addExerciseInput" placeholder="Nombre del ejercicio" aria-label="Nombre del ejercicio nuevo" />
+          <div class="ex-edit-actions">
+            <button type="button" class="ex-save-btn" id="addExerciseSave">Agregar</button>
+            <button type="button" class="ex-cancel-btn" id="addExerciseCancel">Cancelar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== REGISTRO DEL DÍA ===== -->
+      <section class="panel log-panel" aria-label="Registro del día">
+        <div class="log-head">
+          <h2>Registro del día</h2>
+          <span class="log-date" id="logTodayShort"></span>
+        </div>
+        <p class="log-date-full" id="logTodayFull"></p>
+        <button type="button" class="btn btn-main log-save-btn" id="logSaveBtn">Guardar registro del día</button>
+        <div class="log-confirm" id="logConfirm" hidden>
+          <p>¿Seguro que quieres guardar el registro del día?</p>
+          <div class="log-confirm-actions">
+            <button type="button" class="log-confirm-yes" id="logConfirmYes">Sí, guardar</button>
+            <button type="button" class="log-confirm-no" id="logConfirmNo">Cancelar</button>
+          </div>
+        </div>
+        <p class="log-status" id="logStatus" role="status"></p>
+      </section>
+
+      <!-- ===== CONFIGURACIÓN ===== -->
+      <section class="panel config-panel" aria-label="Configuración">
+        <button type="button" class="btn btn-ghost config-btn" id="configBtn">Configuración</button>
+      </section>
+
+      </div><!-- /#mainView -->
+
+      <!-- ===== PÁGINA DE CONFIGURACIÓN ===== -->
+      <div id="configView" hidden>
+        <section class="panel" aria-label="Página de configuración">
+          <div class="config-view-head">
+            <button type="button" class="btn btn-ghost config-back-btn" id="configBackBtn">← Volver</button>
+            <h2>Configuración</h2>
+          </div>
+          <button type="button" class="btn btn-ghost log-view-btn" id="logViewBtn" aria-expanded="false" aria-controls="logHistory">Ver registros anteriores</button>
+          <div class="log-history" id="logHistory" hidden>
+            <ul class="log-list" id="logList"></ul>
+            <p class="log-empty" id="logEmpty">Todavía no hay registros guardados.</p>
+          </div>
+          <button type="button" class="btn btn-main log-view-btn" id="enterExerciseBtn">Entrar a aplicación de ejercicio</button>
+        </section>
+      </div>
+
+    </main>
+
+    <script>
+      (function () {
+        'use strict';
+
+        /* ---------- Audio: pitidos con Web Audio ---------- */
+        var audioCtx = null;
+        function ensureAudio() {
+          if (!audioCtx) {
+            var AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) audioCtx = new AC();
+          }
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          return audioCtx;
+        }
+        function beepOnce(when, freq) {
+          if (!audioCtx) return;
+          // Alarma fuerte: dos osciladores (tono + armónico) a casi todo volumen.
+          var gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0.0001, when);
+          gain.gain.exponentialRampToValueAtTime(0.85, when + 0.015);
+          gain.gain.setValueAtTime(0.85, when + 0.17);
+          gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.24);
+          gain.connect(audioCtx.destination);
+          [freq || 880, (freq || 880) * 2].forEach(function (f, i) {
+            var osc = audioCtx.createOscillator();
+            var og = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.value = f;
+            og.gain.value = i === 0 ? 1 : 0.45;
+            osc.connect(og); og.connect(gain);
+            osc.start(when); osc.stop(when + 0.26);
+          });
+        }
+        // Una alarma: repite 4 pitidos fuertes cada 1.5 s hasta que se detiene.
+        function makeAlarm() {
+          var timer = null;
+          function burst() {
+            if (!ensureAudio()) return;
+            var t = audioCtx.currentTime;
+            beepOnce(t, 988); beepOnce(t + 0.28, 988); beepOnce(t + 0.56, 988); beepOnce(t + 0.84, 1318);
+          }
+          return {
+            start: function () {
+              if (timer) return;
+              burst();
+              timer = setInterval(burst, 1500);
+              if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+            },
+            stop: function () {
+              if (timer) { clearInterval(timer); timer = null; }
+            }
+          };
+        }
+
+        /* ---------- Formato ---------- */
+        function fmtTenths(ms) {
+          if (ms < 0) ms = 0;
+          var totalSec = Math.floor(ms / 1000);
+          var m = Math.floor(totalSec / 60);
+          var s = totalSec % 60;
+          var t = Math.floor((ms % 1000) / 100);
+          return { main: m + ':' + (s < 10 ? '0' : '') + s, cs: '.' + t };
+        }
+        function fmtHundredths(ms) {
+          if (ms < 0) ms = 0;
+          var totalSec = Math.floor(ms / 1000);
+          var m = Math.floor(totalSec / 60);
+          var s = totalSec % 60;
+          var h = Math.floor((ms % 1000) / 10);
+          return { main: m + ':' + (s < 10 ? '0' : '') + s, cs: '.' + (h < 10 ? '0' : '') + h };
+        }
+        function setDisplay(el, parts) {
+          el.innerHTML = '';
+          el.appendChild(document.createTextNode(parts.main));
+          var span = document.createElement('span');
+          span.className = 'cs';
+          span.textContent = parts.cs;
+          el.appendChild(span);
+        }
+        function describe(secs) {
+          if (secs < 60) return secs + (secs === 1 ? ' segundo' : ' segundos');
+          var m = Math.floor(secs / 60), s = secs % 60;
+          var txt = m + (m === 1 ? ' minuto' : ' minutos');
+          if (s) txt += ' y ' + s + ' s';
+          return txt;
+        }
+
+        /* ---------- Cambio de modo ---------- */
+        var panel = document.getElementById('panel');
+        var modeSw = document.getElementById('modeSw');
+        var modeTimer = document.getElementById('modeTimer');
+        var swView = document.getElementById('swView');
+        var timerView = document.getElementById('timerView');
+        function setMode(mode) {
+          var isSw = mode === 'sw';
+          modeSw.setAttribute('aria-pressed', isSw ? 'true' : 'false');
+          modeTimer.setAttribute('aria-pressed', isSw ? 'false' : 'true');
+          swView.hidden = !isSw;
+          timerView.hidden = isSw;
+        }
+        modeSw.addEventListener('click', function () { setMode('sw'); });
+        modeTimer.addEventListener('click', function () { setMode('timer'); });
+
+        /* ---------- Temporizador (cuenta atrás) ---------- */
+        var timerDisplay = document.getElementById('timerDisplay');
+        var timerBar = document.getElementById('timerBar');
+        var timerToggle = document.getElementById('timerToggle');
+        var timerResetBtn = document.getElementById('timerReset');
+        var timerAlarmBar = document.getElementById('timerAlarm');
+        var timerStatus = document.getElementById('timerStatus');
+        var inMin = document.getElementById('inMin');
+        var inSec = document.getElementById('inSec');
+        var presets = document.querySelectorAll('.preset');
+        var alarm = makeAlarm();
+
+        var durationMs = 60 * 1000;
+        var remainingMs = durationMs;
+        var endAt = 0;
+        var tickId = null;
+        var running = false;
+
+        function renderTimer() {
+          setDisplay(timerDisplay, fmtTenths(remainingMs));
+          var pct = durationMs > 0 ? (remainingMs / durationMs) * 100 : 0;
+          timerBar.style.width = pct + '%';
+        }
+        function stopLoop() {
+          if (tickId) { clearInterval(tickId); tickId = null; }
+        }
+        function silence() {
+          alarm.stop();
+          panel.classList.remove('ringing');
+          document.body.classList.remove('flashing');
+          timerAlarmBar.classList.remove('show');
+        }
+        function finish() {
+          running = false;
+          stopLoop();
+          timerToggle.textContent = 'Iniciar';
+          panel.classList.add('ringing');
+          document.body.classList.add('flashing');
+          timerAlarmBar.classList.add('show');
+          timerStatus.textContent = '¡Tiempo cumplido!';
+          alarm.start();
+        }
+        function tick() {
+          remainingMs = endAt - Date.now();
+          if (remainingMs <= 0) {
+            remainingMs = 0;
+            renderTimer();
+            finish();
+            return;
+          }
+          renderTimer();
+        }
+        function startTimer() {
+          ensureAudio();
+          silence();
+          if (remainingMs <= 0) remainingMs = durationMs;
+          if (remainingMs <= 0) { timerStatus.textContent = 'Pon un tiempo mayor a cero.'; return; }
+          endAt = Date.now() + remainingMs;
+          running = true;
+          timerToggle.textContent = 'Pausar';
+          timerStatus.textContent = 'Contando…';
+          stopLoop();
+          tickId = setInterval(tick, 100);
+          tick();
+        }
+        function pauseTimer() {
+          running = false;
+          stopLoop();
+          remainingMs = Math.max(0, endAt - Date.now());
+          timerToggle.textContent = 'Continuar';
+          timerStatus.textContent = 'En pausa';
+          renderTimer();
+        }
+        function resetTimer(newDurationMs) {
+          silence();
+          running = false;
+          stopLoop();
+          if (typeof newDurationMs === 'number') durationMs = newDurationMs;
+          remainingMs = durationMs;
+          timerToggle.textContent = 'Iniciar';
+          timerStatus.textContent = 'Listo: ' + describe(Math.round(durationMs / 1000));
+          renderTimer();
+        }
+
+        timerToggle.addEventListener('click', function () { running ? pauseTimer() : startTimer(); });
+        timerResetBtn.addEventListener('click', function () { resetTimer(); });
+        document.getElementById('timerStopAlarm').addEventListener('click', function () {
+          silence();
+          timerStatus.textContent = 'Alarma detenida';
+        });
+
+        presets.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            presets.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+            btn.setAttribute('aria-pressed', 'true');
+            var secs = parseInt(btn.getAttribute('data-secs'), 10);
+            resetTimer(secs * 1000);
+            timerStatus.textContent = 'Listo: ' + describe(secs) + ' seleccionado' + (secs === 1 ? '' : 's');
+            if (secs === 60) timerStatus.textContent = 'Listo: 1 minuto seleccionado';
+          });
+        });
+
+        function onCustomInput() {
+          var m = parseInt(inMin.value, 10); if (isNaN(m) || m < 0) m = 0;
+          var s = parseInt(inSec.value, 10); if (isNaN(s) || s < 0) s = 0;
+          if (s > 59) s = 59;
+          presets.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+          resetTimer((m * 60 + s) * 1000);
+        }
+        inMin.addEventListener('input', onCustomInput);
+        inSec.addEventListener('input', onCustomInput);
+        renderTimer();
+
+        /* ---------- Cronómetro ---------- */
+        var swDisplay = document.getElementById('swDisplay');
+        var swToggle = document.getElementById('swToggle');
+        var swLapBtn = document.getElementById('swLap');
+        var swResetBtn = document.getElementById('swReset');
+        var swLaps = document.getElementById('swLaps');
+        var swElapsed = 0, swStartAt = 0, swTimer = null, swRunning = false;
+        var lapCount = 0, lastLapAt = 0;
+
+        function swNow() { return swElapsed + (swRunning ? Date.now() - swStartAt : 0); }
+        function swRender() { setDisplay(swDisplay, fmtHundredths(swNow())); }
+        swToggle.addEventListener('click', function () {
+          ensureAudio();
+          if (swRunning) {
+            swElapsed = swNow();
+            swRunning = false;
+            clearInterval(swTimer); swTimer = null;
+            swToggle.textContent = 'Continuar';
+            swLapBtn.disabled = true;
+          } else {
+            swStartAt = Date.now();
+            swRunning = true;
+            swToggle.textContent = 'Pausar';
+            swLapBtn.disabled = false;
+            swTimer = setInterval(swRender, 31);
+          }
+          swRender();
+        });
+        swLapBtn.addEventListener('click', function () {
+          if (!swRunning) return;
+          var now = swNow();
+          lapCount++;
+          var li = document.createElement('li');
+          var name = document.createElement('span');
+          name.className = 'lap-name';
+          name.textContent = 'Vuelta ' + lapCount;
+          var split = document.createElement('span');
+          var sp = fmtHundredths(now - lastLapAt);
+          split.textContent = '+' + sp.main + sp.cs;
+          var total = document.createElement('span');
+          var tp = fmtHundredths(now);
+          total.textContent = tp.main + tp.cs;
+          li.appendChild(name); li.appendChild(split); li.appendChild(total);
+          swLaps.insertBefore(li, swLaps.firstChild);
+          lastLapAt = now;
+        });
+        swResetBtn.addEventListener('click', function () {
+          swRunning = false;
+          clearInterval(swTimer); swTimer = null;
+          swElapsed = 0; lapCount = 0; lastLapAt = 0;
+          swToggle.textContent = 'Iniciar';
+          swLapBtn.disabled = true;
+          swLaps.innerHTML = '';
+          swRender();
+        });
+        swRender();
+
+        /* ---------- Perfiles: masculino / femenino ----------
+           La página de inicio ofrece dos perfiles. Cada perfil tiene su
+           propia lista de ejercicios y su propia clave de series en
+           localStorage, para que las marcas no se mezclen. El perfil
+           elegido se guarda y se restaura al recargar. El botón
+           "Entrar a aplicación de ejercicio" de Configuración vuelve
+           a la página de inicio para cambiar de perfil. */
+        var PROFILE_KEY = 'temporizador-perfil-v1';
+        var SERIES_KEY_M = 'temporizador-series-2026-11-24-v1';
+        var SERIES_KEY_F = 'temporizador-series-2026-11-24-femenino-v1';
+        var currentProfile = 'masculino';
+        var homeView = document.getElementById('homeView');
+        var exListM = document.getElementById('exListMasculino');
+        var exListF = document.getElementById('exListFemenino');
+        function activeExList() { return currentProfile === 'femenino' ? exListF : exListM; }
+        function activeSeriesKey() { return currentProfile === 'femenino' ? SERIES_KEY_F : SERIES_KEY_M; }
+        function showHome() {
+          if (homeView) homeView.hidden = false;
+          var mv = document.getElementById('mainView');
+          if (mv) mv.hidden = true;
+          var cv = document.getElementById('configView');
+          if (cv) cv.hidden = true;
+          window.scrollTo(0, 0);
+        }
+        function selectProfile(p) {
+          currentProfile = (p === 'femenino') ? 'femenino' : 'masculino';
+          try { localStorage.setItem(PROFILE_KEY, currentProfile); } catch (e) {}
+          if (exListM) exListM.hidden = currentProfile !== 'masculino';
+          if (exListF) exListF.hidden = currentProfile !== 'femenino';
+          if (homeView) homeView.hidden = true;
+          var cv = document.getElementById('configView');
+          if (cv) cv.hidden = true;
+          var mv = document.getElementById('mainView');
+          if (mv) mv.hidden = false;
+          window.scrollTo(0, 0);
+          loadSeries();
+        }
+        (function initProfile() {
+          var saved = null;
+          try { saved = localStorage.getItem(PROFILE_KEY); } catch (e) {}
+          var mv = document.getElementById('mainView');
+          if (saved === 'femenino' || saved === 'masculino') {
+            currentProfile = saved;
+            if (exListM) exListM.hidden = currentProfile !== 'masculino';
+            if (exListF) exListF.hidden = currentProfile !== 'femenino';
+            if (homeView) homeView.hidden = true;
+            if (mv) mv.hidden = false;
+          } else {
+            currentProfile = 'masculino';
+            if (exListM) exListM.hidden = false;
+            if (exListF) exListF.hidden = true;
+            if (homeView) homeView.hidden = false;
+            if (mv) mv.hidden = true;
+          }
+        })();
+        var profileMaleBtn = document.getElementById('profileMale');
+        if (profileMaleBtn) profileMaleBtn.addEventListener('click', function () { selectProfile('masculino'); });
+        var profileFemaleBtn = document.getElementById('profileFemale');
+        if (profileFemaleBtn) profileFemaleBtn.addEventListener('click', function () { selectProfile('femenino'); });
+        var enterExerciseBtn = document.getElementById('enterExerciseBtn');
+        if (enterExerciseBtn) enterExerciseBtn.addEventListener('click', function () { showHome(); });
+
+        /* ---------- Series de ejercicios: tocar para marcar / desmarcar ----------
+           Las marcas se guardan en este teléfono (localStorage, clave del
+           24/11/26) y sobreviven al cerrar o recargar la app. El botón
+           "Limpiar marcas" las borra todas para empezar de nuevo. */
+        function getSerieBtns() { return activeExList().querySelectorAll('.serie-btn'); }
+        function loadSeries() {
+          try {
+            var saved = JSON.parse(localStorage.getItem(activeSeriesKey()) || '[]');
+            if (!Array.isArray(saved)) return;
+            getSerieBtns().forEach(function (btn, i) {
+              btn.setAttribute('aria-pressed', saved[i] ? 'true' : 'false');
+            });
+          } catch (e) { /* sin almacenamiento: las marcas solo duran la sesión */ }
+        }
+        function saveSeries() {
+          try {
+            var state = [];
+            getSerieBtns().forEach(function (btn) {
+              state.push(btn.getAttribute('aria-pressed') === 'true');
+            });
+            localStorage.setItem(activeSeriesKey(), JSON.stringify(state));
+          } catch (e) { /* sin almacenamiento: no se puede guardar */ }
+        }
+        function bindSerieBtn(btn) {
+          btn.addEventListener('click', function () {
+            var on = btn.getAttribute('aria-pressed') === 'true';
+            btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+            saveSeries();
+          });
+        }
+        loadSeries();
+        document.querySelectorAll('.serie-btn').forEach(bindSerieBtn);
+        var clearSeriesBtn = document.getElementById('clearSeries');
+        if (clearSeriesBtn) {
+          clearSeriesBtn.addEventListener('click', function () {
+            getSerieBtns().forEach(function (btn) {
+              btn.setAttribute('aria-pressed', 'false');
+            });
+            try { localStorage.removeItem(activeSeriesKey()); } catch (e) {}
+          });
+        }
+
+        /* ---------- Editar el nombre y borrar cada ejercicio ----------
+           Editar: el botón "Editar nombre" abre un campo con el nombre
+           actual; Guardar lo cambia y Cancelar lo deja igual.
+           Borrar: la ✕ primero pide confirmación en la misma tarjeta
+           ("¿Borrar este ejercicio?"); solo con "Sí, borrar" se quita
+           el ejercicio de la lista. Ambos cambios duran mientras la
+           app está abierta. */
+        function renumberExercises() {
+          activeExList().querySelectorAll('.ex-item').forEach(function (it, i) {
+            var num = it.querySelector('.ex-num');
+            if (num) num.textContent = (i + 1) + '.';
+          });
+        }
+        function setupExercise(item) {
+          var textEl = item.querySelector('.ex-text');
+          var row = item.querySelector('.ex-edit-row');
+          var editBtn = item.querySelector('.ex-edit-btn');
+          var form = item.querySelector('.ex-edit-form');
+          var input = item.querySelector('.ex-edit-input');
+          var delBtn = item.querySelector('.ex-del-btn');
+          var confirmBox = item.querySelector('.ex-del-confirm');
+          if (!textEl || !row || !editBtn || !form || !input || !delBtn || !confirmBox) return;
+
+          function closeForm() {
+            form.hidden = true;
+            row.hidden = false;
+          }
+          function saveName() {
+            var name = input.value.trim();
+            if (name) textEl.textContent = name;
+            closeForm();
+            editBtn.focus();
+          }
+          editBtn.addEventListener('click', function () {
+            confirmBox.hidden = true;
+            input.value = textEl.textContent;
+            form.hidden = false;
+            row.hidden = true;
+            input.focus();
+            input.select();
+          });
+          item.querySelector('.ex-save-btn').addEventListener('click', saveName);
+          item.querySelector('.ex-cancel-btn').addEventListener('click', function () {
+            closeForm();
+            editBtn.focus();
+          });
+          input.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Enter') { ev.preventDefault(); saveName(); }
+            if (ev.key === 'Escape') { closeForm(); editBtn.focus(); }
+          });
+
+          delBtn.addEventListener('click', function () {
+            form.hidden = true;
+            row.hidden = true;
+            confirmBox.hidden = false;
+            item.querySelector('.ex-del-no').focus();
+          });
+          item.querySelector('.ex-del-no').addEventListener('click', function () {
+            confirmBox.hidden = true;
+            row.hidden = false;
+            delBtn.focus();
+          });
+          item.querySelector('.ex-del-yes').addEventListener('click', function () {
+            item.remove();
+            renumberExercises();
+            saveSeries();
+          });
+        }
+        document.querySelectorAll('.ex-item').forEach(setupExercise);
+
+        /* ---------- Agregar ejercicio (botón hasta abajo) ---------- */
+        var addBtn = document.getElementById('addExerciseBtn');
+        var addForm = document.getElementById('addExerciseForm');
+        var addInput = document.getElementById('addExerciseInput');
+        var addSave = document.getElementById('addExerciseSave');
+        var addCancel = document.getElementById('addExerciseCancel');
+
+        function buildExercise(name) {
+          var li = document.createElement('li');
+          li.className = 'ex-item';
+
+          var p = document.createElement('p');
+          p.className = 'ex-name';
+          var num = document.createElement('span');
+          num.className = 'ex-num';
+          num.textContent = '0.';
+          var txt = document.createElement('span');
+          txt.className = 'ex-text';
+          txt.textContent = name;
+          p.appendChild(num);
+          p.appendChild(txt);
+          li.appendChild(p);
+
+          var seriesRow = document.createElement('div');
+          seriesRow.className = 'series-row';
+          seriesRow.setAttribute('role', 'group');
+          seriesRow.setAttribute('aria-label', 'Series de ' + name);
+          for (var i = 1; i <= 3; i++) {
+            var sb = document.createElement('button');
+            sb.type = 'button';
+            sb.className = 'serie-btn';
+            sb.setAttribute('aria-pressed', 'false');
+            sb.textContent = 'Serie ' + i;
+            bindSerieBtn(sb);
+            seriesRow.appendChild(sb);
+          }
+          li.appendChild(seriesRow);
+
+          var editRow = document.createElement('div');
+          editRow.className = 'ex-edit-row';
+          var delB = document.createElement('button');
+          delB.type = 'button';
+          delB.className = 'ex-del-btn';
+          delB.setAttribute('aria-label', 'Borrar este ejercicio');
+          delB.textContent = '✕';
+          var editB = document.createElement('button');
+          editB.type = 'button';
+          editB.className = 'ex-edit-btn';
+          editB.textContent = 'Editar nombre';
+          editRow.appendChild(delB);
+          editRow.appendChild(editB);
+          li.appendChild(editRow);
+
+          var eForm = document.createElement('div');
+          eForm.className = 'ex-edit-form';
+          eForm.hidden = true;
+          var eInput = document.createElement('input');
+          eInput.type = 'text';
+          eInput.className = 'ex-edit-input';
+          eInput.setAttribute('aria-label', 'Nuevo nombre del ejercicio');
+          var eActions = document.createElement('div');
+          eActions.className = 'ex-edit-actions';
+          var saveB = document.createElement('button');
+          saveB.type = 'button';
+          saveB.className = 'ex-save-btn';
+          saveB.textContent = 'Guardar';
+          var cancelB = document.createElement('button');
+          cancelB.type = 'button';
+          cancelB.className = 'ex-cancel-btn';
+          cancelB.textContent = 'Cancelar';
+          eActions.appendChild(saveB);
+          eActions.appendChild(cancelB);
+          eForm.appendChild(eInput);
+          eForm.appendChild(eActions);
+          li.appendChild(eForm);
+
+          var confirm = document.createElement('div');
+          confirm.className = 'ex-del-confirm';
+          confirm.hidden = true;
+          var cp = document.createElement('p');
+          cp.textContent = '¿Borrar este ejercicio?';
+          var cActions = document.createElement('div');
+          cActions.className = 'ex-del-actions';
+          var yesB = document.createElement('button');
+          yesB.type = 'button';
+          yesB.className = 'ex-del-yes';
+          yesB.textContent = 'Sí, borrar';
+          var noB = document.createElement('button');
+          noB.type = 'button';
+          noB.className = 'ex-del-no';
+          noB.textContent = 'Cancelar';
+          cActions.appendChild(yesB);
+          cActions.appendChild(noB);
+          confirm.appendChild(cp);
+          confirm.appendChild(cActions);
+          li.appendChild(confirm);
+
+          return li;
+        }
+
+        function closeAddForm() {
+          addForm.hidden = true;
+          addBtn.hidden = false;
+          addInput.value = '';
+        }
+        function addExercise() {
+          var name = addInput.value.trim();
+          if (!name) { addInput.focus(); return; }
+          var item = buildExercise(name);
+          activeExList().appendChild(item);
+          setupExercise(item);
+          renumberExercises();
+          closeAddForm();
+          addBtn.focus();
+          item.scrollIntoView({ block: 'nearest' });
+        }
+        if (addBtn && addForm && addInput) {
+          addBtn.addEventListener('click', function () {
+            addForm.hidden = false;
+            addBtn.hidden = true;
+            addInput.focus();
+          });
+          addSave.addEventListener('click', addExercise);
+          addCancel.addEventListener('click', function () {
+            closeAddForm();
+            addBtn.focus();
+          });
+          addInput.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Enter') { ev.preventDefault(); addExercise(); }
+            if (ev.key === 'Escape') { closeAddForm(); addBtn.focus(); }
+          });
+        }
+
+        /* ---------- Registro del día ----------
+           Muestra la fecha de hoy y, con el botón, guarda un registro con
+           la fecha, cada ejercicio y qué series (1, 2 y 3) quedaron
+           marcadas. Los registros se guardan en este teléfono
+           (localStorage) y quedan en la lista de abajo. Si ya hay un
+           registro de hoy, guardarlo de nuevo lo actualiza. */
+        var LOG_KEY = 'temporizador-registros-v1';
+        var logTodayShort = document.getElementById('logTodayShort');
+        var logTodayFull = document.getElementById('logTodayFull');
+        var logSaveBtn = document.getElementById('logSaveBtn');
+        var logConfirm = document.getElementById('logConfirm');
+        var logConfirmYes = document.getElementById('logConfirmYes');
+        var logConfirmNo = document.getElementById('logConfirmNo');
+        var logStatus = document.getElementById('logStatus');
+        var logList = document.getElementById('logList');
+        var logEmpty = document.getElementById('logEmpty');
+        var logViewBtn = document.getElementById('logViewBtn');
+        var logHistory = document.getElementById('logHistory');
+
+        function pad2(n) { return (n < 10 ? '0' : '') + n; }
+        function dateKey(d) {
+          return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+        }
+        function dateShort(d) {
+          return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2);
+        }
+        function dateLong(d) {
+          try {
+            return d.toLocaleDateString('es-MX', {
+              weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+          } catch (e) { return dateShort(d); }
+        }
+        var now = new Date();
+        if (logTodayShort) logTodayShort.textContent = dateShort(now);
+        if (logTodayFull) logTodayFull.textContent = dateLong(now);
+
+        function loadLogs() {
+          try {
+            var saved = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+            return Array.isArray(saved) ? saved : [];
+          } catch (e) { return []; }
+        }
+        function storeLogs(logs) {
+          try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch (e) {}
+        }
+        function updateLogViewBtn() {
+          if (!logViewBtn || !logHistory) return;
+          var logs = loadLogs();
+          var open = !logHistory.hidden;
+          var count = logs.length ? ' (' + logs.length + ')' : '';
+          logViewBtn.textContent = open
+            ? 'Ocultar registros anteriores'
+            : 'Ver registros anteriores' + count;
+          logViewBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        function renderLogs() {
+          var logs = loadLogs();
+          logList.innerHTML = '';
+          logEmpty.hidden = logs.length > 0;
+          updateLogViewBtn();
+          logs.forEach(function (rec) {
+            var li = document.createElement('li');
+            li.className = 'log-item';
+            var head = document.createElement('p');
+            head.className = 'log-item-date';
+            head.appendChild(document.createTextNode(rec.short + ' '));
+            var span = document.createElement('span');
+            span.textContent = '· ' + rec.long;
+            head.appendChild(span);
+            li.appendChild(head);
+            var ul = document.createElement('ul');
+            ul.className = 'log-ex-list';
+            (rec.items || []).forEach(function (it) {
+              var row = document.createElement('li');
+              var nm = document.createElement('span');
+              nm.className = 'log-ex-name';
+              nm.textContent = it.name;
+              var sr = document.createElement('span');
+              var marked = [];
+              (it.series || []).forEach(function (on, i) { if (on) marked.push(i + 1); });
+              if (marked.length) {
+                sr.className = 'log-ex-series';
+                sr.textContent = marked.length === 1
+                  ? 'Serie ' + marked[0] + ' ✓'
+                  : 'Series ' + marked.join(', ') + ' ✓';
+              } else {
+                sr.className = 'log-ex-series none';
+                sr.textContent = 'Sin series';
+              }
+              row.appendChild(nm);
+              row.appendChild(sr);
+              ul.appendChild(row);
+            });
+            li.appendChild(ul);
+            logList.appendChild(li);
+          });
+        }
+        function saveLog() {
+            var today = new Date();
+            var items = [];
+            activeExList().querySelectorAll('.ex-item').forEach(function (item) {
+              var nameEl = item.querySelector('.ex-text');
+              var series = [];
+              item.querySelectorAll('.serie-btn').forEach(function (btn) {
+                series.push(btn.getAttribute('aria-pressed') === 'true');
+              });
+              items.push({ name: nameEl ? nameEl.textContent : '', series: series });
+            });
+            var rec = {
+              key: dateKey(today),
+              short: dateShort(today),
+              long: dateLong(today),
+              items: items
+            };
+            var logs = loadLogs();
+            var replaced = false;
+            for (var i = 0; i < logs.length; i++) {
+              if (logs[i].key === rec.key) { logs[i] = rec; replaced = true; break; }
+            }
+            if (!replaced) logs.unshift(rec);
+            logs.sort(function (a, b) { return a.key < b.key ? 1 : (a.key > b.key ? -1 : 0); });
+            storeLogs(logs);
+            renderLogs();
+            logStatus.textContent = replaced
+              ? 'Registro de hoy actualizado ✓'
+              : 'Registro guardado ✓ ' + rec.short;
+        }
+        if (logSaveBtn && logConfirm && logConfirmYes && logConfirmNo) {
+          logSaveBtn.addEventListener('click', function () {
+            logStatus.textContent = '';
+            logConfirm.hidden = false;
+            logSaveBtn.hidden = true;
+            logConfirmNo.focus();
+          });
+          logConfirmYes.addEventListener('click', function () {
+            logConfirm.hidden = true;
+            logSaveBtn.hidden = false;
+            saveLog();
+            logSaveBtn.focus();
+          });
+          logConfirmNo.addEventListener('click', function () {
+            logConfirm.hidden = true;
+            logSaveBtn.hidden = false;
+            logSaveBtn.focus();
+          });
+        }
+        if (logViewBtn && logHistory) {
+          logViewBtn.addEventListener('click', function () {
+            logHistory.hidden = !logHistory.hidden;
+            updateLogViewBtn();
+            if (!logHistory.hidden) {
+              logHistory.scrollIntoView({ block: 'nearest' });
+            }
+          });
+        }
+
+        /* ---------- Página de Configuración ----------
+           El botón Configuración abre otra página (oculta la vista
+           principal y muestra la de Configuración, con botón ← Volver
+           para regresar). El botón Ver registros anteriores y su lista
+           viven en esa página; sus IDs no cambiaron, así que renderLogs
+           y updateLogViewBtn siguen funcionando igual. */
+        var mainView = document.getElementById('mainView');
+        var configView = document.getElementById('configView');
+        var configBtn = document.getElementById('configBtn');
+        var configBackBtn = document.getElementById('configBackBtn');
+        if (configBtn && mainView && configView) {
+          configBtn.addEventListener('click', function () {
+            mainView.hidden = true;
+            configView.hidden = false;
+            window.scrollTo(0, 0);
+            if (configBackBtn) configBackBtn.focus();
+          });
+        }
+        if (configBackBtn && mainView && configView) {
+          configBackBtn.addEventListener('click', function () {
+            configView.hidden = true;
+            mainView.hidden = false;
+            window.scrollTo(0, 0);
+            if (configBtn) configBtn.focus();
+          });
+        }
+
+        renderLogs();
+      })();
+    </script>
+  </body>
+</html>
