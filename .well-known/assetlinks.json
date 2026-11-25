@@ -1,0 +1,1 @@
+[{"relation": ["delegate_permission/common.handle_all_urls"], "target": {"namespace": "android_app", "package_name": "com.vu.micontrolcalorico", "sha256_cert_fingerprints": ["89:06:0F:CE:00:05:F9:8D:AC:02:BF:09:70:B3:06:55:D5:07:10:AF:14:61:AC:53:73:57:7F:E1:85:46:17:D2"]}}]
