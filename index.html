@@ -609,9 +609,45 @@
       font-size: 12px;
       color: var(--text-muted);
       text-align: right;
-      margin-top: 8px;
+      margin: -6px 2px 12px;
       padding-top: 6px;
       border-top: 1px solid var(--border);
+    }
+
+    /* Vista de aplicación de ejercicio (iframe a pantalla completa) */
+    #vistaEjercicio {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+      background: var(--bg-card);
+      display: none;
+      flex-direction: column;
+    }
+
+    #vistaEjercicio.abierta {
+      display: flex;
+    }
+
+    #vistaEjercicio .ejercicio-barra {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    #vistaEjercicio .ejercicio-titulo {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    #iframeEjercicio {
+      flex: 1 1 auto;
+      width: 100%;
+      border: 0;
+      background: var(--bg-card);
     }
 
     .alimento-item {
@@ -985,7 +1021,7 @@
     .tabla-pesos th.num, .tabla-pesos td.num { text-align: right; font-variant-numeric: tabular-nums; }
     .tabla-pesos td { padding: 8px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .tabla-pesos tr.medidas-row td { padding: 0 4px 8px; font-size: 11px; color: var(--text-muted); }
-    /* Gatitos animados decorativos v62: 2 siameses (blanco y cafe) paseando por la pantalla */
+    /* Gatitos animados decorativos v64: 2 siameses (blanco y cafe) paseando por la pantalla */
     .gatito { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; width: 58px; height: 44px; will-change: transform; --ciclo-paso: .6s; }
     .gatito .gatito-flip { display: block; width: 100%; height: 100%; transition: transform .18s ease; }
     .gatito svg { display: block; width: 100%; height: 100%; animation: none; }
@@ -1566,6 +1602,10 @@
         <h2 class="section-title">Ajustes</h2>
         <p class="section-subtitle">Apartados de comida, actividad física, respaldo y reinicio de datos.</p>
 
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 14px;">
+          <button type="button" id="btnAbrirEjercicio" class="btn btn-primary" style="width: 100%;">Entrar a aplicación de ejercicio</button>
+        </div>
+
         <button type="button" id="btnAbrirPerfil" class="btn btn-primary" style="width: 100%; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Perfil</button>
         <button type="button" id="btnAbrirMetas" class="btn btn-soft" style="width: 100%; margin-bottom: 14px;">Modificar metas calóricas y macros</button>
 
@@ -1677,7 +1717,7 @@
           </div>
 
           <button type="button" id="btnActualizarApp" class="btn btn-soft" style="width: 100%; margin-top: 4px;">Actualizar app</button>
-          <div id="versionAppTexto" style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 8px;">Versión instalada: v62</div>
+          <div id="versionAppTexto" style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 8px;">Versión instalada: v64</div>
           <button type="button" id="btnQuitarGatitos" class="btn btn-soft" style="width: 100%; margin-top: 8px;">Quitar gatitos</button>
           <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px; margin-bottom: 12px;">
             <div class="form-label" style="margin-bottom: 0;">Reiniciar datos guardados</div>
@@ -1900,6 +1940,15 @@
       </button>
     </div>
   </nav>
+
+  <!-- VISTA: APLICACIÓN DE EJERCICIO -->
+  <div id="vistaEjercicio" aria-hidden="true">
+    <div class="ejercicio-barra">
+      <button type="button" id="btnCerrarEjercicio" class="btn btn-soft">✕ Volver</button>
+      <span class="ejercicio-titulo">Aplicación de ejercicio</span>
+    </div>
+    <iframe id="iframeEjercicio" title="Aplicación de ejercicio"></iframe>
+  </div>
 
   <!-- MODAL 1: SELECTOR AL TOCAR '+' -->
   <div id="modalSelectorAgregar" class="modal-backdrop">
@@ -2589,7 +2638,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v62";
+    const VERSION_APP = "v64";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6027,13 +6076,6 @@
         }
 
         if (items.length && !colapsado) {
-          const resumenMacros = document.createElement("div");
-          resumenMacros.className = "apartado-macros";
-          resumenMacros.textContent = `Total: ${fmtNum(kcalComida, 0)} kcal · P ${fmtNum(protComida, 1)} g · C ${fmtNum(carbComida, 1)} g · G ${fmtNum(grasComida, 1)} g · Fib ${fmtNum(fibraComida, 1)} g`;
-          card.appendChild(resumenMacros);
-        }
-
-        if (items.length && !colapsado) {
           const footer = document.createElement("div");
           footer.style.cssText = "display:flex; gap:8px; margin-top:10px;";
           footer.innerHTML = `
@@ -6062,6 +6104,13 @@
         }
 
         cont.appendChild(card);
+
+        if (items.length) {
+          const resumenMacros = document.createElement("div");
+          resumenMacros.className = "apartado-macros";
+          resumenMacros.textContent = `Total: ${fmtNum(kcalComida, 0)} kcal · P ${fmtNum(protComida, 1)} g · C ${fmtNum(carbComida, 1)} g · G ${fmtNum(grasComida, 1)} g · Fib ${fmtNum(fibraComida, 1)} g`;
+          cont.appendChild(resumenMacros);
+        }
       });
 
       renderizarAguaDiario(tot.aguaMl);
@@ -6518,6 +6567,35 @@
       confirmarBorradoPendiente();
       document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-ajustes"));
       window.scrollTo(0, 0);
+    });
+
+    /* Aplicación de ejercicio (iframe a pantalla completa dentro de la app) */
+    function abrirEjercicio() {
+      const vista = document.getElementById("vistaEjercicio");
+      const frame = document.getElementById("iframeEjercicio");
+      if (frame && !frame.getAttribute("src")) frame.setAttribute("src", "ejercicios.html");
+      if (vista) {
+        vista.classList.add("abierta");
+        vista.setAttribute("aria-hidden", "false");
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function cerrarEjercicio() {
+      const vista = document.getElementById("vistaEjercicio");
+      if (vista) {
+        vista.classList.remove("abierta");
+        vista.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    document.getElementById("btnAbrirEjercicio").addEventListener("click", () => {
+      confirmarBorradoPendiente();
+      abrirEjercicio();
+    });
+
+    document.getElementById("btnCerrarEjercicio").addEventListener("click", () => {
+      cerrarEjercicio();
     });
 
     /* Modales */
@@ -9503,7 +9581,7 @@
       document.getElementById("modalOrdenApartados").classList.add("open");
     });
 
-    /* Gatitos decorativos v62: 2 siameses (blanco y cafe) con caminata en 4 tiempos, anticipacion, lerp y parpadeo aleatorio */
+    /* Gatitos decorativos v64: 2 siameses (blanco y cafe) con caminata en 4 tiempos, anticipacion, lerp y parpadeo aleatorio */
     function svgGatito(colorCuerpo, colorPuntos, variante, colorLejos) {
       variante = variante || "normal";
       colorLejos = colorLejos || colorPuntos;
@@ -9613,7 +9691,7 @@
       if (tipo === "liga") return '<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="none" stroke="#f472b6" stroke-width="4"/><circle cx="12" cy="4" r="2" fill="#be185d"/></svg>';
       return "";
     }
-    /* --- Gatitos v62: helpers puros de animacion --- */
+    /* --- Gatitos v64: helpers puros de animacion --- */
     function easeInOutCubic(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
     function puntoBezierCuad(p0, c, p1, t) { var u = 1 - t; return u * u * p0 + 2 * u * t * c + t * t * p1; }
     function lerpHacia(cur, objetivo, f) { return cur + (objetivo - cur) * f; }
