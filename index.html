@@ -2731,7 +2731,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v83";
+    const VERSION_APP = "v84";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -9593,7 +9593,7 @@
       // Si hay carpeta elegida y el permiso está concedido, el archivo va SOLO
       // a la carpeta; si no hay carpeta (o se perdió el permiso), se descarga
       // a Descargas como antes.
-      const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, contenido);
+      const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, contenido, true);
       if (!enCarpeta) {
         const blob = new Blob([contenido], { type: "application/json" });
         const a = document.createElement("a");
@@ -9779,7 +9779,7 @@
         // Si hay carpeta elegida y el permiso está concedido, el archivo va SOLO
         // a la carpeta; si no hay carpeta (o se perdió el permiso), se descarga
         // a Descargas como antes.
-        const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, r.datos);
+        const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, r.datos, true);
         if (!enCarpeta) {
           const blob = new Blob([r.datos], { type: "application/json" });
           const a = document.createElement("a");
@@ -9877,6 +9877,7 @@
         try { localStorage.setItem(CLAVE_NOMBRE_CARPETA_RESPALDO, handle.name); } catch (e) {}
         mostrarCarpetaRespaldo();
         mostrarToast("Carpeta elegida: " + handle.name);
+        reponerArchivoRespaldoHoy();
       } catch (e) {
         if (e && e.name === "AbortError") return;
         mostrarToast("No se pudo elegir la carpeta");
@@ -9888,25 +9889,29 @@
     // toast y devuelve false. La usan el respaldo automático, "Guardar
     // respaldo" y el "Guardar" de la lista de respaldos automáticos. No borra
     // nada; la rotación solo la hace escribirRespaldoAutoEnCarpeta.
-    async function escribirArchivoEnCarpeta(nombreArchivo, contenido) {
+    async function escribirArchivoEnCarpeta(nombreArchivo, contenido, avisar) {
       if (!carpetaRespaldoHandle) return false;
       try {
-        const permiso = await carpetaRespaldoHandle.requestPermission({ mode: "readwrite" });
-        if (permiso !== "granted") throw new Error("permiso denegado");
+        var estado = "prompt";
+        try { estado = await carpetaRespaldoHandle.queryPermission({ mode: "readwrite" }); } catch (e) { estado = "prompt"; }
+        if (estado !== "granted") {
+          const permiso = await carpetaRespaldoHandle.requestPermission({ mode: "readwrite" });
+          if (permiso !== "granted") throw new Error("permiso denegado");
+        }
         const fileHandle = await carpetaRespaldoHandle.getFileHandle(nombreArchivo, { create: true });
         const writable = await fileHandle.createWritable();
         await writable.write(contenido);
         await writable.close();
         return true;
       } catch (e) {
-        mostrarToast("No se pudo escribir en la carpeta, elige la carpeta de nuevo");
+        if (avisar) mostrarToast("No se pudo escribir en la carpeta, elige la carpeta de nuevo");
         return false;
       }
     }
 
     async function escribirRespaldoAutoEnCarpeta(entrada) {
       if (!carpetaRespaldoHandle) return;
-      const ok = await escribirArchivoEnCarpeta(PREFIJO_ARCHIVO_RESPALDO_AUTO + entrada.fecha + ".json", entrada.datos);
+      const ok = await escribirArchivoEnCarpeta(PREFIJO_ARCHIVO_RESPALDO_AUTO + entrada.fecha + ".json", entrada.datos, false);
       if (!ok) return;
       try {
         const nombres = [];
@@ -9920,9 +9925,7 @@
           const viejo = nombres.shift();
           await carpetaRespaldoHandle.removeEntry(viejo);
         }
-      } catch (e) {
-        mostrarToast("No se pudo escribir en la carpeta, elige la carpeta de nuevo");
-      }
+      } catch (e) {}
     }
 
     document.getElementById("btnElegirCarpetaRespaldo").addEventListener("click", elegirCarpetaRespaldo);
