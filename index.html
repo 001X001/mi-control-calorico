@@ -2731,7 +2731,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v82";
+    const VERSION_APP = "v83";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -10157,7 +10157,7 @@
         : "";
       var hocico = esBlanco ? "" : '<ellipse cx="63" cy="26" rx="6" ry="4.5" fill="' + colorPuntos + '" opacity="0.55"/>';
       var gradId = "gradGato" + (esBlanco ? "Blanco" : "Cafe");
-      var gradTop = esBlanco ? "#ffffff" : "#d9c1a3";
+      var gradTop = esBlanco ? "#ffffff" : "#d9b48c";
       return `<svg viewBox="0 0 80 60" aria-hidden="true"><defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${gradTop}"/><stop offset="1" stop-color="${colorCuerpo}"/></linearGradient></defs><g class="gatito-cola-lerp"><g class="gatito-cola"><path d="M14 34 Q0 28 4 12" fill="none" stroke="${colorPuntos}" stroke-width="5" stroke-linecap="round"/><circle class="gatito-cola-punta" cx="4" cy="12" r="3" fill="${colorPuntos}"/></g></g><g class="gatito-pata gatito-pata-trasera-lejos"><path d="M27 45 L27 51" stroke="${colorLejos}" stroke-width="4" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="27" cy="52" rx="4.5" ry="2.5" fill="${colorLejos}"/></g></g><g class="gatito-pata gatito-pata-delantera-lejos"><path d="M49 45 L49 51" stroke="${colorLejos}" stroke-width="4" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="49" cy="52" rx="4.5" ry="2.5" fill="${colorLejos}"/></g></g><ellipse cx="42" cy="34" rx="21" ry="12" fill="url(#${gradId})"/><ellipse cx="44" cy="37" rx="11" ry="6" fill="#ffffff" opacity="0.3"/>${manchasCuerpo}<g class="gatito-pata gatito-pata-trasera"><path d="M30 44 L30 53" stroke="${colorPuntos}" stroke-width="4.5" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="30" cy="54" rx="5.5" ry="3" fill="${colorPuntos}"/></g></g><g class="gatito-pata gatito-pata-delantera"><path d="M52 44 L52 53" stroke="${colorPuntos}" stroke-width="4.5" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="52" cy="54" rx="5.5" ry="3" fill="${colorPuntos}"/></g></g><g class="gatito-cabeza-lerp"><g class="gatito-cabeza"><circle cx="60" cy="22" r="11" fill="url(#${gradId})"/><g class="gatito-oreja gatito-oreja-izq"><polygon points="52,14 53,1 61,11" fill="${colorPuntos}"/><polygon points="54.5,11 54.5,5 59,10" fill="#f2b8c6"/></g><g class="gatito-oreja gatito-oreja-der"><polygon points="63,11 67,0 69,13" fill="${colorPuntos}"/><polygon points="64.5,10 67,3 68.5,11" fill="#f2b8c6"/></g>${manchasCara}${hocico}<g class="gatito-ojos">${ojos}</g><circle cx="54" cy="24" r="1.7" fill="#f28b8b" opacity="0.75"/><circle cx="63" cy="24.5" r="1.7" fill="#f28b8b" opacity="0.75"/><polygon points="67.5,24 70.5,24 69,26.5" fill="#e88ca0"/>${boca}${lengua}<g class="gatito-bigotes"><path d="M68 24 L76 21" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/><path d="M68 26.5 L76 28" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/><path d="M52 24 L45 21.5" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/></g></g></g></svg>`;
     }
 
@@ -10794,7 +10794,7 @@
     function iniciarGatitos() {
       var colores = [
         { cuerpo: "#ffffff", puntos: "#3a3230", lejos: "#6b6156", tipo: "blanco" },
-        { cuerpo: "#e8dcc8", puntos: "#2b2118", lejos: "#4a2c17", tipo: "cafe" }
+        { cuerpo: "#c19a6b", puntos: "#2b2118", lejos: "#4a2c17", tipo: "cafe" }
       ];
       colores.forEach(function (c, i) {
         var el = document.createElement("div");
