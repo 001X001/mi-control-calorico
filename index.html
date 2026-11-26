@@ -641,6 +641,10 @@
     .apartado-macros .am-carb { color: var(--carbs); font-weight: 700; }
     .apartado-macros .am-gras { color: var(--fat); font-weight: 700; }
     .apartado-macros .am-fibra { color: var(--fiber); font-weight: 700; }
+    .apartado-macros .am-azucar { color: var(--sugar); font-weight: 700; }
+    .apartado-macros .am-sodio { color: var(--sodium); font-weight: 700; }
+    .apartado-macros .am-grasSat { color: var(--satfat); font-weight: 700; }
+    .apartado-macros .am-colest { color: var(--cholest); font-weight: 700; }
     /* En modo oscuro los colores base no se leen sobre el fondo oscuro:
        se usan sus versiones claras (Tailwind 400) y blanco puro para kcal. */
     body.modo-oscuro .apartado-macros .am-kcal { color: #ffffff; }
@@ -648,6 +652,10 @@
     body.modo-oscuro .apartado-macros .am-carb { color: #fbbf24; }
     body.modo-oscuro .apartado-macros .am-gras { color: #fb7185; }
     body.modo-oscuro .apartado-macros .am-fibra { color: #a78bfa; }
+    body.modo-oscuro .apartado-macros .am-azucar { color: #f472b6; }
+    body.modo-oscuro .apartado-macros .am-sodio { color: #22d3ee; }
+    body.modo-oscuro .apartado-macros .am-grasSat { color: #fb923c; }
+    body.modo-oscuro .apartado-macros .am-colest { color: #a3e635; }
 
     /* Despliegue animado de los productos de un apartado (v79): la lista se
        abre y se cierra con un deslizamiento suave usando el truco de
@@ -2827,7 +2835,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v107";
+    const VERSION_APP = "v108";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6623,14 +6631,14 @@
     const CLAVES_NUTRIENTES = ["prot", "carb", "gras", "fibra", "azucar", "sodio", "grasSat", "colest"];
     const MACROS_PRIORITARIOS_DEFAULT = ["prot", "carb", "gras", "fibra"];
     const NUTRIENTES_INFO = {
-      prot: { etiqueta: "Proteínas", unidad: "g", dec: 1, totalKey: "prot", extraKey: null, conKey: null, metaKey: "metaProt" },
-      carb: { etiqueta: "Carbos", unidad: "g", dec: 1, totalKey: "carb", extraKey: null, conKey: null, metaKey: "metaCarb" },
-      gras: { etiqueta: "Grasas", unidad: "g", dec: 1, totalKey: "gras", extraKey: null, conKey: null, metaKey: "metaGras" },
-      fibra: { etiqueta: "Fibra", unidad: "g", dec: 1, totalKey: "fibra", extraKey: null, conKey: null, metaKey: "metaFibra" },
-      azucar: { etiqueta: "Azúcar", unidad: "g", dec: 1, totalKey: null, extraKey: "azucar", conKey: "conAzucar", metaKey: "metaAzucar" },
-      sodio: { etiqueta: "Sodio", unidad: "mg", dec: 0, totalKey: null, extraKey: "sodio", conKey: "conSodio", metaKey: "metaSodio" },
-      grasSat: { etiqueta: "Grasa saturada", unidad: "g", dec: 1, totalKey: null, extraKey: "grasSat", conKey: "conGrasSat", metaKey: "metaGrasSat" },
-      colest: { etiqueta: "Colesterol", unidad: "mg", dec: 0, totalKey: null, extraKey: "colest", conKey: "conColest", metaKey: "metaColest" }
+      prot: { etiqueta: "Proteínas", unidad: "g", dec: 1, totalKey: "prot", extraKey: null, conKey: null, metaKey: "metaProt", corta: "P" },
+      carb: { etiqueta: "Carbos", unidad: "g", dec: 1, totalKey: "carb", extraKey: null, conKey: null, metaKey: "metaCarb", corta: "C" },
+      gras: { etiqueta: "Grasas", unidad: "g", dec: 1, totalKey: "gras", extraKey: null, conKey: null, metaKey: "metaGras", corta: "G" },
+      fibra: { etiqueta: "Fibra", unidad: "g", dec: 1, totalKey: "fibra", extraKey: null, conKey: null, metaKey: "metaFibra", corta: "Fib" },
+      azucar: { etiqueta: "Azúcar", unidad: "g", dec: 1, totalKey: null, extraKey: "azucar", conKey: "conAzucar", metaKey: "metaAzucar", corta: "Az" },
+      sodio: { etiqueta: "Sodio", unidad: "mg", dec: 0, totalKey: null, extraKey: "sodio", conKey: "conSodio", metaKey: "metaSodio", corta: "Sod" },
+      grasSat: { etiqueta: "Grasa saturada", unidad: "g", dec: 1, totalKey: null, extraKey: "grasSat", conKey: "conGrasSat", metaKey: "metaGrasSat", corta: "GS" },
+      colest: { etiqueta: "Colesterol", unidad: "mg", dec: 0, totalKey: null, extraKey: "colest", conKey: "conColest", metaKey: "metaColest", corta: "Col" }
     };
 
     function obtenerMacrosPrioritarios() {
@@ -6855,6 +6863,10 @@
         const carbComida = items.reduce((acc, x) => acc + (Number(x.carb) || 0), 0);
         const grasComida = items.reduce((acc, x) => acc + (Number(x.gras) || 0), 0);
         const fibraComida = items.reduce((acc, x) => acc + (Number(x.fibra) || 0), 0);
+        const azucarComida = items.reduce((acc, x) => acc + (Number(x.azucar) || 0), 0);
+        const sodioComida = items.reduce((acc, x) => acc + (Number(x.sodio) || 0), 0);
+        const grasSatComida = items.reduce((acc, x) => acc + (Number(x.grasSat) || 0), 0);
+        const colestComida = items.reduce((acc, x) => acc + (Number(x.colest) || 0), 0);
         const pctComidaMeta = metaKcal > 0 ? Math.round((kcalComida / metaKcal) * 100) : 0;
         const pctComidaDia = tot.kcal > 0 ? Math.round((kcalComida / tot.kcal) * 100) : 0;
         const colapsado = !!(appState.apartadosColapsados && appState.apartadosColapsados[nombreComida]);
@@ -6944,7 +6956,13 @@
         if (items.length) {
           const resumenMacros = document.createElement("div");
           resumenMacros.className = "apartado-macros";
-          resumenMacros.innerHTML = `Total: <span class="am-kcal">${fmtNum(kcalComida, 0)} kcal</span> · <span class="am-prot">P ${fmtNum(protComida, 1)} g</span> · <span class="am-carb">C ${fmtNum(carbComida, 1)} g</span> · <span class="am-gras">G ${fmtNum(grasComida, 1)} g</span> · <span class="am-fibra">Fib ${fmtNum(fibraComida, 1)} g</span>`;
+          const valoresComida = { prot: protComida, carb: carbComida, gras: grasComida, fibra: fibraComida, azucar: azucarComida, sodio: sodioComida, grasSat: grasSatComida, colest: colestComida };
+          const partesMacros = obtenerMacrosPrioritarios().map((clave) => {
+            const info = NUTRIENTES_INFO[clave];
+            if (!info) return null;
+            return `<span class="am-${clave}">${info.corta} ${fmtNum(valoresComida[clave] || 0, info.dec)} ${info.unidad}</span>`;
+          }).filter(Boolean);
+          resumenMacros.innerHTML = `Total: <span class="am-kcal">${fmtNum(kcalComida, 0)} kcal</span>` + (partesMacros.length ? " · " + partesMacros.join(" · ") : "");
           card.appendChild(resumenMacros);
         }
 
