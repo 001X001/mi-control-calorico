@@ -2648,7 +2648,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v70";
+    const VERSION_APP = "v71";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -9568,8 +9568,8 @@
         const horaTxt = new Date(r.creadoEn).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
         return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);">'
           + '<div style="flex:1;font-size:13px;">' + escaparHTML(fechaTxt) + ' <span style="color:var(--text-muted);font-size:11px;">' + escaparHTML(horaTxt) + '</span></div>'
-          + '<button type="button" class="btn btn-soft" data-respaldo-auto-restaurar="' + i + '" style="padding:5px 10px;">Restaurar</button>'
-          + '<button type="button" class="btn btn-soft" data-respaldo-auto-descargar="' + i + '" style="padding:5px 10px;">Descargar</button>'
+          + '<button type="button" class="btn btn-soft" data-respaldo-auto-restaurar="' + i + '" style="padding:5px 10px;">Cargar</button>'
+          + '<button type="button" class="btn btn-soft" data-respaldo-auto-descargar="' + i + '" style="padding:5px 10px;">Guardar</button>'
           + '</div>';
       }).join("");
     }
