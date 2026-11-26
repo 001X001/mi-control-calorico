@@ -2829,7 +2829,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v99";
+    const VERSION_APP = "v100";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -7193,6 +7193,13 @@
     function abrirElegirApartadoLupa() {
       const lista = document.getElementById("listaApartadosLupa");
       lista.innerHTML = "";
+      const bVer = document.createElement("button");
+      bVer.type = "button";
+      bVer.className = "btn btn-soft";
+      bVer.style.cssText = "padding: 13px; font-size: 14px; justify-content: flex-start; text-align: left;";
+      bVer.textContent = "Solo quiero ver";
+      bVer.addEventListener("click", () => abrirBusquedaLupa(null));
+      lista.appendChild(bVer);
       (appState.apartados || []).forEach((ap) => {
         const b = document.createElement("button");
         b.type = "button";
@@ -7207,9 +7214,9 @@
 
     function abrirBusquedaLupa(destino) {
       cerrarModales();
-      comidaActivaModal = destino;
+      comidaActivaModal = destino || "";
       origenListaAlimento = "buscar";
-      document.getElementById("guardadosTituloComida").textContent = `Agregar a ${destino}`;
+      document.getElementById("guardadosTituloComida").textContent = destino ? `Agregar a ${destino}` : "Buscar alimento";
       cambiarTabGuardados("nuevo");
       cerrarDetalleAlimento();
       document.getElementById("buscarNuevoAlimento").value = "";
@@ -7471,6 +7478,7 @@
 
     function volverAlSelector() {
       cerrarModales();
+      if (!comidaActivaModal) { abrirElegirApartadoLupa(); return; }
       document.getElementById("selectorTituloComida").textContent = `Agregar a ${comidaActivaModal}`;
       document.getElementById("modalSelectorAgregar").classList.add("open");
     }
@@ -7656,6 +7664,7 @@
     document.getElementById("gramosCodigoBarras").addEventListener("input", actualizarPreviewCodigoBarras);
 
     document.getElementById("btnConfirmarCodigoBarras").addEventListener("click", () => {
+      if (!comidaActivaModal) { mostrarToast("Elige el apartado donde va"); return; }
       if (productoCodigoBarras) {
         const gramos = Number(document.getElementById("gramosCodigoBarras").value) || 0;
         if (gramos <= 0) { mostrarToast("Ingresa los gramos"); return; }
@@ -7903,6 +7912,13 @@
       document.getElementById("selAlmNombre").textContent = it.nombre;
       const selApartado = document.getElementById("selAlmApartado");
       selApartado.innerHTML = "";
+      if (!comidaActivaModal) {
+        const opVacia = document.createElement("option");
+        opVacia.value = "";
+        opVacia.textContent = "Elige apartado...";
+        opVacia.selected = true;
+        selApartado.appendChild(opVacia);
+      }
       appState.apartados.forEach((ap) => {
         const op = document.createElement("option");
         op.value = ap;
@@ -8029,6 +8045,7 @@
       }
       const factor = gramos / 100;
       const apartadoDestino = document.getElementById("selAlmApartado").value || comidaActivaModal;
+      if (!apartadoDestino) { mostrarToast("Elige el apartado donde va"); return; }
       comidaActivaModal = apartadoDestino;
       agregarItemAComida(apartadoDestino, {
         nombre: alimentoSeleccionadoModal.nombre,
@@ -8272,6 +8289,7 @@
         });
         return;
       }
+      if (!comidaActivaModal) { mostrarToast("Elige el apartado donde va"); return; }
       agregarItemAComida(comidaActivaModal, { ...it });
       cerrarModales();
     }
@@ -8281,7 +8299,7 @@
       cont.innerHTML = "";
       const lista = appState.recientes.filter((r) => !r.comida || r.comida === comidaActivaModal);
       if (!lista.length) {
-        cont.innerHTML = `<p class="empty-text">Aún no tienes elementos recientes en ${escaparHTML(comidaActivaModal)}.</p>`;
+        cont.innerHTML = comidaActivaModal ? `<p class="empty-text">Aún no tienes elementos recientes en ${escaparHTML(comidaActivaModal)}.</p>` : `<p class="empty-text">Aún no tienes elementos recientes.</p>`;
         return;
       }
       lista.slice(0, 15).forEach((it) => {
