@@ -249,13 +249,13 @@
     }
 
     .kcal-consumed {
-      font-size: 22px;
+      font-size: 19px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
 
     .kcal-goal {
-      font-size: 14px;
+      font-size: 17px;
       color: var(--text-muted);
       font-weight: 800;
     }
@@ -276,7 +276,7 @@
     }
 
     .kcal-remaining-val {
-      font-size: 14px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--primary);
       text-align: right;
@@ -623,7 +623,7 @@
       font-size: 12px;
       color: var(--text-muted);
       text-align: right;
-      margin: -6px 2px 12px;
+      margin: 8px 2px 0;
       padding-top: 6px;
       border-top: 1px solid var(--border);
     }
@@ -2683,7 +2683,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v74";
+    const VERSION_APP = "v75";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6149,14 +6149,14 @@
           card.appendChild(btnToggle);
         }
 
-        cont.appendChild(card);
-
         if (items.length) {
           const resumenMacros = document.createElement("div");
           resumenMacros.className = "apartado-macros";
           resumenMacros.innerHTML = `Total: <span class="am-kcal">${fmtNum(kcalComida, 0)} kcal</span> · <span class="am-prot">P ${fmtNum(protComida, 1)} g</span> · <span class="am-carb">C ${fmtNum(carbComida, 1)} g</span> · <span class="am-gras">G ${fmtNum(grasComida, 1)} g</span> · <span class="am-fibra">Fib ${fmtNum(fibraComida, 1)} g</span>`;
-          cont.appendChild(resumenMacros);
+          card.appendChild(resumenMacros);
         }
+
+        cont.appendChild(card);
       });
 
       renderizarAguaDiario(tot.aguaMl);
@@ -7294,7 +7294,11 @@
         fibra: (Number(alimentoSeleccionadoModal.fibra100) || 0) * factor,
         ...extrasPorFactor(alimentoSeleccionadoModal, factor)
       });
-      cerrarDetalleAlimento();
+      // v75: no cerrar tras agregar; volver a la busqueda limpia para el siguiente producto.
+      document.getElementById("buscarNuevoAlimento").value = "";
+      document.getElementById("buscarAlmacenModal").value = "";
+      document.getElementById("selAlmGramos").value = "";
+      volverAListaAlimento();
     });
 
     document.getElementById("btnElegirBuscarAlimento").addEventListener("click", () => {
