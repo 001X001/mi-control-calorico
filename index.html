@@ -643,6 +643,14 @@
     body.modo-oscuro .apartado-macros .am-gras { color: #fb7185; }
     body.modo-oscuro .apartado-macros .am-fibra { color: #a78bfa; }
 
+    /* Despliegue animado de los productos de un apartado (v79): la lista se
+       abre y se cierra con un deslizamiento suave usando el truco de
+       grid-template-rows 0fr -> 1fr; el contenedor interno recorta el
+       contenido mientras se anima. */
+    .comida-desplegable { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 300ms ease; }
+    .comida-desplegable.abierto { grid-template-rows: 1fr; }
+    .comida-desplegable > .comida-desplegable-in { overflow: hidden; min-height: 0; }
+
     /* Vista de aplicación de ejercicio (iframe a pantalla completa) */
     #vistaEjercicio {
       position: fixed;
@@ -1051,7 +1059,7 @@
     .tabla-pesos td { padding: 8px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .tabla-pesos tr.medidas-row td { padding: 0 4px 8px; font-size: 11px; color: var(--text-muted); }
     /* Gatitos animados decorativos v64: 2 siameses (blanco y cafe) paseando por la pantalla */
-    .gatito { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; width: 58px; height: 44px; will-change: transform; --ciclo-paso: .6s; }
+    .gatito { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: auto; touch-action: manipulation; width: 58px; height: 44px; will-change: transform; --ciclo-paso: .6s; }
     .gatito .gatito-flip { display: block; width: 100%; height: 100%; transition: transform .18s ease; }
     .gatito svg { display: block; width: 100%; height: 100%; animation: none; }
     .gatito.gatito-caminando svg { animation: gatitoBob calc(var(--ciclo-paso) / 2) ease-in-out infinite alternate; }
@@ -1081,12 +1089,14 @@
     @keyframes gatitoPataLejos { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
     @keyframes gatitoPataBajaDelantera { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(12deg); } }
     @keyframes gatitoPataBajaTrasera { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-12deg); } }
-    @media (prefers-reduced-motion: reduce) { .gatito, .gatito * { animation: none !important; } .gatito-prop { animation: none !important; } }
+    @media (prefers-reduced-motion: reduce) { .gatito, .gatito * { animation: none !important; } .gatito-prop, .gatito-prop-flota { animation: none !important; } }
     .gatito-burbuja { position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%) scale(.85); background: #fff; color: #4a2c17; border: 1.5px solid #d8b4fe; border-radius: 12px; padding: 2px 8px; font-size: 12px; font-weight: 700; line-height: 1.25; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .18s ease, transform .18s ease; box-shadow: 0 2px 8px rgba(0,0,0,.18); z-index: 10000; }
     .gatito-burbuja.ver { opacity: 1; transform: translateX(-50%) scale(1); }
-    .gatito-prop { position: fixed; left: 0; top: 0; z-index: 9998; pointer-events: none; animation: gatitoPropFlota 1.2s ease-in-out infinite alternate; }
+    .gatito-prop { position: fixed; left: 0; top: 0; z-index: 9998; pointer-events: none; }
     @keyframes gatitoPropFlota { from { transform: translateY(0); } to { transform: translateY(-5px); } }
     .gatito-prop.prop-suelo { animation: none; }
+    .gatito-prop-flota { display: block; animation: gatitoPropFlota 1.2s ease-in-out infinite alternate; }
+    .gatito-prop.prop-suelo .gatito-prop-flota { animation: none; }
     .gatito.gatito-mirar-prop .gatito-cabeza { transform: rotate(8deg); transition: transform .3s ease; }
     .gatito.gatito-micro-oreja .gatito-oreja-der { animation: gatitoMicroOreja .15s ease-in-out 2; }
     .gatito.gatito-micro-cola .gatito-cola-punta { animation: gatitoMicroCola .18s ease-in-out 3; }
@@ -1148,6 +1158,10 @@
     .gatito.comp-comer .gatito-pata, .gatito.comp-lamer .gatito-pata { animation: none; }
     .gatito.gatito-anticipacion svg { animation: gatitoAnticipacion .2s ease-in-out 1; }
     .gatito.gatito-meneo svg { animation: gatitoMeneo .12s linear infinite; }
+    .gatito.gatito-feliz .gatito-cola { animation-duration: .18s; }
+    .gatito.gatito-morder .gatito-flip svg { animation: gatitoMorder .3s ease-in-out 2; }
+    @keyframes gatitoMorder { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(7px,-2px) scale(1.06); } }
+    .gatito.gatito-arrastrando { touch-action: none; z-index: 10001; filter: drop-shadow(0 6px 6px rgba(0,0,0,.3)); }
     @keyframes gatitoPelear { 0%,100% { transform: translateX(0) rotate(0deg) scale(1.05); } 25% { transform: translateX(-5px) rotate(-10deg) scale(1.12); } 75% { transform: translateX(5px) rotate(10deg) scale(1.12); } }
     @keyframes gatitoComer { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(9px) rotate(9deg); } }
     @keyframes gatitoSalto { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scaleY(1.05); } 70% { transform: translateY(0) scaleY(.92) scaleX(1.06); } 100% { transform: translateY(0) scale(1); } }
@@ -2681,7 +2695,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v78";
+    const VERSION_APP = "v79";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6005,6 +6019,29 @@
       renderizarDiario();
     }
 
+    /* Al expandir un apartado, desplaza la pantalla con suavidad para que el
+       apartado completo quede visible (v79). Solo al abrir: al cerrar nada
+       queda cortado. Se espera a que termine la transición de despliegue
+       (transitionend, con respaldo por tiempo) porque desplazar con la
+       altura colapsada calcularía mal el scroll. */
+    function desplazarApartadoVisible(card, desplegable) {
+      let hecho = false;
+      const reducirMovimiento = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      const hacerScroll = () => {
+        if (hecho) return;
+        hecho = true;
+        if (!desplegable.classList.contains("abierto")) return;
+        card.scrollIntoView({ behavior: reducirMovimiento ? "auto" : "smooth", block: "nearest" });
+      };
+      const alTerminar = (e) => {
+        if (e && e.propertyName && e.propertyName !== "grid-template-rows") return;
+        desplegable.removeEventListener("transitionend", alTerminar);
+        hacerScroll();
+      };
+      desplegable.addEventListener("transitionend", alTerminar);
+      setTimeout(hacerScroll, 380);
+    }
+
     function renderizarDiario() {
       const dia = asegurarDia(fechaSeleccionada);
       const tot = calcularTotalesDia(fechaSeleccionada);
@@ -6101,7 +6138,7 @@
               <button type="button" class="btn-add-circle" title="Agregar alimento">+</button>
             </div>
           </div>
-          <div class="comida-items"></div>
+          <div class="comida-desplegable${colapsado ? "" : " abierto"}"><div class="comida-desplegable-in"><div class="comida-items"></div></div></div>
         `;
 
         const btns = card.querySelectorAll(".comida-header button");
@@ -6109,9 +6146,11 @@
         btns[1].onclick = () => abrirSelectorAgregar(nombreComida);
 
         const listaItems = card.querySelector(".comida-items");
-        if (!colapsado && !items.length) {
+        const desplegable = card.querySelector(".comida-desplegable");
+        const desplegableIn = desplegable.querySelector(".comida-desplegable-in");
+        if (!items.length) {
           listaItems.innerHTML = `<p class="empty-text">Sin alimentos registrados aún.</p>`;
-        } else if (!colapsado) {
+        } else {
           items.forEach((it, idx) => {
             const row = document.createElement("div");
             row.className = "alimento-item";
@@ -6133,7 +6172,7 @@
           });
         }
 
-        if (items.length && !colapsado) {
+        if (items.length) {
           const footer = document.createElement("div");
           footer.style.cssText = "display:flex; gap:8px; margin-top:10px;";
           footer.innerHTML = `
@@ -6143,7 +6182,7 @@
           const btnsFooter = footer.querySelectorAll("button");
           btnsFooter[0].onclick = () => abrirModalCopiarComida(nombreComida);
           btnsFooter[1].onclick = () => abrirModalComidaAReceta(nombreComida);
-          card.appendChild(footer);
+          desplegableIn.appendChild(footer);
         }
 
         if (items.length) {
@@ -6154,9 +6193,13 @@
           btnToggle.textContent = colapsado ? "▼ Ver productos" : "▲ Minimizar";
           btnToggle.onclick = () => {
             if (!appState.apartadosColapsados || typeof appState.apartadosColapsados !== "object") appState.apartadosColapsados = {};
-            appState.apartadosColapsados[nombreComida] = !colapsado;
+            const ahoraColapsado = !appState.apartadosColapsados[nombreComida];
+            appState.apartadosColapsados[nombreComida] = ahoraColapsado;
             guardarEstado();
-            renderizarDiario();
+            const abriendo = !ahoraColapsado;
+            desplegable.classList.toggle("abierto", abriendo);
+            btnToggle.textContent = ahoraColapsado ? "▼ Ver productos" : "▲ Minimizar";
+            if (abriendo) desplazarApartadoVisible(card, desplegable);
           };
           card.appendChild(btnToggle);
         }
@@ -10231,6 +10274,7 @@
       g.flip.style.transform = "scaleX(" + dir + ")";
     }
     function iniciarViaje(g, nx, ny, velocidadPxS, alLlegar, silencioso) {
+      if (g.arrastrando) return;
       var nd = nx < g.x ? -1 : (nx > g.x ? 1 : g.dir);
       g.giroToken = (g.giroToken || 0) + 1;
       var token = g.giroToken;
@@ -10280,6 +10324,7 @@
       }
     }
     function pasear(g) {
+      if (g.arrastrando) return;
       if (movimientoReducidoGatos) return;
       g.el.classList.remove("gatito-respirar");
       var maxX = Math.max(0, window.innerWidth - GATITO_W);
@@ -10329,7 +10374,7 @@
       if (comp.prop) {
         propEl = document.createElement("div");
         propEl.className = "gatito-prop";
-        propEl.innerHTML = htmlPropGato(comp.prop);
+        propEl.innerHTML = '<div class="gatito-prop-flota">' + htmlPropGato(comp.prop) + "</div>";
         var px = limitar(g.x + 45, 4, Math.max(4, window.innerWidth - 50));
         var py = Math.max(4, g.y - 10);
         if (comp.prop === "croquetas" || comp.prop === "agua" || comp.prop === "platito" || comp.prop === "balde" || comp.prop === "camita") {
@@ -10407,6 +10452,128 @@
       g.el.classList.add(m.cls);
       setTimeout(function () { g.el.classList.remove(m.cls); }, m.d);
     }
+    /* --- Gatitos interactivos v79: tocar (reaccion) y mantener + arrastrar --- */
+    var GATO_HOLD_MS = 250;
+    var GATO_TAP_MAX_MOV = 10;
+    var GATO_TAP_MAX_MS = 500;
+    function reaccionToqueGato(g, xCliente) {
+      if (g.reaccionActiva) return;
+      g.reaccionActiva = true;
+      var token = (g.reaccionToken || 0) + 1;
+      g.reaccionToken = token;
+      var feliz = Math.random() < 0.7;
+      var varianteAntes = g.variante;
+      var varianteReaccion = feliz ? "parpadeo" : "bostezo";
+      g.variante = varianteReaccion;
+      g.flip.innerHTML = svgGatito(g.cuerpo, g.puntos, varianteReaccion, g.lejos);
+      refrescarRefsGato(g);
+      var burbujaMostrada = false;
+      if (feliz) {
+        g.el.classList.add("gatito-feliz");
+      } else {
+        g.el.classList.add("gatito-morder");
+        var cx = g.x + GATITO_W / 2;
+        var dirTap = xCliente < cx ? -1 : 1;
+        if (dirTap !== g.dir) girarGato(g, dirTap);
+        if (g.burbuja && !g.burbuja.classList.contains("ver")) {
+          g.burbuja.textContent = "\u00a1\u00d1am!";
+          g.burbuja.classList.add("ver");
+          burbujaMostrada = true;
+        }
+      }
+      setTimeout(function () {
+        if (token !== g.reaccionToken) return;
+        g.reaccionActiva = false;
+        g.el.classList.remove("gatito-feliz");
+        g.el.classList.remove("gatito-morder");
+        if (burbujaMostrada && g.burbuja) g.burbuja.classList.remove("ver");
+        if (g.variante === varianteReaccion) {
+          g.variante = varianteAntes;
+          g.flip.innerHTML = svgGatito(g.cuerpo, g.puntos, varianteAntes, g.lejos);
+          refrescarRefsGato(g);
+        }
+      }, 1000);
+    }
+    function conectarToqueGato(g) {
+      var el = g.el;
+      function quitarBloqueoScroll(t) {
+        if (t && t.bloqueoScroll) { document.removeEventListener("touchmove", t.bloqueoScroll, true); t.bloqueoScroll = null; }
+      }
+      function limpiarHold(t) {
+        if (t && t.holdTimer) { clearTimeout(t.holdTimer); t.holdTimer = null; }
+      }
+      function terminarArrastre(t) {
+        if (!t || !t.arrastrando) return;
+        t.arrastrando = false;
+        g.arrastrando = false;
+        el.classList.remove("gatito-arrastrando");
+        el.style.touchAction = "";
+        try { if (el.hasPointerCapture && el.hasPointerCapture(t.pointerId)) el.releasePointerCapture(t.pointerId); } catch (e) {}
+        quitarBloqueoScroll(t);
+        limpiarHold(t);
+        g.estado = "espera";
+        setTimeout(function () { if (!g.arrastrando) pasear(g); }, 400);
+      }
+      el.addEventListener("pointerdown", function (e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        if (g.arrastrando || g.toque) return;
+        var t = { pointerId: e.pointerId, x0: e.clientX, y0: e.clientY, t0: Date.now(), holdTimer: null, arrastrando: false, cancelado: false, bloqueoScroll: null };
+        g.toque = t;
+        t.holdTimer = setTimeout(function () {
+          if (!g.toque || g.toque !== t || t.cancelado) return;
+          t.arrastrando = true;
+          g.arrastrando = true;
+          g.giroToken = (g.giroToken || 0) + 1;
+          g.viaje = null;
+          g.caza = null;
+          el.classList.remove("gatito-caminando");
+          el.classList.remove("gatito-meneo");
+          el.classList.remove("gatito-respirar");
+          el.classList.add("gatito-arrastrando");
+          el.style.touchAction = "none";
+          try { el.setPointerCapture(t.pointerId); } catch (err) {}
+          t.bloqueoScroll = function (ev) { ev.preventDefault(); };
+          document.addEventListener("touchmove", t.bloqueoScroll, { passive: false, capture: true });
+          if (g.variante === "dormido" || g.variante === "parpadeo") {
+            g.variante = "normal";
+            g.flip.innerHTML = svgGatito(g.cuerpo, g.puntos, "normal", g.lejos);
+            refrescarRefsGato(g);
+          }
+          g.estado = "arrastrando";
+        }, GATO_HOLD_MS);
+      });
+      el.addEventListener("pointermove", function (e) {
+        var t = g.toque;
+        if (!t || e.pointerId !== t.pointerId) return;
+        var dx = e.clientX - t.x0, dy = e.clientY - t.y0;
+        if (!t.arrastrando) {
+          if (Math.hypot(dx, dy) > GATO_TAP_MAX_MOV) { t.cancelado = true; limpiarHold(t); }
+          return;
+        }
+        var maxX = Math.max(0, window.innerWidth - GATITO_W);
+        var maxY = Math.max(0, window.innerHeight - GATITO_H);
+        g.x = limitar(e.clientX - GATITO_W / 2, 0, maxX);
+        g.y = limitar(e.clientY - GATITO_H - 12, 0, maxY);
+        g.xAnt = g.x;
+        var tf = "translate3d(" + g.x.toFixed(1) + "px," + g.y.toFixed(1) + "px,0)";
+        g.tfAplicado = tf;
+        el.style.transform = tf;
+      });
+      function finPuntero(e, esCancel) {
+        var t = g.toque;
+        if (!t || e.pointerId !== t.pointerId) return;
+        limpiarHold(t);
+        if (t.arrastrando) { g.toque = null; terminarArrastre(t); return; }
+        g.toque = null;
+        if (!esCancel && !t.cancelado && (Date.now() - t.t0) <= GATO_TAP_MAX_MS) reaccionToqueGato(g, e.clientX);
+      }
+      el.addEventListener("pointerup", function (e) { finPuntero(e, false); });
+      el.addEventListener("pointercancel", function (e) { finPuntero(e, true); });
+      el.addEventListener("lostpointercapture", function (e) {
+        var t = g.toque;
+        if (t && t.arrastrando) { g.toque = null; terminarArrastre(t); }
+      });
+    }
     function iniciarGatitos() {
       var colores = [
         { cuerpo: "#f6f1e7", puntos: "#b39d8a", lejos: "#9a8a78" },
@@ -10434,7 +10601,7 @@
           estado: "espera", viaje: null, caza: null, velProximo: 1,
           colaLerp: 0, cabezaLerp: 0, ojosX: 0, ojosY: 0,
           colaLerpAplicado: 999, cabezaLerpAplicado: 999, ojosXAplicado: 999, ojosYAplicado: 999,
-          tfAplicado: "", giroToken: 0, dormido: false,
+          tfAplicado: "", giroToken: 0, dormido: false, toque: null, arrastrando: false, reaccionActiva: false, reaccionToken: 0,
           refCola: null, refCabeza: null, refOjos: null
         };
         var tf0 = "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0)";
@@ -10442,6 +10609,7 @@
         g.tfAplicado = tf0;
         refrescarRefsGato(g);
         gatosV60.push(g);
+        conectarToqueGato(g);
         window.addEventListener("resize", function () {
           var v = g.viaje;
           g.giroToken = (g.giroToken || 0) + 1;
