@@ -1716,6 +1716,14 @@
             </div>
             <div id="textoUltimoRespaldo" style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Último respaldo: nunca</div>
             <button type="button" id="btnCompartirDiaAsistente" class="btn btn-soft" style="width: 100%; margin-top: 8px;">Compartir día con mi asistente</button>
+            <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px;">
+              <div class="form-label" style="margin-bottom: 0;">Respaldos automáticos</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Respaldo automático: activado. Se guarda la primera vez que abres la app cada día. Se guardan los últimos 5.</div>
+              <button type="button" id="btnElegirCarpetaRespaldo" class="btn btn-soft" style="width: 100%; margin-bottom: 8px;">Elegir carpeta de destino</button>
+              <div id="textoCarpetaRespaldo" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Sin carpeta elegida</div>
+              <div id="textoUltimoRespaldoAuto" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Último respaldo automático: nunca</div>
+              <div id="listaRespaldosAuto"></div>
+            </div>
           </div>
 
           <button type="button" id="btnActualizarApp" class="btn btn-soft" style="width: 100%; margin-top: 4px;">Actualizar app</button>
@@ -2640,7 +2648,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v68";
+    const VERSION_APP = "v70";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -9434,6 +9442,30 @@
       document.getElementById("inputImportarRespaldo").click();
     });
 
+    // Aplica un respaldo (objeto con la forma de appState): reemplaza los datos
+    // actuales, guarda y vuelve a dibujar. Lo usan "Cargar respaldo" y el
+    // respaldo automático.
+    function aplicarRespaldo(data) {
+      const baseRespaldo = clonarEstadoInicial();
+      appState = {
+        ...baseRespaldo,
+        ...data,
+        perfil: { ...baseRespaldo.perfil, ...(data.perfil || {}) },
+        apartados: Array.isArray(data.apartados) && data.apartados.length ? data.apartados : [...baseRespaldo.apartados],
+        diarios: data.diarios && typeof data.diarios === "object" ? data.diarios : {},
+        actividades: data.actividades && typeof data.actividades === "object" ? data.actividades : {},
+        pesos: Array.isArray(data.pesos) ? data.pesos : [],
+        metaPeso: data.metaPeso != null ? data.metaPeso : null,
+        almacen: Array.isArray(data.almacen) ? data.almacen : [],
+        recientes: Array.isArray(data.recientes) ? data.recientes : [],
+        apartadosColapsados: data.apartadosColapsados && typeof data.apartadosColapsados === "object" ? data.apartadosColapsados : {}
+      };
+      guardarEstado();
+      cargarFormularioPerfil();
+      renderizarDiario();
+      renderizarAlmacen();
+    }
+
     document.getElementById("inputImportarRespaldo").addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -9446,24 +9478,7 @@
             return;
           }
           if (!confirm("¿Restaurar este respaldo? Se reemplazarán tus datos actuales.")) return;
-          const baseRespaldo = clonarEstadoInicial();
-          appState = {
-            ...baseRespaldo,
-            ...data,
-            perfil: { ...baseRespaldo.perfil, ...(data.perfil || {}) },
-            apartados: Array.isArray(data.apartados) && data.apartados.length ? data.apartados : [...baseRespaldo.apartados],
-            diarios: data.diarios && typeof data.diarios === "object" ? data.diarios : {},
-            actividades: data.actividades && typeof data.actividades === "object" ? data.actividades : {},
-            pesos: Array.isArray(data.pesos) ? data.pesos : [],
-            metaPeso: data.metaPeso != null ? data.metaPeso : null,
-            almacen: Array.isArray(data.almacen) ? data.almacen : [],
-            recientes: Array.isArray(data.recientes) ? data.recientes : [],
-            apartadosColapsados: data.apartadosColapsados && typeof data.apartadosColapsados === "object" ? data.apartadosColapsados : {}
-          };
-          guardarEstado();
-          cargarFormularioPerfil();
-          renderizarDiario();
-          renderizarAlmacen();
+          aplicarRespaldo(data);
           mostrarToast("Respaldo cargado");
         } catch (err) {
           mostrarToast("No se pudo leer el respaldo");
@@ -9473,6 +9488,228 @@
       };
       reader.readAsText(file);
     });
+
+    // Respaldo automático diario: un respaldo por día, máx. 5, se borra el más viejo.
+    // Se crea la primera vez que se abre la app cada día. Vive en localStorage
+    // (y en la carpeta elegida, si hay una); desde la lista se puede restaurar
+    // o descargar cualquiera como .json.
+    const CLAVE_RESPALDOS_AUTO = "respaldoAutoCalorias";
+    const MAX_RESPALDOS_AUTO = 5;
+
+    function obtenerRespaldosAuto() {
+      try {
+        const raw = localStorage.getItem(CLAVE_RESPALDOS_AUTO);
+        if (!raw) return [];
+        const lista = JSON.parse(raw);
+        return Array.isArray(lista) ? lista : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function ordenarRespaldosAuto(lista) {
+      return lista.slice().sort((a, b) => (a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : a.creadoEn - b.creadoEn));
+    }
+
+    function guardarRespaldosAuto(lista) {
+      try {
+        localStorage.setItem(CLAVE_RESPALDOS_AUTO, JSON.stringify(lista));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Crea el respaldo del día `fechaISO` si aún no existe. Devuelve true si creó uno.
+    function crearRespaldoAuto(fechaISO) {
+      const lista = obtenerRespaldosAuto();
+      if (lista.some((r) => r && r.fecha === fechaISO)) return false;
+      const entrada = { fecha: fechaISO, creadoEn: Date.now(), datos: JSON.stringify(appState) };
+      lista.push(entrada);
+      const ordenada = ordenarRespaldosAuto(lista);
+      while (ordenada.length > MAX_RESPALDOS_AUTO) ordenada.shift();
+      if (!guardarRespaldosAuto(ordenada)) {
+        ordenada.shift();
+        if (!guardarRespaldosAuto(ordenada)) {
+          mostrarToast("No se pudo guardar el respaldo automático");
+          return false;
+        }
+      }
+      renderizarRespaldosAuto();
+      escribirRespaldoAutoEnCarpeta(entrada);
+      return true;
+    }
+
+    // Al abrir la app: si no hay respaldo del último día completado (ayer), créalo.
+    // Al abrir la app: si todavía no hay respaldo para la fecha de hoy, créalo.
+    function revisarRespaldoAutoAlAbrir() {
+      const hoy = obtenerFechaISO(0);
+      if (!obtenerRespaldosAuto().some((r) => r && r.fecha === hoy)) {
+        crearRespaldoAuto(hoy);
+      }
+      renderizarRespaldosAuto();
+    }
+
+
+    function renderizarRespaldosAuto() {
+      const elTexto = document.getElementById("textoUltimoRespaldoAuto");
+      const elLista = document.getElementById("listaRespaldosAuto");
+      if (!elTexto || !elLista) return;
+      const lista = ordenarRespaldosAuto(obtenerRespaldosAuto());
+      if (!lista.length) {
+        elTexto.textContent = "Último respaldo automático: nunca";
+        elLista.innerHTML = "";
+        return;
+      }
+      const ultimo = lista[lista.length - 1];
+      elTexto.textContent = "Último respaldo automático: " + formatearFechaLegible(ultimo.fecha) + " " + new Date(ultimo.creadoEn).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+      elLista.innerHTML = lista.map((r, i) => {
+        const fechaTxt = formatearFechaLegible(r.fecha);
+        const horaTxt = new Date(r.creadoEn).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);">'
+          + '<div style="flex:1;font-size:13px;">' + escaparHTML(fechaTxt) + ' <span style="color:var(--text-muted);font-size:11px;">' + escaparHTML(horaTxt) + '</span></div>'
+          + '<button type="button" class="btn btn-soft" data-respaldo-auto-restaurar="' + i + '" style="padding:5px 10px;">Restaurar</button>'
+          + '<button type="button" class="btn btn-soft" data-respaldo-auto-descargar="' + i + '" style="padding:5px 10px;">Descargar</button>'
+          + '</div>';
+      }).join("");
+    }
+
+    // Restaurar / Descargar desde la lista (delegación, porque la lista se redibuja).
+    document.getElementById("listaRespaldosAuto").addEventListener("click", (e) => {
+      const btnR = e.target.closest("[data-respaldo-auto-restaurar]");
+      const btnD = e.target.closest("[data-respaldo-auto-descargar]");
+      if (!btnR && !btnD) return;
+      const idx = Number(btnR ? btnR.getAttribute("data-respaldo-auto-restaurar") : btnD.getAttribute("data-respaldo-auto-descargar"));
+      const lista = ordenarRespaldosAuto(obtenerRespaldosAuto());
+      const r = lista[idx];
+      if (!r) return;
+      if (btnD) {
+        const blob = new Blob([r.datos], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `mi-control-calorico-respaldo-auto-${r.fecha}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        mostrarToast("Respaldo descargado");
+        return;
+      }
+      let data;
+      try {
+        data = JSON.parse(r.datos);
+      } catch (err) {
+        mostrarToast("Ese respaldo está dañado");
+        return;
+      }
+      if (!data || typeof data !== "object" || !data.perfil || !data.diarios || !Array.isArray(data.almacen)) {
+        mostrarToast("Ese respaldo no es válido");
+        return;
+      }
+      pedirConfirmacion("¿Restaurar este respaldo?", "Se reemplazarán tus datos actuales por los del " + formatearFechaLegible(r.fecha) + ".", "Sí, restaurar", () => {
+        aplicarRespaldo(data);
+        mostrarToast("Respaldo restaurado");
+      });
+    });
+
+    // Carpeta de destino para los respaldos automáticos (File System Access API).
+    // El handle de la carpeta no se puede guardar en localStorage (no se serializa
+    // a JSON), así que va a IndexedDB; el nombre se guarda en localStorage para
+    // mostrarlo. Si no hay carpeta elegida, el respaldo solo vive dentro de la
+    // app, como en la v69. Si escribir en la carpeta falla, el respaldo dentro
+    // de la app se guarda igual y solo sale un aviso.
+    const CLAVE_NOMBRE_CARPETA_RESPALDO = "nombreCarpetaRespaldo";
+    const PREFIJO_ARCHIVO_RESPALDO_AUTO = "mi-control-calorico-respaldo-auto-";
+    let carpetaRespaldoHandle = null;
+
+    function abrirBaseCarpetaRespaldo() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open("mi-control-calorico", 1);
+        req.onupgradeneeded = () => {
+          if (!req.result.objectStoreNames.contains("config")) req.result.createObjectStore("config");
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function guardarHandleCarpetaRespaldo(handle) {
+      const db = await abrirBaseCarpetaRespaldo();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("config", "readwrite");
+        tx.objectStore("config").put(handle, "carpetaRespaldo");
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => { db.close(); reject(tx.error); };
+      });
+    }
+
+    async function cargarHandleCarpetaRespaldo() {
+      try {
+        const db = await abrirBaseCarpetaRespaldo();
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction("config", "readonly");
+          const req = tx.objectStore("config").get("carpetaRespaldo");
+          req.onsuccess = () => { db.close(); resolve(req.result || null); };
+          req.onerror = () => { db.close(); reject(req.error); };
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function mostrarCarpetaRespaldo() {
+      const el = document.getElementById("textoCarpetaRespaldo");
+      if (!el) return;
+      let nombre = "";
+      try { nombre = localStorage.getItem(CLAVE_NOMBRE_CARPETA_RESPALDO) || ""; } catch (e) {}
+      el.textContent = nombre ? "Carpeta: " + nombre : "Sin carpeta elegida";
+    }
+
+    async function elegirCarpetaRespaldo() {
+      if (!("showDirectoryPicker" in window)) {
+        mostrarToast("Tu navegador no permite elegir carpeta");
+        return;
+      }
+      try {
+        const handle = await window.showDirectoryPicker();
+        await guardarHandleCarpetaRespaldo(handle);
+        carpetaRespaldoHandle = handle;
+        try { localStorage.setItem(CLAVE_NOMBRE_CARPETA_RESPALDO, handle.name); } catch (e) {}
+        mostrarCarpetaRespaldo();
+        mostrarToast("Carpeta elegida: " + handle.name);
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+        mostrarToast("No se pudo elegir la carpeta");
+      }
+    }
+
+    async function escribirRespaldoAutoEnCarpeta(entrada) {
+      if (!carpetaRespaldoHandle) return;
+      try {
+        const permiso = await carpetaRespaldoHandle.requestPermission({ mode: "readwrite" });
+        if (permiso !== "granted") throw new Error("permiso denegado");
+        const nombreArchivo = PREFIJO_ARCHIVO_RESPALDO_AUTO + entrada.fecha + ".json";
+        const fileHandle = await carpetaRespaldoHandle.getFileHandle(nombreArchivo, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(entrada.datos);
+        await writable.close();
+        const nombres = [];
+        for await (const par of carpetaRespaldoHandle.values()) {
+          const nombre = par[0];
+          const h = par[1];
+          if (h.kind === "file" && nombre.indexOf(PREFIJO_ARCHIVO_RESPALDO_AUTO) === 0 && nombre.slice(-5) === ".json") nombres.push(nombre);
+        }
+        nombres.sort();
+        while (nombres.length > MAX_RESPALDOS_AUTO) {
+          const viejo = nombres.shift();
+          await carpetaRespaldoHandle.removeEntry(viejo);
+        }
+      } catch (e) {
+        mostrarToast("No se pudo escribir en la carpeta, elige la carpeta de nuevo");
+      }
+    }
+
+    document.getElementById("btnElegirCarpetaRespaldo").addEventListener("click", elegirCarpetaRespaldo);
 
     // Compartir el día con el asistente: resumen en texto de todo lo registrado
     // en el día que se está viendo (fechaSeleccionada, hoy por defecto).
@@ -10151,6 +10388,9 @@
         renderizarAlmacen();
         renderizarMacrosPrioritarios();
         iniciarGatitos();
+        revisarRespaldoAutoAlAbrir();
+        mostrarCarpetaRespaldo();
+        cargarHandleCarpetaRespaldo().then((h) => { carpetaRespaldoHandle = h; mostrarCarpetaRespaldo(); });
       } catch (err) {
         const el = document.getElementById("fechaActualTexto");
         if (el) el.textContent = "Error al iniciar";
