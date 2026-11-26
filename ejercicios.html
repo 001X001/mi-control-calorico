@@ -819,11 +819,11 @@
 
       </section>
 
-      <!-- ===== EJERCICIOS DEL 24/11/26 ===== -->
-      <section class="panel exercises-panel" aria-label="Ejercicios del 24 de noviembre">
+      <!-- ===== EJERCICIOS ===== -->
+      <section class="panel exercises-panel" aria-label="Ejercicios">
         <div class="exercises-head">
           <h2>V&amp;U</h2>
-          <span>24/11/26</span>
+          <span id="exDate">24/11/26</span>
         </div>
         <ol class="ex-list" id="exListMasculino">
           <li class="ex-item">
@@ -1454,30 +1454,15 @@
           </div>
         </div>
         <p class="log-status" id="logStatus" role="status"></p>
-      </section>
-
-      <!-- ===== CONFIGURACIÓN ===== -->
-      <section class="panel config-panel" aria-label="Configuración">
-        <button type="button" class="btn btn-ghost config-btn" id="configBtn">Configuración</button>
+        <button type="button" class="btn btn-ghost log-view-btn" id="logViewBtn" aria-expanded="false" aria-controls="logHistory">Ver registros anteriores</button>
+        <div class="log-history" id="logHistory" hidden>
+          <ul class="log-list" id="logList"></ul>
+          <p class="log-empty" id="logEmpty">Todavía no hay registros guardados.</p>
+        </div>
+        <button type="button" class="btn btn-ghost" id="enterExerciseBtn">Cambiar perfil</button>
       </section>
 
       </div><!-- /#mainView -->
-
-      <!-- ===== PÁGINA DE CONFIGURACIÓN ===== -->
-      <div id="configView" hidden>
-        <section class="panel" aria-label="Página de configuración">
-          <div class="config-view-head">
-            <button type="button" class="btn btn-ghost config-back-btn" id="configBackBtn">← Volver</button>
-            <h2>Configuración</h2>
-          </div>
-          <button type="button" class="btn btn-ghost log-view-btn" id="logViewBtn" aria-expanded="false" aria-controls="logHistory">Ver registros anteriores</button>
-          <div class="log-history" id="logHistory" hidden>
-            <ul class="log-list" id="logList"></ul>
-            <p class="log-empty" id="logEmpty">Todavía no hay registros guardados.</p>
-          </div>
-          <button type="button" class="btn btn-main log-view-btn" id="enterExerciseBtn">Entrar a aplicación de ejercicio</button>
-        </section>
-      </div>
 
     </main>
 
@@ -1779,8 +1764,6 @@
           if (homeView) homeView.hidden = false;
           var mv = document.getElementById('mainView');
           if (mv) mv.hidden = true;
-          var cv = document.getElementById('configView');
-          if (cv) cv.hidden = true;
           window.scrollTo(0, 0);
         }
         function selectProfile(p) {
@@ -1789,8 +1772,6 @@
           if (exListM) exListM.hidden = currentProfile !== 'masculino';
           if (exListF) exListF.hidden = currentProfile !== 'femenino';
           if (homeView) homeView.hidden = true;
-          var cv = document.getElementById('configView');
-          if (cv) cv.hidden = true;
           var mv = document.getElementById('mainView');
           if (mv) mv.hidden = false;
           window.scrollTo(0, 0);
@@ -2168,6 +2149,8 @@
         var now = new Date();
         if (logTodayShort) logTodayShort.textContent = dateShort(now);
         if (logTodayFull) logTodayFull.textContent = dateLong(now);
+        var exDate = document.getElementById('exDate');
+        if (exDate) exDate.textContent = dateShort(now);
 
         function loadLogs() {
           try {
@@ -2289,33 +2272,8 @@
           });
         }
 
-        /* ---------- Página de Configuración ----------
-           El botón Configuración abre otra página (oculta la vista
-           principal y muestra la de Configuración, con botón ← Volver
-           para regresar). El botón Ver registros anteriores y su lista
-           viven en esa página; sus IDs no cambiaron, así que renderLogs
-           y updateLogViewBtn siguen funcionando igual. */
-        var mainView = document.getElementById('mainView');
-        var configView = document.getElementById('configView');
-        var configBtn = document.getElementById('configBtn');
-        var configBackBtn = document.getElementById('configBackBtn');
-        if (configBtn && mainView && configView) {
-          configBtn.addEventListener('click', function () {
-            mainView.hidden = true;
-            configView.hidden = false;
-            window.scrollTo(0, 0);
-            if (configBackBtn) configBackBtn.focus();
-          });
-        }
-        if (configBackBtn && mainView && configView) {
-          configBackBtn.addEventListener('click', function () {
-            configView.hidden = true;
-            mainView.hidden = false;
-            window.scrollTo(0, 0);
-            if (configBtn) configBtn.focus();
-          });
-        }
-
+        /* Los registros anteriores y Cambiar perfil ahora viven en la
+           vista principal, abajo del botón Guardar registro del día. */
         renderLogs();
       })();
     </script>
