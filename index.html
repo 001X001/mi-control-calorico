@@ -1382,6 +1382,7 @@
             </button>
           </div>
         </div>
+        <div id="avisoDiaBloqueado" style="display: none; margin: 0 0 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg-soft); color: var(--text-muted); font-size: 12px; font-weight: 700;">Día bloqueado: ya pasaron 2 días, no se puede modificar</div>
 
         <div class="hero-panel">
           <div class="kcal-summary-row">
@@ -2829,7 +2830,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v104";
+    const VERSION_APP = "v105";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6344,6 +6345,7 @@
       const p = borradoPendiente;
       borradoPendiente = null;
       if (temporizadorBorrado) { clearTimeout(temporizadorBorrado); temporizadorBorrado = null; }
+      if (diaBloqueado(p.fechaISO)) { ocultarToast(); avisarDiaBloqueado(); return; }
       const diaR = asegurarDia(p.fechaISO);
       if (!Array.isArray(diaR.comidas[p.apartado])) {
         ocultarToast();
@@ -6360,6 +6362,7 @@
     }
 
     function eliminarAlimentoDiario(nombreComida, idx) {
+      if (diaBloqueado(fechaSeleccionada)) { avisarDiaBloqueado(); return; }
       const dia = asegurarDia(fechaSeleccionada);
       const lista = dia.comidas[nombreComida] || [];
       if (idx < 0 || idx >= lista.length) return;
@@ -6531,6 +6534,19 @@
         }
       });
       return appState.diarios[fechaISO];
+    }
+
+    // Bloqueo de dias viejos: un dia queda bloqueado cuando ya pasaron 2 dias
+    // (hoy y ayer se pueden modificar; el anteayer y anteriores, no). Asi una
+    // actualizacion del catalogo nunca toca dias ya registrados.
+    function diaBloqueado(fechaISO) {
+      const hoy = new Date(obtenerFechaISO(0) + "T12:00:00");
+      const f = new Date(fechaISO + "T12:00:00");
+      const dias = Math.round((hoy - f) / 86400000);
+      return dias >= 2;
+    }
+    function avisarDiaBloqueado() {
+      mostrarToast("Este día ya está bloqueado, pasaron más de 2 días");
     }
 
     function calcularTotalesDia(fechaISO) {
@@ -6733,6 +6749,8 @@
       const btnHoyDiario = document.getElementById("btnIrHoyDiario");
       if (btnHoyDiario) btnHoyDiario.style.display = esHoy ? "none" : "inline-block";
       document.getElementById("fechaActualTexto").textContent = formatearFechaLegible(fechaSeleccionada);
+      const diaBloqueadoActual = diaBloqueado(fechaSeleccionada);
+      document.getElementById("avisoDiaBloqueado").style.display = diaBloqueadoActual ? "block" : "none";
 
       document.getElementById("kcalConsumidas").textContent = fmtNum(tot.kcal, 0);
       document.getElementById("kcalMetaTexto").textContent = `/ ${fmtNum(metaKcal, 0)} kcal`;
@@ -6820,6 +6838,7 @@
         const btns = card.querySelectorAll(".comida-header button");
         btns[0].onclick = () => reiniciarApartadoComida(nombreComida);
         btns[1].onclick = () => abrirSelectorAgregar(nombreComida);
+        if (diaBloqueadoActual) { btns[0].style.display = "none"; btns[1].style.display = "none"; }
 
         const listaItems = card.querySelector(".comida-items");
         const desplegable = card.querySelector(".comida-desplegable");
@@ -6844,6 +6863,7 @@
             const btnsRow = row.querySelectorAll("button");
             btnsRow[0].onclick = () => abrirModalEditarRegistro(nombreComida, idx);
             btnsRow[1].onclick = () => eliminarAlimentoDiario(nombreComida, idx);
+            if (diaBloqueadoActual) { btnsRow[0].style.display = "none"; btnsRow[1].style.display = "none"; }
             listaItems.appendChild(row);
           });
         }
@@ -6894,6 +6914,7 @@
     }
 
     function reiniciarApartadoComida(nombreComida) {
+      if (diaBloqueado(fechaSeleccionada)) { avisarDiaBloqueado(); return; }
       const dia = asegurarDia(fechaSeleccionada);
       const n = (dia.comidas[nombreComida] || []).length;
       if (!n) { mostrarToast("Este apartado ya está vacío"); return; }
@@ -7456,6 +7477,7 @@
     actualizarBloqueoScroll();
 
     function abrirSelectorAgregar(nombreComida) {
+      if (diaBloqueado(fechaSeleccionada)) { avisarDiaBloqueado(); return; }
       comidaActivaModal = nombreComida;
       document.getElementById("selectorTituloComida").textContent = `Agregar a ${nombreComida}`;
       document.getElementById("modalSelectorAgregar").classList.add("open");
@@ -8341,12 +8363,14 @@
     }
 
     function agregarItemAComida(nombreComida, item) {
+      if (diaBloqueado(fechaSeleccionada)) { avisarDiaBloqueado(); return; }
       const dia = asegurarDia(fechaSeleccionada);
       if (!dia.comidas[nombreComida]) dia.comidas[nombreComida] = [];
       const limpio = {
         nombre: item.nombre,
         comida: nombreComida,
         cantidadLabel: item.cantidadLabel || "",
+        gramos: resolverGramosEdit(item.cantidadLabel, item.nombre),
         kcal: Number(item.kcal) || 0,
         prot: Number(item.prot) || 0,
         carb: Number(item.carb) || 0,
@@ -10150,6 +10174,11 @@
       return gramosPorPiezaEdit(nombre, label);
     }
 
+    // Al editar los gramos de un registro, los valores se escalan SOLO desde
+    // lo que quedo guardado al registrarlo (valoresOriginal / gramosOriginal):
+    // nunca se vuelve a consultar el catalogo, para que un cambio de calorias
+    // o de porciones de hoy no modifique dias ya registrados, y para que
+    // borrar un producto de la lista no borre lo registrado con el.
     function recalcularValoresEdicion() {
       valoresRecalcEdit = null;
       if (!registroEditando) return;
@@ -10157,34 +10186,11 @@
       const it = (dia.comidas[registroEditando.nombreComida] || [])[registroEditando.idx];
       if (!it) return;
       const gramosNuevos = resolverGramosEdit(document.getElementById("editCantidad").value, registroEditando.nombreOriginal);
-      if (!(gramosNuevos > 0)) return;
-      const factor = gramosNuevos / 100;
-      const cat = obtenerCatalogoCombinado().find((x) => x.nombreLower === registroEditando.nombreOriginal.toLowerCase());
-      const escOrig = (campo) => {
-        const o = registroEditando.valoresOriginal[campo];
-        if (o == null || !(registroEditando.gramosOriginal > 0)) return null;
-        return Number(o) * (gramosNuevos / registroEditando.gramosOriginal);
-      };
-      let calc = null;
-      if (cat && cat.kcal100 != null) {
-        calc = {
-          kcal: (Number(cat.kcal100) || 0) * factor,
-          prot: (Number(cat.prot100) || 0) * factor,
-          carb: (Number(cat.carb100) || 0) * factor,
-          gras: (Number(cat.gras100) || 0) * factor,
-          fibra: (Number(cat.fibra100) || 0) * factor,
-          azucar: cat.azucar100 == null ? escOrig("azucar") : Number(cat.azucar100) * factor,
-          sodio: cat.sodio100 == null ? escOrig("sodio") : Number(cat.sodio100) * factor,
-          grasSat: cat.grasSat100 == null ? escOrig("grasSat") : Number(cat.grasSat100) * factor,
-          colest: cat.colest100 == null ? escOrig("colest") : Number(cat.colest100) * factor
-        };
-      } else if (registroEditando.gramosOriginal > 0) {
-        const f = gramosNuevos / registroEditando.gramosOriginal;
-        const o = registroEditando.valoresOriginal;
-        const esc = (v) => (v == null ? null : Number(v) * f);
-        calc = { kcal: esc(o.kcal), prot: esc(o.prot), carb: esc(o.carb), gras: esc(o.gras), fibra: esc(o.fibra), azucar: esc(o.azucar), sodio: esc(o.sodio), grasSat: esc(o.grasSat), colest: esc(o.colest) };
-      }
-      if (!calc) return;
+      if (!(gramosNuevos > 0) || !(registroEditando.gramosOriginal > 0)) return;
+      const f = gramosNuevos / registroEditando.gramosOriginal;
+      const o = registroEditando.valoresOriginal;
+      const esc = (v) => (v == null ? null : Number(v) * f);
+      const calc = { kcal: esc(o.kcal), prot: esc(o.prot), carb: esc(o.carb), gras: esc(o.gras), fibra: esc(o.fibra), azucar: esc(o.azucar), sodio: esc(o.sodio), grasSat: esc(o.grasSat), colest: esc(o.colest) };
       valoresRecalcEdit = calc;
       document.getElementById("editKcal").value = Number(calc.kcal.toFixed(0));
       document.getElementById("editProt").value = Number(calc.prot.toFixed(1));
@@ -10194,13 +10200,14 @@
     }
 
     function abrirModalEditarRegistro(nombreComida, idx) {
+      if (diaBloqueado(fechaSeleccionada)) { avisarDiaBloqueado(); return; }
       const dia = asegurarDia(fechaSeleccionada);
       const it = (dia.comidas[nombreComida] || [])[idx];
       if (!it) return;
       registroEditando = {
         nombreComida, idx,
         nombreOriginal: it.nombre,
-        gramosOriginal: resolverGramosEdit(it.cantidadLabel, it.nombre),
+        gramosOriginal: (it.gramos != null && it.gramos > 0) ? it.gramos : resolverGramosEdit(it.cantidadLabel, it.nombre),
         valoresOriginal: { kcal: it.kcal, prot: it.prot, carb: it.carb, gras: it.gras, fibra: it.fibra, azucar: it.azucar, sodio: it.sodio, grasSat: it.grasSat, colest: it.colest }
       };
       valoresRecalcEdit = null;
@@ -10219,6 +10226,7 @@
 
     document.getElementById("btnGuardarEdicionRegistro").addEventListener("click", () => {
       if (!registroEditando) return;
+      if (diaBloqueado(fechaSeleccionada)) { avisarDiaBloqueado(); return; }
       const dia = asegurarDia(fechaSeleccionada);
       const it = (dia.comidas[registroEditando.nombreComida] || [])[registroEditando.idx];
       if (!it) return;
