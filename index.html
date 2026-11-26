@@ -2829,7 +2829,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v100";
+    const VERSION_APP = "v101";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -3141,18 +3141,6 @@
       { nombre: "Paleta de helado cubierta de chocolate", kcal100: 331, prot100: 4.1, carb100: 24.5, gras100: 24.1, fibra100: 0.8, azucar100: 18.3, grasSat100: 13.2, colest100: 28 },
       { nombre: "Barra de helado cubierta de chocolate y nueces", kcal100: 303, prot100: 5.6, carb100: 11.9, gras100: 25.8, fibra100: 1.1, azucar100: 10.8, grasSat100: 15.9, colest100: 56 },
       { nombre: "Helado suave de chocolate", kcal100: 222, prot100: 4.1, carb100: 22.2, gras100: 13, fibra100: 0.7, azucar100: 21.2, grasSat100: 7.5, colest100: 91 },
-      { nombre: "Pizza Especial", kcal100: 243, prot100: 10.9, carb100: 25.6, gras100: 10.7, fibra100: 2, azucar100: 3.7, grasSat100: 4.6, colest100: 20 },
-      { nombre: "Pizza de pepperoni", kcal100: 291, prot100: 12.2, carb100: 32.1, gras100: 12.6, fibra100: 2.6, azucar100: 2.8, grasSat100: 5.4, colest100: 26 },
-      { nombre: "Pizza Hawaiana", kcal100: 265, prot100: 12, carb100: 33, gras100: 9.5, fibra100: 2, azucar100: 3.4, grasSat100: 5, colest100: 24 },
-      { nombre: "Pizza de carnes frias", kcal100: 287, prot100: 11.9, carb100: 29.4, gras100: 13.5, fibra100: 2.3, azucar100: 2.7, grasSat100: 5.5, colest100: 26 },
-      { nombre: "Pizza de arrachera", kcal100: 275, prot100: 13, carb100: 30, gras100: 11, fibra100: 2.2, azucar100: 2.7, grasSat100: 5.5, colest100: 26 },
-      { nombre: "Pizza Vegetariana", kcal100: 265, prot100: 11.5, carb100: 32, gras100: 10, fibra100: 3, azucar100: 3.4, grasSat100: 5, colest100: 24 },
-      { nombre: "Pizza Especial con orilla de queso", kcal100: 253, prot100: 11.9, carb100: 25.6, gras100: 11.7, fibra100: 2, azucar100: 3.7, grasSat100: 5.1, colest100: 23 },
-      { nombre: "Pizza de pepperoni con orilla de queso", kcal100: 301, prot100: 13.2, carb100: 32.1, gras100: 13.6, fibra100: 2.6, azucar100: 2.8, grasSat100: 5.9, colest100: 29 },
-      { nombre: "Pizza Hawaiana con orilla de queso", kcal100: 275, prot100: 13, carb100: 33, gras100: 10.5, fibra100: 2, azucar100: 3.4, grasSat100: 5.5, colest100: 27 },
-      { nombre: "Pizza de carnes frias con orilla de queso", kcal100: 297, prot100: 12.9, carb100: 29.4, gras100: 14.5, fibra100: 2.3, azucar100: 2.7, grasSat100: 6, colest100: 29 },
-      { nombre: "Pizza de arrachera con orilla de queso", kcal100: 285, prot100: 14, carb100: 30, gras100: 12, fibra100: 2.2, azucar100: 2.7, grasSat100: 6, colest100: 29 },
-      { nombre: "Pizza Vegetariana con orilla de queso", kcal100: 275, prot100: 12.5, carb100: 32, gras100: 11, fibra100: 3, azucar100: 3.4, grasSat100: 5.5, colest100: 27 },
       { nombre: "Pupusa de chicharron con queso", kcal100: 244, prot100: 11.6, carb100: 22.7, gras100: 11.8, fibra100: 2.8, azucar100: 1.3, grasSat100: 4.8, colest100: 31 },
       { nombre: "Gordita de chicharron (de maiz, frita)", kcal100: 282, prot100: 9, carb100: 28, gras100: 15, fibra100: 3 },
       { nombre: "Guarache (de maiz, con frijoles y queso)", kcal100: 200, prot100: 7, carb100: 26, gras100: 8, fibra100: 3.5 },
@@ -3827,9 +3815,6 @@
       { nombre: "Pina (enlatado, escurrido)", kcal100: 60, prot100: 0.5, carb100: 15.6, gras100: 0.1, fibra100: 1.3 },
       { nombre: "Pina (congelado, endulzado)", kcal100: 86, prot100: 0.4, carb100: 22.2, gras100: 0.1, fibra100: 1.1, azucar100: 21.1, sodio100: 2, grasSat100: 0, colest100: 0 },
       { nombre: "Pina (crudo)", kcal100: 50, prot100: 0.5, carb100: 13.1, gras100: 0.1, fibra100: 1.4, azucar100: 9.8, sodio100: 1, grasSat100: 0, colest100: 0 },
-      { nombre: "Pizza", kcal100: 271, prot100: 11.9, carb100: 31.2, gras100: 10.9, fibra100: 1.8, azucar100: 3.4, sodio100: 685, grasSat100: 5, colest100: 24 },
-      { nombre: "Pizza (congelado, sin preparar)", kcal100: 328, prot100: 8.7, carb100: 50.7, gras100: 10, fibra100: 1.2, azucar100: 3.7, sodio100: 599, grasSat100: 2.5, colest100: 6 },
-      { nombre: "Pizza (cocido, congelado)", kcal100: 268, prot100: 10.4, carb100: 29, gras100: 12.3, fibra100: 2.2, azucar100: 3.6, sodio100: 447, grasSat100: 4.3, colest100: 14 },
       { nombre: "Platano macho (hervido, verde)", kcal100: 121, prot100: 1.1, carb100: 29.2, gras100: 0.1, fibra100: 2.6, azucar100: 2.2, sodio100: 2, grasSat100: 0.1 },
       { nombre: "Platano macho (frito, verde)", kcal100: 309, prot100: 1.5, carb100: 49.2, gras100: 11.8, fibra100: 3.5, azucar100: 3.6, sodio100: 2, grasSat100: 3.7 },
       { nombre: "Platano macho (crudo, verde)", kcal100: 152, prot100: 1.2, carb100: 36.7, gras100: 0.1, fibra100: 2.2, azucar100: 2.3, sodio100: 2, grasSat100: 0.1 },
