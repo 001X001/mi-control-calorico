@@ -502,6 +502,45 @@
       }
       .ex-del-yes:active, .ex-del-no:active { transform: scale(.985); }
 
+      /* Barrita Deshacer: aparece al borrar un ejercicio */
+      .undo-bar {
+        display: none;
+        position: fixed;
+        left: 50%;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        z-index: 1000;
+        max-width: min(92vw, 420px);
+        background: var(--chip-on);
+        color: var(--chip-on-ink);
+        border-radius: 10px;
+        padding: 8px 10px;
+        align-items: center;
+        gap: 10px;
+        box-shadow: var(--shadow);
+      }
+      .undo-bar.show { display: flex; }
+      .undo-bar span {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .undo-bar button {
+        flex: 0 0 auto;
+        border: none;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 800;
+        font-size: 13px;
+        border-radius: 8px;
+        padding: 8px 12px;
+        min-height: 32px;
+      }
+      .undo-bar button:active { transform: scale(.97); }
+
       /* Agregar ejercicio, hasta abajo de la lista */
       .add-ex-btn {
         width: 100%;
@@ -1442,6 +1481,11 @@
 
     </main>
 
+    <div class="undo-bar" id="undoBar" role="status">
+      <span id="undoText">Ejercicio borrado</span>
+      <button type="button" id="undoBtn">Deshacer</button>
+    </div>
+
     <script>
       (function () {
         'use strict';
@@ -1819,12 +1863,72 @@
           });
         }
 
+        /* ---------- Deshacer el borrado de un ejercicio ----------
+           Al borrar (con "Sí, borrar") se guarda el ejercicio tal como
+           estaba — su lugar en la lista, su nombre y sus marcas de
+           Serie 1/2/3 — y aparece la barrita Deshacer durante 8 s.
+           Al tocarla, el ejercicio vuelve a su lugar original. Solo se
+           guarda el último borrado; si se borra otro, el anterior ya no
+           se puede deshacer. */
+        var ultimoBorrado = null;
+        var undoTimer = null;
+        var undoBar = document.getElementById('undoBar');
+        var undoText = document.getElementById('undoText');
+        var undoBtn = document.getElementById('undoBtn');
+        function seriesDeLista(list) {
+          var marcas = [];
+          list.querySelectorAll('.serie-btn').forEach(function (btn) {
+            marcas.push(btn.getAttribute('aria-pressed') === 'true');
+          });
+          return marcas;
+        }
+        function claveSeriesDeLista(list) {
+          return list === exListF ? SERIES_KEY_F : SERIES_KEY_M;
+        }
+        function guardarSeriesDeLista(list, marcas) {
+          list.querySelectorAll('.serie-btn').forEach(function (btn, i) {
+            btn.setAttribute('aria-pressed', marcas[i] ? 'true' : 'false');
+          });
+          try { localStorage.setItem(claveSeriesDeLista(list), JSON.stringify(marcas)); } catch (e) {}
+        }
+        function renumerarLista(list) {
+          list.querySelectorAll('.ex-item').forEach(function (it, i) {
+            var num = it.querySelector('.ex-num');
+            if (num) num.textContent = (i + 1) + '.';
+          });
+        }
+        function ocultarBarraDeshacer() {
+          if (undoTimer) { clearTimeout(undoTimer); undoTimer = null; }
+          if (undoBar) undoBar.classList.remove('show');
+          ultimoBorrado = null;
+        }
+        function mostrarBarraDeshacer(nombre) {
+          if (!undoBar) return;
+          if (undoText) undoText.textContent = '«' + nombre + '» borrado';
+          undoBar.classList.add('show');
+          if (undoTimer) clearTimeout(undoTimer);
+          undoTimer = setTimeout(ocultarBarraDeshacer, 8000);
+        }
+        if (undoBtn) undoBtn.addEventListener('click', function () {
+          if (!ultimoBorrado) return;
+          var b = ultimoBorrado;
+          ultimoBorrado = null;
+          var ref = b.lista.children[b.indice] || null;
+          b.lista.insertBefore(b.item, ref);
+          renumerarLista(b.lista);
+          guardarSeriesDeLista(b.lista, b.marcas);
+          ocultarBarraDeshacer();
+          b.item.scrollIntoView({ block: 'nearest' });
+        });
+
         /* ---------- Editar el nombre y borrar cada ejercicio ----------
            Editar: el botón "Editar nombre" abre un campo con el nombre
            actual; Guardar lo cambia y Cancelar lo deja igual.
            Borrar: la ✕ primero pide confirmación en la misma tarjeta
            ("¿Borrar este ejercicio?"); solo con "Sí, borrar" se quita
-           el ejercicio de la lista. Ambos cambios duran mientras la
+           el ejercicio de la lista. Al borrar aparece la barrita
+           Deshacer (8 s) para restaurarlo en su lugar, con su nombre
+           y sus series. Ambos cambios duran mientras la
            app está abierta. */
         function renumberExercises() {
           activeExList().querySelectorAll('.ex-item').forEach(function (it, i) {
@@ -1882,9 +1986,15 @@
             delBtn.focus();
           });
           item.querySelector('.ex-del-yes').addEventListener('click', function () {
+            var lista = item.parentNode;
+            var indice = Array.prototype.indexOf.call(lista.children, item);
+            var marcas = seriesDeLista(lista);
+            var nombre = textEl.textContent;
             item.remove();
             renumberExercises();
             saveSeries();
+            ultimoBorrado = { lista: lista, item: item, indice: indice, marcas: marcas };
+            mostrarBarraDeshacer(nombre);
           });
         }
         document.querySelectorAll('.ex-item').forEach(setupExercise);
