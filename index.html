@@ -1239,12 +1239,10 @@
           <div class="kcal-summary-row">
             <div style="display: flex; gap: 14px; align-items: flex-end;">
               <div>
-                <div class="kcal-side-label">Consumidas</div>
                 <span id="kcalConsumidas" class="kcal-consumed">0</span>
               </div>
               <div>
-                <div class="kcal-side-label">Total</div>
-                <span id="kcalMetaTexto" class="kcal-goal">2,000 kcal</span>
+                <span id="kcalMetaTexto" class="kcal-goal">/ 2,000 kcal</span>
               </div>
             </div>
             <div>
@@ -2683,7 +2681,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v75";
+    const VERSION_APP = "v76";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6010,7 +6008,7 @@
       document.getElementById("fechaActualTexto").textContent = formatearFechaLegible(fechaSeleccionada);
 
       document.getElementById("kcalConsumidas").textContent = fmtNum(tot.kcal, 0);
-      document.getElementById("kcalMetaTexto").textContent = `${fmtNum(metaKcal, 0)} kcal`;
+      document.getElementById("kcalMetaTexto").textContent = `/ ${fmtNum(metaKcal, 0)} kcal`;
 
       document.getElementById("filaKcalQuemadas").style.display = appState.perfil.actividadFisicaActiva ? "block" : "none";
       document.getElementById("kcalQuemadas").textContent = fmtNum(quemadasDia, 0);
