@@ -2681,7 +2681,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v77";
+    const VERSION_APP = "v78";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -5148,6 +5148,13 @@
       { nombre: "Agua fresca de frutas / jamaica / limon (con azucar)", kcal100: 32, prot100: 0, carb100: 8, gras100: 0, fibra100: 0 },
       { nombre: "Nieve de garrafa (de agua, limon/mango)", kcal100: 105, prot100: 0.2, carb100: 26, gras100: 0.1, fibra100: 0.5 },
       { nombre: "Danone griego endulzado", kcal100: 84.3, prot100: 5.6, carb100: 11.1, gras100: 1.9, fibra100: 2, azucar100: 7, sodio100: 37.9, grasSat100: 1.2, codigoBarras: "7501032300043" },
+      { nombre: "Pizza Hawaiana (Leña)", kcal100: 260, prot100: 11, carb100: 33, gras100: 9, fibra100: 2, azucar100: 5, sodio100: 520, grasSat100: 4, colest100: 25 },
+      { nombre: "Pizza Pepperoni (Leña)", kcal100: 280, prot100: 12, carb100: 32, gras100: 12, fibra100: 2, azucar100: 3, sodio100: 550, grasSat100: 5, colest100: 30 },
+      { nombre: "Pizza 3 Quesos (Leña)", kcal100: 275, prot100: 12, carb100: 31, gras100: 11, fibra100: 2, azucar100: 3, sodio100: 520, grasSat100: 6, colest100: 30 },
+      { nombre: "Pizza Carnivora (Leña)", kcal100: 300, prot100: 13, carb100: 30, gras100: 14, fibra100: 2, azucar100: 3, sodio100: 650, grasSat100: 6, colest100: 35 },
+      { nombre: "Pizza Rielera (Leña)", kcal100: 285, prot100: 13, carb100: 30, gras100: 12, fibra100: 2, azucar100: 3, sodio100: 580, grasSat100: 5, colest100: 35 },
+      { nombre: "Pizza Vegetariana (Leña)", kcal100: 230, prot100: 9, carb100: 32, gras100: 8, fibra100: 2.5, azucar100: 3, sodio100: 450, grasSat100: 3.5, colest100: 20 },
+      { nombre: "Pizza Parrillera (Leña)", kcal100: 290, prot100: 13, carb100: 30, gras100: 13, fibra100: 2, azucar100: 4, sodio100: 600, grasSat100: 5.5, colest100: 35 },
       { nombre: "Tostadas de maiz deshidratadas (Tortilleria Del Barrio)", kcal100: 481, prot100: 6.8, carb100: 58.3, gras100: 24.5, fibra100: 5.3 },
       { nombre: "Pollo rostizado sin piel (Generico)", kcal100: 205, prot100: 27.4, carb100: 0, gras100: 9.7, fibra100: 0, azucar100: 0, sodio100: 93, grasSat100: 2.7, colest100: 93 },
       { nombre: "Pollo rostizado con piel (Generico)", kcal100: 253, prot100: 26, carb100: 0, gras100: 15.8, fibra100: 0, sodio100: 87, grasSat100: 4.4, colest100: 91 },
@@ -5308,6 +5315,13 @@
       "chicharo": [["1 taza de chicharos", 145]],
       "ejote": [["1 taza de ejotes", 100]],
       "pizza": [["1 rebanada chica (6 reb.)", 80], ["2 rebanadas chica", 160], ["1 rebanada mediana (8 reb.)", 85], ["2 rebanadas mediana", 170], ["1 rebanada grande (8 reb.)", 120], ["2 rebanadas grande", 240], ["1 rebanada extra grande (10 reb.)", 130], ["2 rebanadas extra grande", 260]],
+      "pizza hawaiana (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
+      "pizza pepperoni (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
+      "pizza 3 quesos (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
+      "pizza carnivora (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
+      "pizza rielera (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
+      "pizza vegetariana (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
+      "pizza parrillera (lena)": [["1 rebanada chica (1/8)", 80], ["1 rebanada mediana (1/10)", 90], ["1 rebanada grande (1/12)", 105]],
       "proteina en polvo": [["1 scoop (~30 g)", 30], ["2 scoops (~60 g)", 60]],
       "barra de proteina": [["1 barra (~60 g)", 60], ["2 barras (~120 g)", 120]],
       "batido de proteina": [["1 bote (~330 g)", 330]],
