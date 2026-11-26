@@ -1068,20 +1068,118 @@
     .tabla-pesos td { padding: 8px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .tabla-pesos tr.medidas-row td { padding: 0 4px 8px; font-size: 11px; color: var(--text-muted); }
     /* Gatitos animados decorativos v64: 2 siameses (blanco y cafe) paseando por la pantalla */
-    .gatito { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: auto; touch-action: manipulation; width: 58px; height: 44px; will-change: transform; --ciclo-paso: .6s; }
+    .gatito { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: auto; touch-action: manipulation; width: 58px; height: 44px; will-change: transform; --ciclo-paso: .6s; --dur-cola: .9s; }
     .gatito .gatito-flip { display: block; width: 100%; height: 100%; transition: transform .18s ease; }
     .gatito svg { display: block; width: 100%; height: 100%; animation: none; }
     .gatito.gatito-caminando svg { animation: gatitoBob calc(var(--ciclo-paso) / 2) ease-in-out infinite alternate; }
-    .gatito .gatito-cola { transform-box: fill-box; transform-origin: 100% 100%; animation: gatitoCola 0.9s ease-in-out infinite alternate; }
+    .gatito .gatito-cola { transform-box: view-box; transform-origin: 14px 34px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; }
+    .gatito .gatito-cola-s2 { transform-box: view-box; transform-origin: 9.8px 31.7px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; animation-delay: calc(var(--dur-cola) * -0.0833); }
+    .gatito .gatito-cola-s3 { transform-box: view-box; transform-origin: 6.7px 28.9px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; animation-delay: calc(var(--dur-cola) * -0.1667); }
+    .gatito .gatito-cola-s4 { transform-box: view-box; transform-origin: 4.5px 25.5px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; animation-delay: calc(var(--dur-cola) * -0.25); }
+    .gatito .gatito-cola-s5 { transform-box: view-box; transform-origin: 3.3px 21.6px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; animation-delay: calc(var(--dur-cola) * -0.3333); }
+    .gatito .gatito-cola-s6 { transform-box: view-box; transform-origin: 3.2px 17.1px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; animation-delay: calc(var(--dur-cola) * -0.4167); }
     .gatito .gatito-cola-lerp { transform-box: fill-box; transform-origin: 100% 100%; }
     .gatito .gatito-cabeza-lerp { transform-box: fill-box; transform-origin: 50% 100%; }
     .gatito .gatito-cabeza { transform-box: fill-box; transform-origin: 50% 100%; }
     .gatito .gatito-oreja { transform-box: fill-box; transform-origin: 50% 100%; }
-    .gatito .gatito-cola-punta { transform-box: fill-box; transform-origin: 50% 50%; }
+    .gatito .gatito-cola-punta { transform-box: view-box; transform-origin: 4px 12px; animation: gatitoColaSerpiente var(--dur-cola) linear infinite; animation-delay: calc(var(--dur-cola) * -0.5); }
     @keyframes gatitoBob { from { transform: translateY(0) rotate(-2.5deg); } to { transform: translateY(-2px) rotate(2.5deg); } }
-    @keyframes gatitoCola { from { transform: rotate(-18deg); } to { transform: rotate(20deg); } }
+    @keyframes gatitoColaSerpiente { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(16deg); } 75% { transform: rotate(-16deg); } }
+    @keyframes gatitoColaLatigazo { from { transform: rotate(-25deg); } to { transform: rotate(25deg); } }
+    @keyframes gatitoColaBarrido { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
+    @keyframes gatitoColaOndaRapida { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(8deg); } 75% { transform: rotate(-8deg); } }
+    @keyframes gatitoColaPuntaTwitch { from { transform: rotate(-12deg); } to { transform: rotate(12deg); } }
+    .gatito.cola-latigazo .gatito-cola, .gatito.cola-latigazo .gatito-cola-s2, .gatito.cola-latigazo .gatito-cola-s3, .gatito.cola-latigazo .gatito-cola-s4, .gatito.cola-latigazo .gatito-cola-s5, .gatito.cola-latigazo .gatito-cola-s6, .gatito.cola-latigazo .gatito-cola-punta { animation: gatitoColaLatigazo .4s ease-in-out infinite alternate; animation-delay: 0s; }
+    .gatito.cola-barrido .gatito-cola, .gatito.cola-barrido .gatito-cola-s2, .gatito.cola-barrido .gatito-cola-s3, .gatito.cola-barrido .gatito-cola-s4, .gatito.cola-barrido .gatito-cola-s5, .gatito.cola-barrido .gatito-cola-s6, .gatito.cola-barrido .gatito-cola-punta { animation: gatitoColaBarrido 1.8s ease-in-out infinite alternate; animation-delay: 0s; }
+    .gatito.cola-onda-rapida .gatito-cola { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: 0s; }
+    .gatito.cola-onda-rapida .gatito-cola-s2 { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: -.0375s; }
+    .gatito.cola-onda-rapida .gatito-cola-s3 { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: -.075s; }
+    .gatito.cola-onda-rapida .gatito-cola-s4 { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: -.1125s; }
+    .gatito.cola-onda-rapida .gatito-cola-s5 { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: -.15s; }
+    .gatito.cola-onda-rapida .gatito-cola-s6 { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: -.1875s; }
+    .gatito.cola-onda-rapida .gatito-cola-punta { animation: gatitoColaOndaRapida .45s linear infinite; animation-delay: -.225s; }
+    .gatito.cola-punta .gatito-cola, .gatito.cola-punta .gatito-cola-s2, .gatito.cola-punta .gatito-cola-s3, .gatito.cola-punta .gatito-cola-s4, .gatito.cola-punta .gatito-cola-s5 { animation: none; }
+    .gatito.cola-punta .gatito-cola-s6 { animation: gatitoColaPuntaTwitch .3s ease-in-out infinite alternate; animation-delay: 0s; }
+    .gatito.cola-punta .gatito-cola-punta { animation: gatitoColaPuntaTwitch .25s ease-in-out infinite alternate; animation-delay: 0s; }
+    @keyframes gatitoColaRizo { 0%, 100% { transform: rotate(var(--rizo, 0deg)); } 50% { transform: rotate(calc(var(--rizo, 0deg) + 8deg)); } }
+    @keyframes gatitoColaVibracion { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+    @keyframes gatitoColaAzote { 0%, 55% { transform: rotate(0deg); } 65% { transform: rotate(-22deg); } 75%, 100% { transform: rotate(0deg); } }
+    @keyframes gatitoColaEspasmo { 0%, 40% { transform: rotate(0deg); } 45%, 50% { transform: rotate(18deg); } 55%, 100% { transform: rotate(0deg); } }
+    @keyframes gatitoColaSuave { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+    .gatito.cola-onda-lenta .gatito-cola { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: 0s; }
+    .gatito.cola-onda-lenta .gatito-cola-s2 { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: -.2083s; }
+    .gatito.cola-onda-lenta .gatito-cola-s3 { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: -.4167s; }
+    .gatito.cola-onda-lenta .gatito-cola-s4 { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: -.625s; }
+    .gatito.cola-onda-lenta .gatito-cola-s5 { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: -.8333s; }
+    .gatito.cola-onda-lenta .gatito-cola-s6 { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: -1.0417s; }
+    .gatito.cola-onda-lenta .gatito-cola-punta { animation: gatitoColaSerpiente 2.5s linear infinite; animation-delay: -1.25s; }
+    .gatito.cola-onda-doble .gatito-cola { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: 0s; }
+    .gatito.cola-onda-doble .gatito-cola-s2 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.3s; }
+    .gatito.cola-onda-doble .gatito-cola-s3 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.6s; }
+    .gatito.cola-onda-doble .gatito-cola-s4 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.9s; }
+    .gatito.cola-onda-doble .gatito-cola-s5 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -1.2s; }
+    .gatito.cola-onda-doble .gatito-cola-s6 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -1.5s; }
+    .gatito.cola-onda-doble .gatito-cola-punta { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -1.8s; }
+    .gatito.cola-onda-invertida .gatito-cola { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.45s; }
+    .gatito.cola-onda-invertida .gatito-cola-s2 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.375s; }
+    .gatito.cola-onda-invertida .gatito-cola-s3 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.3s; }
+    .gatito.cola-onda-invertida .gatito-cola-s4 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.225s; }
+    .gatito.cola-onda-invertida .gatito-cola-s5 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.15s; }
+    .gatito.cola-onda-invertida .gatito-cola-s6 { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: -.075s; }
+    .gatito.cola-onda-invertida .gatito-cola-punta { animation: gatitoColaSerpiente .9s linear infinite; animation-delay: 0s; }
+    .gatito.cola-latigo-lento .gatito-cola, .gatito.cola-latigo-lento .gatito-cola-s2, .gatito.cola-latigo-lento .gatito-cola-s3, .gatito.cola-latigo-lento .gatito-cola-s4, .gatito.cola-latigo-lento .gatito-cola-s5, .gatito.cola-latigo-lento .gatito-cola-s6, .gatito.cola-latigo-lento .gatito-cola-punta { animation: gatitoColaLatigazo 1.2s ease-in-out infinite alternate; animation-delay: 0s; }
+    .gatito.cola-metronomo .gatito-cola, .gatito.cola-metronomo .gatito-cola-s2, .gatito.cola-metronomo .gatito-cola-s3, .gatito.cola-metronomo .gatito-cola-s4, .gatito.cola-metronomo .gatito-cola-s5, .gatito.cola-metronomo .gatito-cola-s6, .gatito.cola-metronomo .gatito-cola-punta { animation: gatitoColaBarrido .8s ease-in-out infinite alternate; animation-delay: 0s; }
+    .gatito.cola-tiesa .gatito-cola, .gatito.cola-tiesa .gatito-cola-s2, .gatito.cola-tiesa .gatito-cola-s3, .gatito.cola-tiesa .gatito-cola-s4, .gatito.cola-tiesa .gatito-cola-s5, .gatito.cola-tiesa .gatito-cola-s6, .gatito.cola-tiesa .gatito-cola-punta { animation: gatitoColaSuave 2s ease-in-out infinite alternate; animation-delay: 0s; }
+    .gatito.cola-vibracion .gatito-cola, .gatito.cola-vibracion .gatito-cola-s2, .gatito.cola-vibracion .gatito-cola-s3, .gatito.cola-vibracion .gatito-cola-s4, .gatito.cola-vibracion .gatito-cola-s5, .gatito.cola-vibracion .gatito-cola-s6, .gatito.cola-vibracion .gatito-cola-punta { animation: gatitoColaVibracion .12s linear infinite alternate; animation-delay: 0s; }
+    .gatito.cola-rizo .gatito-cola { --rizo: 0deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-rizo .gatito-cola-s2 { --rizo: 12deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-rizo .gatito-cola-s3 { --rizo: 24deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-rizo .gatito-cola-s4 { --rizo: 36deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-rizo .gatito-cola-s5 { --rizo: 48deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-rizo .gatito-cola-s6 { --rizo: 60deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-rizo .gatito-cola-punta { --rizo: 60deg; animation: gatitoColaRizo 1.5s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola { --rizo: -8deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola-s2 { --rizo: -16deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola-s3 { --rizo: -24deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola-s4 { --rizo: -32deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola-s5 { --rizo: -40deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola-s6 { --rizo: -48deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-levantada .gatito-cola-punta { --rizo: -48deg; animation: gatitoColaRizo 1.2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola { --rizo: 15deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola-s2 { --rizo: 25deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola-s3 { --rizo: 35deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola-s4 { --rizo: 45deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola-s5 { --rizo: 50deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola-s6 { --rizo: 55deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-baja .gatito-cola-punta { --rizo: 55deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola { --rizo: 0deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola-s2 { --rizo: -12deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola-s3 { --rizo: -12deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola-s4 { --rizo: 0deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola-s5 { --rizo: 12deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola-s6 { --rizo: 12deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-s-fija .gatito-cola-punta { --rizo: 0deg; animation: gatitoColaRizo 2s ease-in-out infinite; }
+    .gatito.cola-azote .gatito-cola, .gatito.cola-azote .gatito-cola-s2, .gatito.cola-azote .gatito-cola-s3, .gatito.cola-azote .gatito-cola-s4, .gatito.cola-azote .gatito-cola-s5, .gatito.cola-azote .gatito-cola-s6, .gatito.cola-azote .gatito-cola-punta { animation: gatitoColaAzote 1.5s ease-in-out infinite; animation-delay: 0s; }
+    .gatito.cola-espasmo .gatito-cola { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: 0s; }
+    .gatito.cola-espasmo .gatito-cola-s2 { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: -.1s; }
+    .gatito.cola-espasmo .gatito-cola-s3 { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: -.2s; }
+    .gatito.cola-espasmo .gatito-cola-s4 { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: -.3s; }
+    .gatito.cola-espasmo .gatito-cola-s5 { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: -.4s; }
+    .gatito.cola-espasmo .gatito-cola-s6 { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: -.5s; }
+    .gatito.cola-espasmo .gatito-cola-punta { animation: gatitoColaEspasmo 1.2s linear infinite; animation-delay: -.6s; }
+    .gatito.cola-temblor-punta .gatito-cola, .gatito.cola-temblor-punta .gatito-cola-s2, .gatito.cola-temblor-punta .gatito-cola-s3, .gatito.cola-temblor-punta .gatito-cola-s4, .gatito.cola-temblor-punta .gatito-cola-s5 { animation: none; }
+    .gatito.cola-temblor-punta .gatito-cola-s6 { animation: gatitoColaVibracion .12s linear infinite alternate; animation-delay: 0s; }
+    .gatito.cola-temblor-punta .gatito-cola-punta { animation: gatitoColaVibracion .1s linear infinite alternate; animation-delay: 0s; }
+    .gatito.cola-ondulacion .gatito-cola { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: 0s; }
+    .gatito.cola-ondulacion .gatito-cola-s2 { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: -.25s; }
+    .gatito.cola-ondulacion .gatito-cola-s3 { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: -.5s; }
+    .gatito.cola-ondulacion .gatito-cola-s4 { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: -.75s; }
+    .gatito.cola-ondulacion .gatito-cola-s5 { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: -1s; }
+    .gatito.cola-ondulacion .gatito-cola-s6 { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: -1.25s; }
+    .gatito.cola-ondulacion .gatito-cola-punta { animation: gatitoColaSerpiente 3s linear infinite; animation-delay: -1.5s; }
     .gatito .gatito-pata { transform-box: fill-box; transform-origin: 50% 0%; animation: none; }
     .gatito .gatito-pata-baja { transform-box: fill-box; transform-origin: 50% 0%; animation: none; }
+    .gatito .gatito-pata-pie { transform-box: fill-box; transform-origin: 50% 0%; animation: none; }
     .gatito.gatito-caminando .gatito-pata { animation: gatitoPata var(--ciclo-paso) ease-in-out infinite alternate; }
     .gatito.gatito-caminando .gatito-pata-lejos { animation-name: gatitoPataLejos; }
     .gatito.gatito-caminando .gatito-pata-delantera .gatito-pata-baja { animation: gatitoPataBajaDelantera var(--ciclo-paso) ease-in-out infinite alternate; }
@@ -1096,8 +1194,8 @@
     .gatito.gatito-caminando .gatito-pata-delantera-lejos .gatito-pata-baja { animation-delay: calc(var(--ciclo-paso) * -0.75); }
     @keyframes gatitoPata { from { transform: rotate(-24deg); } to { transform: rotate(24deg); } }
     @keyframes gatitoPataLejos { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
-    @keyframes gatitoPataBajaDelantera { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(12deg); } }
-    @keyframes gatitoPataBajaTrasera { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-12deg); } }
+    @keyframes gatitoPataBajaDelantera { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(30deg); } }
+    @keyframes gatitoPataBajaTrasera { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-30deg); } }
     @media (prefers-reduced-motion: reduce) { .gatito, .gatito * { animation: none !important; } .gatito-prop, .gatito-prop-flota { animation: none !important; } }
     .gatito-burbuja { position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%) scale(.85); background: #fff; color: #4a2c17; border: 1.5px solid #d8b4fe; border-radius: 12px; padding: 2px 8px; font-size: 12px; font-weight: 700; line-height: 1.25; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .18s ease, transform .18s ease; box-shadow: 0 2px 8px rgba(0,0,0,.18); z-index: 10000; }
     .gatito-burbuja.ver { opacity: 1; transform: translateX(-50%) scale(1); }
@@ -1137,8 +1235,8 @@
     .gatito.comp-lamer svg { animation: gatitoLamer .6s ease-in-out infinite; }
     .gatito.comp-lavar svg { animation: gatitoLavar .45s ease-in-out infinite; }
     .gatito.comp-acicalar svg { animation: gatitoAcicalar .7s ease-in-out infinite; }
-    .gatito.comp-cola-rapida .gatito-cola { animation-duration: .25s; }
-    .gatito.comp-cola-lenta .gatito-cola { animation-duration: 2s; }
+    .gatito.comp-cola-rapida { --dur-cola: .25s; }
+    .gatito.comp-cola-lenta { --dur-cola: 2s; }
     .gatito.comp-bostezo svg { animation: gatitoBostezo 1.2s ease-in-out infinite alternate; }
     .gatito.comp-maullar svg { animation: gatitoMaullar .5s ease-in-out infinite alternate; }
     .gatito.comp-mirar svg { animation: gatitoMirar 2.4s ease-in-out infinite; }
@@ -1150,15 +1248,15 @@
     .gatito.comp-despertar svg { animation: gatitoSalto .4s ease-in-out 2; }
     .gatito.comp-sombra svg { animation: gatitoSombra .35s ease-in-out infinite alternate; }
     .gatito.comp-cazar svg { animation: gatitoCazar .5s ease-in-out infinite; }
-    .gatito.comp-cazar .gatito-cola { animation-duration: .2s; }
+    .gatito.comp-cazar { --dur-cola: .2s; }
     .gatito.comp-arriba svg { animation: gatitoSubir .7s ease-out 1, gatitoArribaMirar 2s ease-in-out .7s infinite alternate; }
     .gatito.comp-pelear svg { animation: gatitoPelear .15s linear infinite; }
-    .gatito.comp-pelear .gatito-cola { animation-duration: .2s; }
+    .gatito.comp-pelear { --dur-cola: .2s; }
     .gatito.comp-comer svg { animation: gatitoComer .7s ease-in-out infinite; }
     .gatito.comp-dormir svg { animation: gatitoDormir 2.4s ease-in-out infinite; }
-    .gatito.comp-dormir .gatito-cola { animation-duration: 2.5s; }
+    .gatito.comp-dormir { --dur-cola: 2.5s; }
     .gatito.comp-corazon svg { animation: gatitoCorazon .6s ease-in-out infinite; }
-    .gatito.comp-corazon .gatito-cola { animation-duration: .3s; }
+    .gatito.comp-corazon { --dur-cola: .3s; }
     .gatito.comp-picaro svg { animation: gatitoPicaro .8s ease-in-out infinite; }
     .gatito.comp-parpadeo svg { animation: gatitoParpadeo 2s ease-in-out infinite; }
     .gatito.comp-rascar .gatito-pata-delantera { animation: gatitoPataRascar .12s linear infinite; }
@@ -1167,7 +1265,7 @@
     .gatito.comp-comer .gatito-pata, .gatito.comp-lamer .gatito-pata { animation: none; }
     .gatito.gatito-anticipacion svg { animation: gatitoAnticipacion .2s ease-in-out 1; }
     .gatito.gatito-meneo svg { animation: gatitoMeneo .12s linear infinite; }
-    .gatito.gatito-feliz .gatito-cola { animation-duration: .18s; }
+    .gatito.gatito-feliz { --dur-cola: .18s; }
     .gatito.gatito-morder .gatito-flip svg { animation: gatitoMorder .3s ease-in-out 2; }
     @keyframes gatitoMorder { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(7px,-2px) scale(1.06); } }
     .gatito.gatito-arrastrando { touch-action: none; z-index: 10001; filter: drop-shadow(0 6px 6px rgba(0,0,0,.3)); }
@@ -2731,7 +2829,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v84";
+    const VERSION_APP = "v94";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -9759,58 +9857,9 @@
         const horaTxt = new Date(r.creadoEn).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
         return '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;margin-top:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-soft);">'
           + '<div style="flex:1;font-size:13px;font-weight:700;">' + escaparHTML(fechaTxt) + ' <span style="color:var(--text-muted);font-size:11px;font-weight:400;">' + escaparHTML(horaTxt) + '</span></div>'
-          + '<button type="button" class="btn btn-soft" data-respaldo-auto-restaurar="' + i + '" style="padding:5px 10px;">Cargar</button>'
-          + '<button type="button" class="btn btn-soft" data-respaldo-auto-descargar="' + i + '" style="padding:5px 10px;">Guardar</button>'
           + '</div>';
       }).join("");
     }
-
-    // Restaurar / Descargar desde la lista (delegación, porque la lista se redibuja).
-    document.getElementById("listaRespaldosAuto").addEventListener("click", async (e) => {
-      const btnR = e.target.closest("[data-respaldo-auto-restaurar]");
-      const btnD = e.target.closest("[data-respaldo-auto-descargar]");
-      if (!btnR && !btnD) return;
-      const idx = Number(btnR ? btnR.getAttribute("data-respaldo-auto-restaurar") : btnD.getAttribute("data-respaldo-auto-descargar"));
-      const lista = ordenarRespaldosAuto(obtenerRespaldosAuto());
-      const r = lista[idx];
-      if (!r) return;
-      if (btnD) {
-        const nombreArchivo = `mi-control-calorico-respaldo-auto-${r.fecha}.json`;
-        // Si hay carpeta elegida y el permiso está concedido, el archivo va SOLO
-        // a la carpeta; si no hay carpeta (o se perdió el permiso), se descarga
-        // a Descargas como antes.
-        const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, r.datos, true);
-        if (!enCarpeta) {
-          const blob = new Blob([r.datos], { type: "application/json" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = nombreArchivo;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-          mostrarToast("Respaldo descargado");
-        } else {
-          mostrarToast("Respaldo guardado en la carpeta");
-        }
-        return;
-      }
-      let data;
-      try {
-        data = JSON.parse(r.datos);
-      } catch (err) {
-        mostrarToast("Ese respaldo está dañado");
-        return;
-      }
-      if (!data || typeof data !== "object" || !data.perfil || !data.diarios || !Array.isArray(data.almacen)) {
-        mostrarToast("Ese respaldo no es válido");
-        return;
-      }
-      pedirConfirmacion("¿Restaurar este respaldo?", "Se reemplazarán tus datos actuales por los del " + formatearFechaLegible(r.fecha) + ".", "Sí, restaurar", () => {
-        aplicarRespaldo(data);
-        mostrarToast("Respaldo restaurado");
-      });
-    });
 
     // Carpeta de destino para los respaldos automáticos (File System Access API).
     // El handle de la carpeta no se puede guardar en localStorage (no se serializa
@@ -10161,7 +10210,7 @@
       var hocico = esBlanco ? "" : '<ellipse cx="63" cy="26" rx="6" ry="4.5" fill="' + colorPuntos + '" opacity="0.55"/>';
       var gradId = "gradGato" + (esBlanco ? "Blanco" : "Cafe");
       var gradTop = esBlanco ? "#ffffff" : "#d9b48c";
-      return `<svg viewBox="0 0 80 60" aria-hidden="true"><defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${gradTop}"/><stop offset="1" stop-color="${colorCuerpo}"/></linearGradient></defs><g class="gatito-cola-lerp"><g class="gatito-cola"><path d="M14 34 Q0 28 4 12" fill="none" stroke="${colorPuntos}" stroke-width="5" stroke-linecap="round"/><circle class="gatito-cola-punta" cx="4" cy="12" r="3" fill="${colorPuntos}"/></g></g><g class="gatito-pata gatito-pata-trasera-lejos"><path d="M27 45 L27 51" stroke="${colorLejos}" stroke-width="4" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="27" cy="52" rx="4.5" ry="2.5" fill="${colorLejos}"/></g></g><g class="gatito-pata gatito-pata-delantera-lejos"><path d="M49 45 L49 51" stroke="${colorLejos}" stroke-width="4" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="49" cy="52" rx="4.5" ry="2.5" fill="${colorLejos}"/></g></g><ellipse cx="42" cy="34" rx="21" ry="12" fill="url(#${gradId})"/><ellipse cx="44" cy="37" rx="11" ry="6" fill="#ffffff" opacity="0.3"/>${manchasCuerpo}<g class="gatito-pata gatito-pata-trasera"><path d="M30 44 L30 53" stroke="${colorPuntos}" stroke-width="4.5" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="30" cy="54" rx="5.5" ry="3" fill="${colorPuntos}"/></g></g><g class="gatito-pata gatito-pata-delantera"><path d="M52 44 L52 53" stroke="${colorPuntos}" stroke-width="4.5" stroke-linecap="round"/><g class="gatito-pata-baja"><ellipse cx="52" cy="54" rx="5.5" ry="3" fill="${colorPuntos}"/></g></g><g class="gatito-cabeza-lerp"><g class="gatito-cabeza"><circle cx="60" cy="22" r="11" fill="url(#${gradId})"/><g class="gatito-oreja gatito-oreja-izq"><polygon points="52,14 53,1 61,11" fill="${colorPuntos}"/><polygon points="54.5,11 54.5,5 59,10" fill="#f2b8c6"/></g><g class="gatito-oreja gatito-oreja-der"><polygon points="63,11 67,0 69,13" fill="${colorPuntos}"/><polygon points="64.5,10 67,3 68.5,11" fill="#f2b8c6"/></g>${manchasCara}${hocico}<g class="gatito-ojos">${ojos}</g><circle cx="54" cy="24" r="1.7" fill="#f28b8b" opacity="0.75"/><circle cx="63" cy="24.5" r="1.7" fill="#f28b8b" opacity="0.75"/><polygon points="67.5,24 70.5,24 69,26.5" fill="#e88ca0"/>${boca}${lengua}<g class="gatito-bigotes"><path d="M68 24 L76 21" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/><path d="M68 26.5 L76 28" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/><path d="M52 24 L45 21.5" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/></g></g></g></svg>`;
+      return `<svg viewBox="0 0 80 60" aria-hidden="true"><defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${gradTop}"/><stop offset="1" stop-color="${colorCuerpo}"/></linearGradient></defs><g class="gatito-cola-lerp"><g class="gatito-cola"><path d="M14 34 Q11.7 33 9.8 31.7" fill="none" stroke="${colorPuntos}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.8" cy="31.7" r="2.7" fill="${colorPuntos}"/><g class="gatito-cola-s2"><path d="M9.8 31.7 Q8 30.4 6.7 28.9" fill="none" stroke="${colorPuntos}" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.7" cy="28.9" r="2.6" fill="${colorPuntos}"/><g class="gatito-cola-s3"><path d="M6.7 28.9 Q5.3 27.3 4.5 25.5" fill="none" stroke="${colorPuntos}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4.5" cy="25.5" r="2.45" fill="${colorPuntos}"/><g class="gatito-cola-s4"><path d="M4.5 25.5 Q3.7 23.7 3.3 21.6" fill="none" stroke="${colorPuntos}" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="3.3" cy="21.6" r="2.3" fill="${colorPuntos}"/><g class="gatito-cola-s5"><path d="M3.3 21.6 Q3 19.4 3.2 17.1" fill="none" stroke="${colorPuntos}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="3.2" cy="17.1" r="2.2" fill="${colorPuntos}"/><g class="gatito-cola-s6"><path d="M3.2 17.1 Q3.3 14.7 4 12" fill="none" stroke="${colorPuntos}" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/><g class="gatito-cola-punta"><circle cx="4" cy="12" r="3" fill="${colorPuntos}"/></g></g></g></g></g></g></g></g><g class="gatito-pata gatito-pata-trasera-lejos"><path d="M27 45 L27 48" stroke="${colorLejos}" stroke-width="4.5" stroke-linecap="round"/><circle cx="27" cy="48" r="2.5" fill="${colorLejos}"/><g class="gatito-pata-baja"><path d="M27 48 L27 52" stroke="${colorLejos}" stroke-width="3" stroke-linecap="round"/><g class="gatito-pata-pie"><ellipse cx="27" cy="52" rx="4.5" ry="2.5" fill="${colorLejos}"/></g></g></g><g class="gatito-pata gatito-pata-delantera-lejos"><path d="M49 45 L49 48" stroke="${colorLejos}" stroke-width="4.5" stroke-linecap="round"/><circle cx="49" cy="48" r="2.5" fill="${colorLejos}"/><g class="gatito-pata-baja"><path d="M49 48 L49 52" stroke="${colorLejos}" stroke-width="3" stroke-linecap="round"/><g class="gatito-pata-pie"><ellipse cx="49" cy="52" rx="4.5" ry="2.5" fill="${colorLejos}"/></g></g></g><ellipse cx="42" cy="34" rx="21" ry="12" fill="url(#${gradId})"/><ellipse cx="44" cy="37" rx="11" ry="6" fill="#ffffff" opacity="0.3"/>${manchasCuerpo}<g class="gatito-pata gatito-pata-trasera"><path d="M30 44 L30 49" stroke="${colorPuntos}" stroke-width="5.5" stroke-linecap="round"/><circle cx="30" cy="49" r="3" fill="${colorPuntos}"/><g class="gatito-pata-baja"><path d="M30 49 L30 54" stroke="${colorPuntos}" stroke-width="3.5" stroke-linecap="round"/><g class="gatito-pata-pie"><ellipse cx="30" cy="54" rx="5.5" ry="3" fill="${colorPuntos}"/></g></g></g><g class="gatito-pata gatito-pata-delantera"><path d="M52 44 L52 49" stroke="${colorPuntos}" stroke-width="5.5" stroke-linecap="round"/><circle cx="52" cy="49" r="3" fill="${colorPuntos}"/><g class="gatito-pata-baja"><path d="M52 49 L52 54" stroke="${colorPuntos}" stroke-width="3.5" stroke-linecap="round"/><g class="gatito-pata-pie"><ellipse cx="52" cy="54" rx="5.5" ry="3" fill="${colorPuntos}"/></g></g></g><g class="gatito-cabeza-lerp"><g class="gatito-cabeza"><circle cx="60" cy="22" r="11" fill="url(#${gradId})"/><g class="gatito-oreja gatito-oreja-izq"><polygon points="52,14 53,1 61,11" fill="${colorPuntos}"/><polygon points="54.5,11 54.5,5 59,10" fill="#f2b8c6"/></g><g class="gatito-oreja gatito-oreja-der"><polygon points="63,11 67,0 69,13" fill="${colorPuntos}"/><polygon points="64.5,10 67,3 68.5,11" fill="#f2b8c6"/></g>${manchasCara}${hocico}<g class="gatito-ojos">${ojos}</g><circle cx="54" cy="24" r="1.7" fill="#f28b8b" opacity="0.75"/><circle cx="63" cy="24.5" r="1.7" fill="#f28b8b" opacity="0.75"/><polygon points="67.5,24 70.5,24 69,26.5" fill="#e88ca0"/>${boca}${lengua}<g class="gatito-bigotes"><path d="M68 24 L76 21" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/><path d="M68 26.5 L76 28" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/><path d="M52 24 L45 21.5" stroke="#b0a090" stroke-width="0.8" stroke-linecap="round" opacity="0.8"/></g></g></g></svg>`;
     }
 
     var COMPORTAMIENTOS_GATO = [
@@ -10794,6 +10843,15 @@
         if (t && t.arrastrando) { g.toque = null; terminarArrastre(t); }
       });
     }
+    var PATRONES_COLA = ["", "cola-latigazo", "cola-barrido", "cola-onda-rapida", "cola-punta", "cola-onda-lenta", "cola-onda-doble", "cola-onda-invertida", "cola-latigo-lento", "cola-metronomo", "cola-tiesa", "cola-vibracion", "cola-rizo", "cola-levantada", "cola-baja", "cola-s-fija", "cola-azote", "cola-espasmo", "cola-temblor-punta", "cola-ondulacion"];
+    function cambiarPatronCola(g) {
+      var actual = g.patronCola || "";
+      var opciones = PATRONES_COLA.filter(function (p) { return p !== actual; });
+      var nuevo = opciones[Math.floor(Math.random() * opciones.length)];
+      if (actual) g.el.classList.remove(actual);
+      if (nuevo) g.el.classList.add(nuevo);
+      g.patronCola = nuevo;
+    }
     function iniciarGatitos() {
       var colores = [
         { cuerpo: "#ffffff", puntos: "#3a3230", lejos: "#6b6156", tipo: "blanco" },
@@ -10836,6 +10894,8 @@
         refrescarRefsGato(g);
         gatosV60.push(g);
         conectarToqueGato(g);
+        g.patronCola = "";
+        setInterval(function () { cambiarPatronCola(g); }, 4000 + Math.random() * 3000);
         window.addEventListener("resize", function () {
           var v = g.viaje;
           g.giroToken = (g.giroToken || 0) + 1;
