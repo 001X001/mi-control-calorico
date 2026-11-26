@@ -1715,6 +1715,7 @@
               <input type="file" id="inputImportarRespaldo" accept=".json,application/json" style="display: none;" />
             </div>
             <div id="textoUltimoRespaldo" style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Último respaldo: nunca</div>
+            <button type="button" id="btnCompartirDiaAsistente" class="btn btn-soft" style="width: 100%; margin-top: 8px;">Compartir día con mi asistente</button>
           </div>
 
           <button type="button" id="btnActualizarApp" class="btn btn-soft" style="width: 100%; margin-top: 4px;">Actualizar app</button>
@@ -2639,7 +2640,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v67";
+    const VERSION_APP = "v68";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -9471,6 +9472,96 @@
         }
       };
       reader.readAsText(file);
+    });
+
+    // Compartir el día con el asistente: resumen en texto de todo lo registrado
+    // en el día que se está viendo (fechaSeleccionada, hoy por defecto).
+    function generarResumenDia(iso) {
+      const dia = asegurarDia(iso);
+      const tot = calcularTotalesDia(iso);
+      const extras = calcularExtrasPeriodo([iso]);
+      const metaKcal = Number(appState.perfil.metaKcal) > 0 ? Number(appState.perfil.metaKcal) : 2000;
+      const quemadasDia = calcularKcalQuemadasDia(iso);
+      const actFisica = !!appState.perfil.actividadFisicaActiva;
+      const kcalNetas = actFisica ? Math.max(0, tot.kcal - quemadasDia) : tot.kcal;
+      const restantes = metaKcal - kcalNetas;
+      const lineas = [];
+      lineas.push("Mi Control Calórico — " + formatearFechaLegible(iso) + " de " + iso.slice(0, 4));
+      lineas.push("");
+      let hayComida = false;
+      appState.apartados.forEach((nombreComida) => {
+        const items = (dia.comidas && dia.comidas[nombreComida]) || [];
+        if (!items.length) return;
+        hayComida = true;
+        let k = 0, p = 0, c = 0, g = 0, f = 0;
+        lineas.push(nombreComida.toUpperCase());
+        items.forEach((it) => {
+          k += Number(it.kcal) || 0; p += Number(it.prot) || 0; c += Number(it.carb) || 0; g += Number(it.gras) || 0; f += Number(it.fibra) || 0;
+          const cant = it.cantidadLabel ? " — " + it.cantidadLabel : "";
+          lineas.push("• " + (it.nombre || "Alimento") + cant + " · " + fmtNum(it.kcal, 0) + " kcal · P " + fmtNum(it.prot, 1) + " g · C " + fmtNum(it.carb, 1) + " g · G " + fmtNum(it.gras, 1) + " g");
+        });
+        lineas.push("Total " + nombreComida + ": " + fmtNum(k, 0) + " kcal · P " + fmtNum(p, 1) + " g · C " + fmtNum(c, 1) + " g · G " + fmtNum(g, 1) + " g · Fib " + fmtNum(f, 1) + " g");
+        lineas.push("");
+      });
+      if (!hayComida) lineas.push("Sin alimentos registrados este día.", "");
+      lineas.push("TOTALES DEL DÍA");
+      lineas.push("Calorías: " + fmtNum(tot.kcal, 0) + " kcal (meta " + fmtNum(metaKcal, 0) + " kcal · " + (restantes >= 0 ? "faltan " + fmtNum(restantes, 0) + " kcal" : "te pasaste por " + fmtNum(Math.abs(restantes), 0) + " kcal") + ")");
+      lineas.push("Proteínas: " + fmtNum(tot.prot, 1) + " g · Carbos: " + fmtNum(tot.carb, 1) + " g · Grasas: " + fmtNum(tot.gras, 1) + " g · Fibra: " + fmtNum(tot.fibra, 1) + " g");
+      lineas.push("Azúcar: " + (extras.conAzucar > 0 ? fmtNum(extras.azucar, 1) + " g" : "Sin datos") + " · Sodio: " + (extras.conSodio > 0 ? fmtNum(extras.sodio, 0) + " mg" : "Sin datos") + " · Grasa saturada: " + (extras.conGrasSat > 0 ? fmtNum(extras.grasSat, 1) + " g" : "Sin datos") + " · Colesterol: " + (extras.conColest > 0 ? fmtNum(extras.colest, 0) + " mg" : "Sin datos"));
+      if (actFisica) lineas.push("Calorías netas: " + fmtNum(kcalNetas, 0) + " kcal (quemadas " + fmtNum(quemadasDia, 0) + " kcal)");
+      lineas.push("");
+      lineas.push("AGUA");
+      lineas.push(fmtNum(tot.aguaMl, 0) + " ml");
+      lineas.push("");
+      const acts = obtenerActividadesDia(iso);
+      lineas.push("ACTIVIDAD");
+      if (acts.length) {
+        acts.forEach((a) => {
+          lineas.push("• " + (a.tipo || "Actividad") + " — " + fmtNum(a.minutos, 0) + " min" + (a.pasos ? " · " + fmtNum(a.pasos, 0) + " pasos" : "") + " · " + fmtNum(a.kcal, 0) + " kcal quemadas");
+        });
+        lineas.push("Total quemado: " + fmtNum(quemadasDia, 0) + " kcal");
+      } else {
+        lineas.push("Sin actividad registrada este día.");
+      }
+      lineas.push("");
+      const pesos = obtenerPesos();
+      const pesoHoy = pesos.find((x) => x && x.fecha === iso);
+      const ultimo = obtenerUltimoPesoYMedidas();
+      lineas.push("PESO");
+      if (pesoHoy) lineas.push("Peso hoy: " + fmtNum(pesoHoy.peso, 1) + " kg");
+      else if (ultimo) lineas.push("Último peso: " + fmtNum(ultimo.peso, 1) + " kg (" + formatearFechaLegible(ultimo.fecha) + ")");
+      else lineas.push("Sin registro de peso.");
+      return lineas.join("\n");
+    }
+
+    function copiarTextoResumen(texto) {
+      const listo = () => mostrarToast("Resumen copiado, pégalo en tu asistente");
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(listo).catch(() => copiarTextoResumenTextarea(texto));
+        return;
+      }
+      copiarTextoResumenTextarea(texto);
+    }
+
+    function copiarTextoResumenTextarea(texto) {
+      const ta = document.createElement("textarea");
+      ta.value = texto;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); mostrarToast("Resumen copiado, pégalo en tu asistente"); }
+      catch (e) { mostrarToast("No se pudo copiar el resumen"); }
+      ta.remove();
+    }
+
+    document.getElementById("btnCompartirDiaAsistente").addEventListener("click", () => {
+      const texto = generarResumenDia(fechaSeleccionada);
+      if (navigator.share) {
+        navigator.share({ text: texto }).catch(() => {});
+        return;
+      }
+      copiarTextoResumen(texto);
     });
 
     // Reordenar apartados del Diario (el orden se guarda en appState.apartados)
