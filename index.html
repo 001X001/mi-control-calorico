@@ -2648,7 +2648,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v71";
+    const VERSION_APP = "v72";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -9423,16 +9423,24 @@
     }
 
     // Respaldo: guardar / cargar todo el estado en un .json
-    document.getElementById("btnExportarRespaldo").addEventListener("click", () => {
+    document.getElementById("btnExportarRespaldo").addEventListener("click", async () => {
       const fecha = obtenerFechaISO(0);
-      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `mi-control-calorico-respaldo-${fecha}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      const contenido = JSON.stringify(appState, null, 2);
+      const nombreArchivo = `mi-control-calorico-respaldo-${fecha}.json`;
+      // Si hay carpeta elegida y el permiso está concedido, el archivo va SOLO
+      // a la carpeta; si no hay carpeta (o se perdió el permiso), se descarga
+      // a Descargas como antes.
+      const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, contenido);
+      if (!enCarpeta) {
+        const blob = new Blob([contenido], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = nombreArchivo;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
       try { localStorage.setItem("miControlCaloricoUltimoRespaldo", fecha); } catch (e) {}
       actualizarTextoUltimoRespaldo();
       mostrarToast("Respaldo guardado");
@@ -9575,7 +9583,7 @@
     }
 
     // Restaurar / Descargar desde la lista (delegación, porque la lista se redibuja).
-    document.getElementById("listaRespaldosAuto").addEventListener("click", (e) => {
+    document.getElementById("listaRespaldosAuto").addEventListener("click", async (e) => {
       const btnR = e.target.closest("[data-respaldo-auto-restaurar]");
       const btnD = e.target.closest("[data-respaldo-auto-descargar]");
       if (!btnR && !btnD) return;
@@ -9584,15 +9592,24 @@
       const r = lista[idx];
       if (!r) return;
       if (btnD) {
-        const blob = new Blob([r.datos], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `mi-control-calorico-respaldo-auto-${r.fecha}.json`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        mostrarToast("Respaldo descargado");
+        const nombreArchivo = `mi-control-calorico-respaldo-auto-${r.fecha}.json`;
+        // Si hay carpeta elegida y el permiso está concedido, el archivo va SOLO
+        // a la carpeta; si no hay carpeta (o se perdió el permiso), se descarga
+        // a Descargas como antes.
+        const enCarpeta = await escribirArchivoEnCarpeta(nombreArchivo, r.datos);
+        if (!enCarpeta) {
+          const blob = new Blob([r.datos], { type: "application/json" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = nombreArchivo;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+          mostrarToast("Respaldo descargado");
+        } else {
+          mostrarToast("Respaldo guardado en la carpeta");
+        }
         return;
       }
       let data;
@@ -9683,16 +9700,32 @@
       }
     }
 
-    async function escribirRespaldoAutoEnCarpeta(entrada) {
-      if (!carpetaRespaldoHandle) return;
+    // Escribe un archivo en la carpeta elegida (si hay una). Sin carpeta no
+    // hace nada y no avisa (devuelve false); si el permiso falla, avisa con un
+    // toast y devuelve false. La usan el respaldo automático, "Guardar
+    // respaldo" y el "Guardar" de la lista de respaldos automáticos. No borra
+    // nada; la rotación solo la hace escribirRespaldoAutoEnCarpeta.
+    async function escribirArchivoEnCarpeta(nombreArchivo, contenido) {
+      if (!carpetaRespaldoHandle) return false;
       try {
         const permiso = await carpetaRespaldoHandle.requestPermission({ mode: "readwrite" });
         if (permiso !== "granted") throw new Error("permiso denegado");
-        const nombreArchivo = PREFIJO_ARCHIVO_RESPALDO_AUTO + entrada.fecha + ".json";
         const fileHandle = await carpetaRespaldoHandle.getFileHandle(nombreArchivo, { create: true });
         const writable = await fileHandle.createWritable();
-        await writable.write(entrada.datos);
+        await writable.write(contenido);
         await writable.close();
+        return true;
+      } catch (e) {
+        mostrarToast("No se pudo escribir en la carpeta, elige la carpeta de nuevo");
+        return false;
+      }
+    }
+
+    async function escribirRespaldoAutoEnCarpeta(entrada) {
+      if (!carpetaRespaldoHandle) return;
+      const ok = await escribirArchivoEnCarpeta(PREFIJO_ARCHIVO_RESPALDO_AUTO + entrada.fecha + ".json", entrada.datos);
+      if (!ok) return;
+      try {
         const nombres = [];
         for await (const par of carpetaRespaldoHandle.values()) {
           const nombre = par[0];
