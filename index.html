@@ -133,6 +133,15 @@
       font-size: 15px;
       line-height: 1.4;
       overflow-x: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    /* El texto no se selecciona al mantener el dedo (sin menú Copiar ni búsqueda) */
+    input, textarea {
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     /* Contenedor principal con marco lateral y base en morado pastel */
@@ -2695,7 +2704,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v79";
+    const VERSION_APP = "v80";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -7550,6 +7559,41 @@
       renderizarAlmacenModal(e.target.value);
     }, 150));
 
+    // Recientes: "Usar" abre el detalle con los gramos en blanco para que el
+    // usuario escriba la cantidad (antes agregaba directo con la cantidad
+    // anterior, sin dejar modificar los gramos).
+    function usarReciente(it) {
+      if (!it || !it.nombre) return;
+      const norm = normalizarTexto(it.nombre);
+      const fuente = obtenerCatalogoCombinado().find((x) => (x.nombreNorm || normalizarTexto(x.nombre)) === norm);
+      if (fuente) {
+        abrirDetalleAlimento(fuente);
+        return;
+      }
+      const gPrev = extraerGramosEdit(it.cantidadLabel);
+      if (gPrev != null && gPrev > 0) {
+        const f = 100 / gPrev;
+        const por100 = (v) => (v == null || v === "" || Number.isNaN(Number(v)) ? null : Number(v) * f);
+        abrirDetalleAlimento({
+          nombre: it.nombre,
+          tipo: "alimento",
+          origen: "Reciente",
+          kcal100: (Number(it.kcal) || 0) * f,
+          prot100: (Number(it.prot) || 0) * f,
+          carb100: (Number(it.carb) || 0) * f,
+          gras100: (Number(it.gras) || 0) * f,
+          fibra100: (Number(it.fibra) || 0) * f,
+          azucar100: por100(it.azucar),
+          sodio100: por100(it.sodio),
+          grasSat100: por100(it.grasSat),
+          colest100: por100(it.colest)
+        });
+        return;
+      }
+      agregarItemAComida(comidaActivaModal, { ...it });
+      cerrarModales();
+    }
+
     function renderizarRecientesModal() {
       const cont = document.getElementById("listaRecientesComida");
       cont.innerHTML = "";
@@ -7568,10 +7612,7 @@
           </div>
           <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px;">Usar</button>
         `;
-        row.querySelector("button").onclick = () => {
-          agregarItemAComida(comidaActivaModal, { ...it });
-          cerrarModales();
-        };
+        row.querySelector("button").onclick = () => usarReciente(it);
         cont.appendChild(row);
       });
     }
@@ -9604,7 +9645,15 @@
         const raw = localStorage.getItem(CLAVE_RESPALDOS_AUTO);
         if (!raw) return [];
         const lista = JSON.parse(raw);
-        return Array.isArray(lista) ? lista : [];
+        if (!Array.isArray(lista)) return [];
+        // Una entrada por fecha: si el guardado trae la misma fecha dos veces,
+        // se queda solo la más reciente para no listar el mismo respaldo dos veces.
+        const porFecha = {};
+        lista.forEach((r) => {
+          if (!r || !r.fecha) return;
+          if (!porFecha[r.fecha] || (r.creadoEn || 0) > (porFecha[r.fecha].creadoEn || 0)) porFecha[r.fecha] = r;
+        });
+        return Object.values(porFecha);
       } catch (e) {
         return [];
       }
@@ -9669,8 +9718,8 @@
       elLista.innerHTML = lista.map((r, i) => {
         const fechaTxt = formatearFechaLegible(r.fecha);
         const horaTxt = new Date(r.creadoEn).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
-        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);">'
-          + '<div style="flex:1;font-size:13px;">' + escaparHTML(fechaTxt) + ' <span style="color:var(--text-muted);font-size:11px;">' + escaparHTML(horaTxt) + '</span></div>'
+        return '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;margin-top:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-soft);">'
+          + '<div style="flex:1;font-size:13px;font-weight:700;">' + escaparHTML(fechaTxt) + ' <span style="color:var(--text-muted);font-size:11px;font-weight:400;">' + escaparHTML(horaTxt) + '</span></div>'
           + '<button type="button" class="btn btn-soft" data-respaldo-auto-restaurar="' + i + '" style="padding:5px 10px;">Cargar</button>'
           + '<button type="button" class="btn btn-soft" data-respaldo-auto-descargar="' + i + '" style="padding:5px 10px;">Guardar</button>'
           + '</div>';
