@@ -111,6 +111,13 @@
       color: var(--pastel-purple-text);
     }
 
+    /* Tarjeta del Diario en modo oscuro: el panel era blanco fijo y el texto
+       (var(--text-main)) se volvía casi blanco -> el número de consumidas
+       se perdía. En oscuro el panel usa el fondo de tarjeta oscuro. */
+    body.modo-oscuro .hero-panel {
+      background: var(--bg-card);
+    }
+
 
     * {
       box-sizing: border-box;
@@ -236,7 +243,7 @@
     .kcal-summary-row {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: flex-end;
       gap: 8px;
       margin-bottom: 6px;
     }
@@ -248,9 +255,16 @@
     }
 
     .kcal-goal {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 800;
+    }
+
+    .kcal-side-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
     }
 
     .kcal-remaining-label {
@@ -613,6 +627,21 @@
       padding-top: 6px;
       border-top: 1px solid var(--border);
     }
+
+    /* Totales de cada apartado: el número de kcal casi negro en claro y
+       blanco puro en oscuro; cada macro con el color de su cajita de arriba. */
+    .apartado-macros .am-kcal { color: var(--text-main); font-weight: 800; }
+    .apartado-macros .am-prot { color: var(--protein); font-weight: 700; }
+    .apartado-macros .am-carb { color: var(--carbs); font-weight: 700; }
+    .apartado-macros .am-gras { color: var(--fat); font-weight: 700; }
+    .apartado-macros .am-fibra { color: var(--fiber); font-weight: 700; }
+    /* En modo oscuro los colores base no se leen sobre el fondo oscuro:
+       se usan sus versiones claras (Tailwind 400) y blanco puro para kcal. */
+    body.modo-oscuro .apartado-macros .am-kcal { color: #ffffff; }
+    body.modo-oscuro .apartado-macros .am-prot { color: #60a5fa; }
+    body.modo-oscuro .apartado-macros .am-carb { color: #fbbf24; }
+    body.modo-oscuro .apartado-macros .am-gras { color: #fb7185; }
+    body.modo-oscuro .apartado-macros .am-fibra { color: #a78bfa; }
 
     /* Vista de aplicación de ejercicio (iframe a pantalla completa) */
     #vistaEjercicio {
@@ -1208,9 +1237,15 @@
 
         <div class="hero-panel">
           <div class="kcal-summary-row">
-            <div>
-              <span id="kcalConsumidas" class="kcal-consumed">0</span>
-              <span id="kcalMetaTexto" class="kcal-goal">/ 2000 kcal</span>
+            <div style="display: flex; gap: 14px; align-items: flex-end;">
+              <div>
+                <div class="kcal-side-label">Consumidas</div>
+                <span id="kcalConsumidas" class="kcal-consumed">0</span>
+              </div>
+              <div>
+                <div class="kcal-side-label">Total</div>
+                <span id="kcalMetaTexto" class="kcal-goal">2,000 kcal</span>
+              </div>
             </div>
             <div>
               <div class="kcal-remaining-label">Restantes</div>
@@ -1237,19 +1272,19 @@
           <button type="button" id="btnVerMasNutrientesDiario" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Ver más</button>
           <div id="panelMasNutrientesDiario" style="display: none; margin-top: 10px;">
             <div class="macros-grid">
-              <div class="macro-box" style="background: #f1f5f9;">
+              <div class="macro-box" style="background: var(--bg-soft);">
                 <div class="macro-title">Azúcar</div>
                 <div id="diaAzucar" class="macro-val">—</div>
               </div>
-              <div class="macro-box" style="background: #f1f5f9;">
+              <div class="macro-box" style="background: var(--bg-soft);">
                 <div class="macro-title">Sodio</div>
                 <div id="diaSodio" class="macro-val">—</div>
               </div>
-              <div class="macro-box" style="background: #f1f5f9;">
+              <div class="macro-box" style="background: var(--bg-soft);">
                 <div class="macro-title">Grasa saturada</div>
                 <div id="diaGrasSat" class="macro-val">—</div>
               </div>
-              <div class="macro-box" style="background: #f1f5f9;">
+              <div class="macro-box" style="background: var(--bg-soft);">
                 <div class="macro-title">Colesterol</div>
                 <div id="diaColest" class="macro-val">—</div>
               </div>
@@ -2648,7 +2683,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v72";
+    const VERSION_APP = "v74";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -5114,6 +5149,7 @@
       { nombre: "Agua de horchata (tradicional)", kcal100: 54, prot100: 0.6, carb100: 11.5, gras100: 0.7, fibra100: 0.2 },
       { nombre: "Agua fresca de frutas / jamaica / limon (con azucar)", kcal100: 32, prot100: 0, carb100: 8, gras100: 0, fibra100: 0 },
       { nombre: "Nieve de garrafa (de agua, limon/mango)", kcal100: 105, prot100: 0.2, carb100: 26, gras100: 0.1, fibra100: 0.5 },
+      { nombre: "Danone griego endulzado", kcal100: 84.3, prot100: 5.6, carb100: 11.1, gras100: 1.9, fibra100: 2, azucar100: 7, sodio100: 37.9, grasSat100: 1.2, codigoBarras: "7501032300043" },
       { nombre: "Tostadas de maiz deshidratadas (Tortilleria Del Barrio)", kcal100: 481, prot100: 6.8, carb100: 58.3, gras100: 24.5, fibra100: 5.3 },
       { nombre: "Pollo rostizado sin piel (Generico)", kcal100: 205, prot100: 27.4, carb100: 0, gras100: 9.7, fibra100: 0, azucar100: 0, sodio100: 93, grasSat100: 2.7, colest100: 93 },
       { nombre: "Pollo rostizado con piel (Generico)", kcal100: 253, prot100: 26, carb100: 0, gras100: 15.8, fibra100: 0, sodio100: 87, grasSat100: 4.4, colest100: 91 },
@@ -5861,7 +5897,7 @@
         const texto = tieneDatos ? `${fmtNum(numero, info.dec)} ${info.unidad}` : "Sin datos";
         const meta = appState.perfil[info.metaKey];
         const logrado = meta != null && Number(meta) > 0 && Number(numero) >= Number(meta);
-        const metaTexto = meta != null && Number(meta) > 0 ? (logrado ? `✓ ¡Logrado! · Meta ${fmtNum(meta, info.dec)} ${info.unidad}` : `Meta ${fmtNum(meta, info.dec)} ${info.unidad}`) : "Sin meta";
+        const metaTexto = meta != null && Number(meta) > 0 ? (logrado ? `✓ ¡Logrado! · Meta ${fmtNum(meta, info.dec)} ${info.unidad}` : `Meta ${fmtNum(meta, info.dec)} ${info.unidad} · faltan ${fmtNum(Number(meta) - Number(numero), info.dec)} ${info.unidad}`) : "Sin meta";
         const box = document.createElement("div");
         box.className = `macro-box ${clave}${logrado ? " macro-logrado" : ""}`;
         box.innerHTML = `
@@ -5974,7 +6010,7 @@
       document.getElementById("fechaActualTexto").textContent = formatearFechaLegible(fechaSeleccionada);
 
       document.getElementById("kcalConsumidas").textContent = fmtNum(tot.kcal, 0);
-      document.getElementById("kcalMetaTexto").textContent = `/ ${fmtNum(metaKcal, 0)} kcal`;
+      document.getElementById("kcalMetaTexto").textContent = `${fmtNum(metaKcal, 0)} kcal`;
 
       document.getElementById("filaKcalQuemadas").style.display = appState.perfil.actividadFisicaActiva ? "block" : "none";
       document.getElementById("kcalQuemadas").textContent = fmtNum(quemadasDia, 0);
@@ -6118,7 +6154,7 @@
         if (items.length) {
           const resumenMacros = document.createElement("div");
           resumenMacros.className = "apartado-macros";
-          resumenMacros.textContent = `Total: ${fmtNum(kcalComida, 0)} kcal · P ${fmtNum(protComida, 1)} g · C ${fmtNum(carbComida, 1)} g · G ${fmtNum(grasComida, 1)} g · Fib ${fmtNum(fibraComida, 1)} g`;
+          resumenMacros.innerHTML = `Total: <span class="am-kcal">${fmtNum(kcalComida, 0)} kcal</span> · <span class="am-prot">P ${fmtNum(protComida, 1)} g</span> · <span class="am-carb">C ${fmtNum(carbComida, 1)} g</span> · <span class="am-gras">G ${fmtNum(grasComida, 1)} g</span> · <span class="am-fibra">Fib ${fmtNum(fibraComida, 1)} g</span>`;
           cont.appendChild(resumenMacros);
         }
       });
