@@ -1458,11 +1458,11 @@
         }
         function beepOnce(when, freq) {
           if (!audioCtx) return;
-          // Alarma a la mitad de volumen: dos osciladores (tono + armónico).
+          // Alarma a la cuarta parte del volumen original: dos osciladores (tono + armónico).
           var gain = audioCtx.createGain();
           gain.gain.setValueAtTime(0.0001, when);
-          gain.gain.exponentialRampToValueAtTime(0.425, when + 0.015);
-          gain.gain.setValueAtTime(0.425, when + 0.17);
+          gain.gain.exponentialRampToValueAtTime(0.2125, when + 0.015);
+          gain.gain.setValueAtTime(0.2125, when + 0.17);
           gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.24);
           gain.connect(audioCtx.destination);
           [freq || 880, (freq || 880) * 2].forEach(function (f, i) {
