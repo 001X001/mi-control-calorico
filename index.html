@@ -551,6 +551,24 @@
       color: var(--text-main);
       border: 1px solid var(--border);
     }
+    /* Calculadora de calorías: opciones en chips y grupos de resultados */
+    .calc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .calc-chip {
+      flex: 1 1 auto;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+    .calc-chip.sel { background: var(--primary); border-color: var(--primary); color: #ffffff; }
+    .calc-resultado-grupo { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; margin-top: 10px; background: var(--bg-soft); }
+    .calc-resultado-grupo.destacado { border: 2px solid var(--primary); }
+    .calc-insignia { display: inline-block; background: var(--primary); color: #ffffff; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 2px 8px; margin-left: 6px; }
 
     .btn-water {
       background: var(--water-bg);
@@ -1791,6 +1809,10 @@
         <p class="section-subtitle">Apartados de comida, actividad física, respaldo y reinicio de datos.</p>
 
         <div style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 14px;">
+          <button type="button" id="btnAbrirCalculadora" class="btn btn-primary" style="width: 100%;">Calculadora de calorías</button>
+        </div>
+
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 14px;">
           <button type="button" id="btnAbrirEjercicio" class="btn btn-primary" style="width: 100%;">Entrar a aplicación de ejercicio</button>
         </div>
 
@@ -1993,6 +2015,83 @@
         </form>
       </div>
     </section>
+    <section id="vista-calculadora" class="vista">
+      <div class="card">
+        <button type="button" id="btnVolverAjustesCalc" class="btn btn-soft" style="margin-bottom: 10px;">← Volver a Ajustes</button>
+        <h2 class="section-title">Calculadora de calorías</h2>
+        <p class="section-subtitle">Responde unas preguntas y te estimamos tus calorías de mantenimiento, déficit y superávit.</p>
+
+        <form id="formCalculadora" novalidate>
+          <div class="form-group">
+            <div class="form-label">1. Objetivo</div>
+            <div class="calc-chips" id="grupoCalcObjetivo">
+              <button type="button" class="calc-chip" data-valor="bajar">Bajar de peso</button>
+              <button type="button" class="calc-chip" data-valor="mantenimiento">Mantenimiento</button>
+              <button type="button" class="calc-chip" data-valor="subir">Subir de peso</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Sexo</div>
+            <div class="calc-chips" id="grupoCalcSexo">
+              <button type="button" class="calc-chip" data-valor="hombre">Hombre</button>
+              <button type="button" class="calc-chip" data-valor="mujer">Mujer</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="calcEdad" class="form-label">2. Edad (años)</label>
+            <input type="number" step="1" min="10" max="100" id="calcEdad" class="input" placeholder="Ej. 30" inputmode="numeric" />
+          </div>
+          <div class="form-group">
+            <label for="calcEstatura" class="form-label">3. Estatura (cm)</label>
+            <input type="number" step="1" min="120" max="230" id="calcEstatura" class="input" placeholder="Ej. 172" inputmode="numeric" />
+          </div>
+          <div class="form-group">
+            <label for="calcPeso" class="form-label">4. Peso actual (kg)</label>
+            <input type="number" step="any" min="30" max="300" id="calcPeso" class="input" placeholder="Ej. 71.1" inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <div class="form-label">5. ¿Cuentas pasos diarios?</div>
+            <div class="calc-chips" id="grupoCalcPasos">
+              <button type="button" class="calc-chip" data-valor="si">Sí</button>
+              <button type="button" class="calc-chip" data-valor="no">No</button>
+            </div>
+            <div id="contCalcPasosSemana" style="display: none; margin-top: 10px;">
+              <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Pasos de la semana pasada, de lunes a domingo (puedes dejar días en blanco):</div>
+              <div id="listaCalcPasosSemana" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-label">6. ¿Haces ejercicio?</div>
+            <div class="calc-chips" id="grupoCalcEjercicio">
+              <button type="button" class="calc-chip" data-valor="si">Sí</button>
+              <button type="button" class="calc-chip" data-valor="no">No</button>
+            </div>
+            <div id="contCalcEjercicio" style="display: none; margin-top: 10px;">
+              <div class="form-group">
+                <label for="calcDias" class="form-label">7. ¿Cuántos días? (opcional)</label>
+                <input type="number" step="1" min="1" max="7" id="calcDias" class="input" placeholder="Ej. 4" inputmode="numeric" />
+              </div>
+              <div class="form-group">
+                <label for="calcHoras" class="form-label">8. ¿Cuántas horas al día?</label>
+                <input type="number" step="any" min="0.5" max="12" id="calcHoras" class="input" placeholder="Ej. 1" inputmode="decimal" />
+              </div>
+              <div class="form-group">
+                <div class="form-label">Tipo de ejercicio</div>
+                <div class="calc-chips" id="grupoCalcTipo">
+                  <button type="button" class="calc-chip" data-valor="fuerza">Fuerza</button>
+                  <button type="button" class="calc-chip" data-valor="cardio">Cardio</button>
+                  <button type="button" class="calc-chip sel" data-valor="mixto">Mixto</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">9. Calcular</button>
+        </form>
+
+        <div id="calcResultados" style="margin-top: 14px;"></div>
+      </div>
+    </section>
+
     <section id="vista-detalle-alimento" class="vista">
       <button type="button" class="btn btn-soft" style="margin-bottom: 12px;" onclick="volverAListaAlimento()">← Volver a la lista</button>
       <div class="card">
@@ -2895,7 +2994,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v114";
+    const VERSION_APP = "v115";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -7638,6 +7737,221 @@
     document.getElementById("btnCerrarEjercicio").addEventListener("click", () => {
       cerrarEjercicio();
     });
+    /* ---------- Calculadora de calorías (v115) ----------
+       En Ajustes, primer botón: abre esta vista. Pregunta objetivo,
+       sexo, edad, estatura, peso, pasos de la semana pasada y ejercicio
+       (días, horas, tipo). Calcula el metabolismo basal (BMR, siempre
+       Mifflin-St Jeor) y el gasto total (TDEE) y muestra mantenimiento,
+       3 déficits y 3 superávits con su cambio de peso aprox. por semana.
+       Son estimaciones, no una prescripción. Los datos se guardan en
+       este teléfono (localStorage, clave calculadora-calorias-v1).
+       El factor de actividad sale de los pasos y del ejercicio (por
+       tipo: fuerza 0.03, mixto 0.045, cardio 0.055 por hora semanal,
+       tope 0.3; PAL total tope 1.9). */
+    const CALC_KEY = "calculadora-calorias-v1";
+    const calcEstado = { objetivo: "", sexo: "", pasosSi: "", ejercicioSi: "", tipo: "mixto" };
+
+    function calcMarcarChip(grupoId, valor) {
+      const grupo = document.getElementById(grupoId);
+      if (!grupo) return;
+      grupo.querySelectorAll(".calc-chip").forEach((b) => b.classList.toggle("sel", b.dataset.valor === valor));
+    }
+    function calcConectarChips(grupoId, clave, alCambiar) {
+      const grupo = document.getElementById(grupoId);
+      if (!grupo) return;
+      grupo.querySelectorAll(".calc-chip").forEach((b) => {
+        b.addEventListener("click", () => {
+          calcEstado[clave] = b.dataset.valor;
+          calcMarcarChip(grupoId, b.dataset.valor);
+          if (alCambiar) alCambiar();
+        });
+      });
+    }
+    function calcLeerNumero(id) {
+      const el = document.getElementById(id);
+      if (!el) return NaN;
+      const v = String(el.value || "").trim().replace(",", ".");
+      return v === "" ? NaN : Number(v);
+    }
+    function calcSemanaPasada() {
+      const hoy = new Date();
+      const diaSem = (hoy.getDay() + 6) % 7; // 0 = lunes
+      const lunes = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - diaSem - 7);
+      const nombres = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+      const dias = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + i);
+        dias.push({ etiqueta: nombres[i] + " " + d.getDate() + "/" + (d.getMonth() + 1) });
+      }
+      return dias;
+    }
+    function calcPintarPasosSemana(valores) {
+      const lista = document.getElementById("listaCalcPasosSemana");
+      if (!lista) return;
+      const dias = calcSemanaPasada();
+      lista.innerHTML = dias.map((d, i) => `<div style="display: flex; align-items: center; gap: 8px;"><label for="calcPaso${i}" class="form-label" style="flex: 0 0 74px; margin-bottom: 0;">${d.etiqueta}</label><input type="number" step="1" min="0" max="60000" id="calcPaso${i}" class="input" placeholder="Pasos" inputmode="numeric" value="${valores && valores[i] != null ? valores[i] : ""}" /></div>`).join("");
+    }
+    function calcActualizarVisibilidad() {
+      const contPasos = document.getElementById("contCalcPasosSemana");
+      if (contPasos) contPasos.style.display = calcEstado.pasosSi === "si" ? "block" : "none";
+      const contEj = document.getElementById("contCalcEjercicio");
+      if (contEj) contEj.style.display = calcEstado.ejercicioSi === "si" ? "block" : "none";
+    }
+    function calcCargar() {
+      let g = {};
+      try { g = JSON.parse(localStorage.getItem(CALC_KEY) || "{}") || {}; } catch (e) { g = {}; }
+      calcEstado.objetivo = g.objetivo || "";
+      calcEstado.sexo = g.sexo || "";
+      calcEstado.pasosSi = g.pasosSi || "";
+      calcEstado.ejercicioSi = g.ejercicioSi || "";
+      calcEstado.tipo = g.tipo || "mixto";
+      calcMarcarChip("grupoCalcObjetivo", calcEstado.objetivo);
+      calcMarcarChip("grupoCalcSexo", calcEstado.sexo);
+      calcMarcarChip("grupoCalcPasos", calcEstado.pasosSi);
+      calcMarcarChip("grupoCalcEjercicio", calcEstado.ejercicioSi);
+      calcMarcarChip("grupoCalcTipo", calcEstado.tipo);
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
+      setVal("calcEdad", g.edad);
+      setVal("calcEstatura", g.estatura);
+      setVal("calcDias", g.dias);
+      setVal("calcHoras", g.horas);
+      let peso = g.peso;
+      if (peso == null || peso === "") {
+        const ultimo = (typeof obtenerUltimoPesoYMedidas === "function") ? obtenerUltimoPesoYMedidas() : null;
+        if (ultimo && ultimo.peso != null) peso = ultimo.peso;
+      }
+      setVal("calcPeso", peso);
+      calcPintarPasosSemana(Array.isArray(g.pasos) ? g.pasos : []);
+      calcActualizarVisibilidad();
+    }
+    function calcGuardar() {
+      const pasos = [];
+      for (let i = 0; i < 7; i++) {
+        const el = document.getElementById("calcPaso" + i);
+        pasos.push(el ? el.value : "");
+      }
+      const datos = {
+        objetivo: calcEstado.objetivo, sexo: calcEstado.sexo,
+        edad: document.getElementById("calcEdad").value,
+        estatura: document.getElementById("calcEstatura").value,
+        peso: document.getElementById("calcPeso").value,
+        pasosSi: calcEstado.pasosSi, pasos,
+        ejercicioSi: calcEstado.ejercicioSi,
+        dias: document.getElementById("calcDias").value,
+        horas: document.getElementById("calcHoras").value,
+        tipo: calcEstado.tipo
+      };
+      try { localStorage.setItem(CALC_KEY, JSON.stringify(datos)); } catch (e) {}
+    }
+    function calcCalcular(ev) {
+      if (ev) ev.preventDefault();
+      const objetivo = calcEstado.objetivo;
+      if (!objetivo) { mostrarToast("Elige tu objetivo"); return; }
+      const sexo = calcEstado.sexo;
+      if (!sexo) { mostrarToast("Elige tu sexo"); return; }
+      const edad = calcLeerNumero("calcEdad");
+      if (!Number.isFinite(edad) || edad < 10 || edad > 100) { mostrarToast("Escribe tu edad (10–100 años)"); return; }
+      const estatura = calcLeerNumero("calcEstatura");
+      if (!Number.isFinite(estatura) || estatura < 120 || estatura > 230) { mostrarToast("Escribe tu estatura (120–230 cm)"); return; }
+      const peso = calcLeerNumero("calcPeso");
+      if (!Number.isFinite(peso) || peso < 30 || peso > 300) { mostrarToast("Escribe tu peso actual (30–300 kg)"); return; }
+      if (!calcEstado.pasosSi) { mostrarToast("Elige si cuentas pasos diarios"); return; }
+      let pasosProm = null;
+      if (calcEstado.pasosSi === "si") {
+        const vals = [];
+        for (let i = 0; i < 7; i++) {
+          const v = calcLeerNumero("calcPaso" + i);
+          if (Number.isFinite(v)) {
+            if (v < 0 || v > 60000) { mostrarToast("Pasos: entre 0 y 60000 por día"); return; }
+            vals.push(v);
+          }
+        }
+        if (vals.length) pasosProm = vals.reduce((a, b) => a + b, 0) / vals.length;
+      }
+      if (!calcEstado.ejercicioSi) { mostrarToast("Elige si haces ejercicio"); return; }
+      let dias = NaN, horas = NaN, diasAsumidos = false;
+      if (calcEstado.ejercicioSi === "si") {
+        const diasEl = document.getElementById("calcDias");
+        if (diasEl && String(diasEl.value || "").trim() === "") { dias = 3; diasAsumidos = true; }
+        else {
+          dias = calcLeerNumero("calcDias");
+          if (!Number.isFinite(dias) || dias < 1 || dias > 7) { mostrarToast("¿Cuántos días? Entre 1 y 7"); return; }
+        }
+        horas = calcLeerNumero("calcHoras");
+        if (!Number.isFinite(horas) || horas < 0.5 || horas > 12) { mostrarToast("¿Cuántas horas al día? Entre 0.5 y 12"); return; }
+        if (!calcEstado.tipo) { mostrarToast("Elige el tipo de ejercicio"); return; }
+      }
+      calcGuardar();
+      const bmr = Math.round(10 * peso + 6.25 * estatura - 5 * edad + (sexo === "hombre" ? 5 : -161));
+      let pal = 1.2;
+      if (pasosProm != null) {
+        if (pasosProm < 5000) pal = 1.2;
+        else if (pasosProm < 7500) pal = 1.35;
+        else if (pasosProm < 10000) pal = 1.45;
+        else if (pasosProm < 12500) pal = 1.55;
+        else pal = 1.65;
+      }
+      if (calcEstado.ejercicioSi === "si") {
+        const factorTipo = calcEstado.tipo === "fuerza" ? 0.03 : calcEstado.tipo === "cardio" ? 0.055 : 0.045;
+        pal = Math.min(1.9, pal + Math.min(0.3, dias * horas * factorTipo));
+      }
+      const tdee = Math.round(bmr * pal);
+      calcMostrarResultados({ objetivo, bmr, pal, tdee, diasAsumidos });
+    }
+    function calcMostrarResultados(r) {
+      const kgSem = (d) => fmtNum(Math.abs(d) * 7 / 7700, 2);
+      const filaDeficit = (deficit, nombre) => {
+        let kcal = r.tdee - deficit;
+        let real = deficit;
+        let ajustado = false;
+        if (kcal < r.bmr) { kcal = r.bmr; real = r.tdee - r.bmr; ajustado = true; }
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span></span></div>`;
+      };
+      const filaSuperavit = (sup, nombre) => `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(r.tdee + sup, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span></span></div>`;
+      const cont = document.getElementById("calcResultados");
+      if (!cont) return;
+      cont.innerHTML = `
+        <div style="font-size: 13px; line-height: 1.7;">
+          <div>Tu metabolismo basal (BMR): <strong>${fmtNum(r.bmr, 0)} kcal/día</strong></div>
+          <div>Tu gasto total estimado (TDEE): <strong>${fmtNum(r.tdee, 0)} kcal/día</strong> · factor de actividad ${fmtNum(r.pal, 2)}</div>
+          ${r.diasAsumidos ? `<div style="font-size: 12px; color: var(--text-muted);">No escribiste cuántos días haces ejercicio, así que se asumieron 3 días por semana.</div>` : ""}
+        </div>
+        <div class="calc-resultado-grupo${r.objetivo === "mantenimiento" ? " destacado" : ""}">
+          <div style="font-weight: 800;">Mantenimiento${r.objetivo === "mantenimiento" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
+          <div style="margin-top: 4px;"><strong>${fmtNum(r.tdee, 0)} kcal/día</strong></div>
+        </div>
+        <div class="calc-resultado-grupo${r.objetivo === "bajar" ? " destacado" : ""}">
+          <div style="font-weight: 800;">Para bajar de peso${r.objetivo === "bajar" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
+          ${filaDeficit(250, "Suave (−250 kcal)")}
+          ${filaDeficit(500, "Moderado (−500 kcal)")}
+          ${filaDeficit(750, "Agresivo (−750 kcal)")}
+        </div>
+        <div class="calc-resultado-grupo${r.objetivo === "subir" ? " destacado" : ""}">
+          <div style="font-weight: 800;">Para subir de peso${r.objetivo === "subir" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
+          ${filaSuperavit(250, "Suave (+250 kcal)")}
+          ${filaSuperavit(500, "Moderado (+500 kcal)")}
+          ${filaSuperavit(750, "Alto (+750 kcal)")}
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0;">Son estimaciones, no una prescripción.</p>`;
+      cont.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    calcConectarChips("grupoCalcObjetivo", "objetivo");
+    calcConectarChips("grupoCalcSexo", "sexo");
+    calcConectarChips("grupoCalcPasos", "pasosSi", calcActualizarVisibilidad);
+    calcConectarChips("grupoCalcEjercicio", "ejercicioSi", calcActualizarVisibilidad);
+    calcConectarChips("grupoCalcTipo", "tipo");
+    document.getElementById("btnAbrirCalculadora").addEventListener("click", () => {
+      confirmarBorradoPendiente();
+      calcCargar();
+      document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-calculadora"));
+      window.scrollTo(0, 0);
+    });
+    document.getElementById("btnVolverAjustesCalc").addEventListener("click", () => {
+      confirmarBorradoPendiente();
+      document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-ajustes"));
+      window.scrollTo(0, 0);
+    });
+    document.getElementById("formCalculadora").addEventListener("submit", calcCalcular);
 
     /* Modales */
     // Escaneo en vivo con cámara (solo funciona en la versión publicada https).

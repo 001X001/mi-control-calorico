@@ -1,5 +1,5 @@
 /* Service worker de Mi Control Calórico: guarda la app para usarla sin internet. */
-const CACHE = "mi-control-calorico-v114-guardar-remo";
+const CACHE = "mi-control-calorico-v115";
 const FILES = ["./", "./index.html", "./ejercicios.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
