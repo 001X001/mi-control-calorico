@@ -2994,7 +2994,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v115";
+    const VERSION_APP = "v116";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -5563,6 +5563,28 @@
     { nombre: "Squirt", kcal100: 38, prot100: 0, carb100: 9.5, gras100: 0, fibra100: 0, azucar100: 9, sodio100: 12, grasSat100: 0, colest100: null, codigoBarras: "7501071120183" },
     { nombre: "Mezcla de verduras congeladas (Generico)", kcal100: 72, prot100: 3.3, carb100: 13.5, gras100: 0.5, fibra100: 4, azucar100: null, sodio100: 47, grasSat100: 0.1, colest100: 0 },
     { nombre: "Papas fritas congeladas (sin preparar, Generico)", kcal100: 147, prot100: 2.2, carb100: 24.8, gras100: 4.7, fibra100: 1.9, azucar100: 0.2, sodio100: 332, grasSat100: 1, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Pollo (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Pollo Picante (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 17.2, fibra100: 3.1, azucar100: 4.7, sodio100: 2047, grasSat100: 7.8, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Camaron (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Camaron, Limon y Habanero (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Camaron y Chile Piquin (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 2047, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Camaron, Limon (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Carne de Res (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 59.4, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Instant Lunch sabor Queso (Maruchan)", kcal100: 453, prot100: 10.9, carb100: 60.9, gras100: 18.8, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 9.4, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Ramen sabor Pollo (Maruchan)", kcal100: 442, prot100: 9.3, carb100: 62.8, gras100: 16.3, fibra100: 2.3, azucar100: 2.3, sodio100: 1770, grasSat100: 8.1, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Ramen sabor Camaron Picante (Maruchan)", kcal100: 442, prot100: 9.3, carb100: 62.8, gras100: 16.3, fibra100: 2.3, azucar100: 2.3, sodio100: 1770, grasSat100: 8.1, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Ramen sabor Camaron, Limon y Habanero (Maruchan)", kcal100: 442, prot100: 9.3, carb100: 62.8, gras100: 16.3, fibra100: 2.3, azucar100: 2.3, sodio100: 1770, grasSat100: 8.1, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Ramen sabor Pollo Picante (Maruchan)", kcal100: 442, prot100: 9.3, carb100: 62.8, gras100: 16.3, fibra100: 2.3, azucar100: 2.3, sodio100: 1770, grasSat100: 8.1, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Ramen sabor Camaron (Maruchan)", kcal100: 442, prot100: 9.3, carb100: 62.8, gras100: 16.3, fibra100: 2.3, azucar100: 2.3, sodio100: 1770, grasSat100: 8.1, colest100: 0 },
+    { nombre: "Sopa instantanea Maruchan Ramen sabor Carne de Res (Maruchan)", kcal100: 442, prot100: 9.3, carb100: 62.8, gras100: 16.3, fibra100: 2.3, azucar100: 2.3, sodio100: 1770, grasSat100: 8.1, colest100: 0 },
+    { nombre: "Sopa instantanea Nissin Cup Noodles sabor Pollo (Nissin)", kcal100: 453, prot100: 9.4, carb100: 64.1, gras100: 17.2, fibra100: 3.1, azucar100: 3.1, sodio100: 1813, grasSat100: 7.8, colest100: 0 },
+    { nombre: "Sopa instantanea Nissin Cup Noodles sabor Camaron (Nissin)", kcal100: 453, prot100: 10.9, carb100: 64.1, gras100: 17.2, fibra100: 3.1, azucar100: 3.1, sodio100: 1683, grasSat100: 7.8, colest100: 0 },
+    { nombre: "Sopa instantanea Nissin Cup Noodles sabor Res (Nissin)", kcal100: 453, prot100: 10.9, carb100: 64.1, gras100: 17.2, fibra100: 3.1, azucar100: 3.1, sodio100: 1797, grasSat100: 7.8, colest100: 0 },
+    { nombre: "Sopa instantanea Nissin Cup Noodles sabor Diablo (Nissin)", kcal100: 453, prot100: 9.4, carb100: 64.1, gras100: 17.2, fibra100: 3.1, azucar100: 3.1, sodio100: 1813, grasSat100: 7.8, colest100: 0 },
+    { nombre: "Sopa instantanea Nissin Cup Noodles sabor Camaron Habanero y Limon (Nissin)", kcal100: 453, prot100: 10.9, carb100: 64.1, gras100: 17.2, fibra100: 3.1, azucar100: 3.1, sodio100: 1683, grasSat100: 7.8, colest100: 0 },
+    { nombre: "Sopa instantanea Samyang Buldak sabor Pollo Picante (Samyang)", kcal100: 400, prot100: 8.6, carb100: 60, gras100: 14.3, fibra100: 1.4, azucar100: 8.6, sodio100: 900, grasSat100: 7.1, colest100: 0 },
+    { nombre: "Sopa instantanea Samyang Buldak sabor Queso Picante (Samyang)", kcal100: 409, prot100: 9, carb100: 64, gras100: 13, fibra100: 2.2, azucar100: 4.5, sodio100: 1006, grasSat100: 5.4 },
+    { nombre: "Sopa instantanea de fideos (Generico)", kcal100: 440, prot100: 10.2, carb100: 60.3, gras100: 17.6, fibra100: 2.9, azucar100: 2, sodio100: 1855, grasSat100: 8.1 },
     { nombre: "Tostadas de maiz deshidratadas (Tortilleria Del Barrio)", kcal100: 481, prot100: 6.8, carb100: 58.3, gras100: 24.5, fibra100: 5.3 },
       { nombre: "Pollo rostizado sin piel (Generico)", kcal100: 205, prot100: 27.4, carb100: 0, gras100: 9.7, fibra100: 0, azucar100: 0, sodio100: 93, grasSat100: 2.7, colest100: 93, ingredientes: [{"gramos": 90, "nombre": "Pollo sin piel"}, {"gramos": 2, "nombre": "Aceite"}, {"gramos": 2, "nombre": "Ajo"}, {"gramos": 2, "nombre": "Jugo de limón"}, {"gramos": 1, "nombre": "Romero"}, {"gramos": 1, "nombre": "Sal"}, {"gramos": 1, "nombre": "Pimienta"}], preparacion: {"horno": {"grados": 180, "minutos": 60}, "pasos": ["Unta el pollo con el aceite, el ajo, el jugo de limón, el romero, la sal y la pimienta.", "Colócalo en una charola para horno.", "Hornea a 180 °C durante 60 minutos hasta que esté bien cocido.", "Verifica que no quede rosado por dentro antes de sacarlo.", "Déjalo reposar unos minutos y sírvelo."], "rinde": {"gramosPorcion": 230, "porciones": 6}} },
       { nombre: "Pollo rostizado con piel (Generico)", kcal100: 253, prot100: 26, carb100: 0, gras100: 15.8, fibra100: 0, sodio100: 87, grasSat100: 4.4, colest100: 91, ingredientes: [{"gramos": 90, "nombre": "Pollo con piel"}, {"gramos": 2, "nombre": "Aceite"}, {"gramos": 2, "nombre": "Ajo"}, {"gramos": 2, "nombre": "Jugo de limón"}, {"gramos": 1, "nombre": "Romero"}, {"gramos": 1, "nombre": "Sal"}, {"gramos": 1, "nombre": "Pimienta"}], preparacion: {"horno": {"grados": 180, "minutos": 60}, "pasos": ["Unta el pollo con el aceite, el ajo, el jugo de limón, el romero, la sal y la pimienta.", "Colócalo en una charola con la piel hacia arriba.", "Hornea a 180 °C durante 60 minutos hasta que la piel esté dorada.", "Verifica que el pollo esté bien cocido por dentro antes de sacarlo.", "Déjalo reposar unos minutos y sírvelo."], "rinde": {"gramosPorcion": 250, "porciones": 6}} },
@@ -6421,6 +6443,11 @@
     "betun sabor chocolate": [["2 cucharadas (33 g)", 33]],
     "azucar glass": [["1 cucharada (8 g)", 8], ["1 taza (120 g)", 120]],
     "cocoa en polvo": [["1 cucharada (5 g)", 5]],
+    "cup noodles": [["1 vaso (64 g)", 64], ["2 vasos (128 g)", 128]],
+    "maruchan instant lunch": [["1 vaso (64 g)", 64], ["2 vasos (128 g)", 128]],
+    "maruchan ramen": [["1 sobre (85 g)", 85], ["2 sobres (170 g)", 170]],
+    "samyang buldak": [["1 vaso (70 g)", 70], ["1 paquete (140 g)", 140]],
+    "sopa instantanea de fideos": [["1 sobre (85 g)", 85], ["2 sobres (170 g)", 170]],
     };
 
     function normalizarTexto(s) {
