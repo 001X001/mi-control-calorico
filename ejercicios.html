@@ -577,6 +577,14 @@
       }
       .add-ex-form { margin-top: 8px; }
 
+      /* Guardar la lista modificada, al final de los ejercicios */
+      .save-list-btn {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 38px;
+        font-size: 14px;
+      }
+
       /* Registro del día */
       .log-panel { margin-top: 10px; padding-top: 10px; }
       .log-head {
@@ -1115,8 +1123,8 @@
             </div>
           </li>
           <li class="ex-item">
-            <p class="ex-name"><span class="ex-num">11.</span><span class="ex-text">Dominadas 8 neutro 7 prono 8 neutro</span></p>
-            <div class="series-row" role="group" aria-label="Series de Dominadas">
+            <p class="ex-name"><span class="ex-num">11.</span><span class="ex-text">Remo con mancuerna a una mano 3x8</span></p>
+            <div class="series-row" role="group" aria-label="Series de Remo con mancuerna a una mano">
               <button type="button" class="serie-btn" aria-pressed="false">Serie 1</button>
               <button type="button" class="serie-btn" aria-pressed="false">Serie 2</button>
               <button type="button" class="serie-btn" aria-pressed="false">Serie 3</button>
@@ -1464,6 +1472,7 @@
             <button type="button" class="ex-cancel-btn" id="addExerciseCancel">Cancelar</button>
           </div>
         </div>
+        <button type="button" class="btn btn-main save-list-btn" id="btnGuardarLista" disabled>Guardar ejercicios modificados</button>
       </section>
 
       <!-- ===== REGISTRO DEL DÍA ===== -->
@@ -1811,8 +1820,10 @@
           var mv = document.getElementById('mainView');
           if (mv) mv.hidden = false;
           window.scrollTo(0, 0);
+          cargarListaGuardada();
           loadSeries();
           loadNombres();
+          actualizarBotonGuardarLista();
         }
         (function initProfile() {
           var saved = null;
@@ -1893,6 +1904,69 @@
             localStorage.setItem(activeNombresKey(), JSON.stringify(mapa));
           } catch (e) { /* sin almacenamiento: no se puede guardar */ }
         }
+
+        /* ---------- Guardar la lista de ejercicios modificada ----------
+           El botón "Guardar ejercicios modificados" va al final de la
+           lista. Empieza apagado y solo se enciende cuando se edita el
+           nombre de un ejercicio, se borra uno o se agrega uno. Al
+           tocarlo, la lista actual de este perfil (nombres, en orden)
+           se guarda en este teléfono (localStorage) y al recargar se
+           muestra esa lista guardada, no la original. Las series se
+           guardan tal como están, para que sigan en el ejercicio que
+           les toca. Marcar series no enciende el botón: las series ya
+           se guardan solas al tocarlas. */
+        var LISTA_KEY_M = 'temporizador-lista-2026-11-24-v1';
+        var LISTA_KEY_F = 'temporizador-lista-2026-11-24-femenino-v1';
+        var listaModificada = { masculino: false, femenino: false };
+        var listaAplicada = { masculino: false, femenino: false };
+        var btnGuardarLista = document.getElementById('btnGuardarLista');
+        function activeListaKey() { return currentProfile === 'femenino' ? LISTA_KEY_F : LISTA_KEY_M; }
+        function actualizarBotonGuardarLista() {
+          if (!btnGuardarLista) return;
+          btnGuardarLista.disabled = !listaModificada[currentProfile];
+        }
+        function marcarListaModificada() {
+          listaModificada[currentProfile] = true;
+          actualizarBotonGuardarLista();
+        }
+        function guardarListaEjercicios() {
+          if (!listaModificada[currentProfile]) return;
+          try {
+            var nombres = [];
+            activeExList().querySelectorAll('.ex-item').forEach(function (item) {
+              var textEl = item.querySelector('.ex-text');
+              if (textEl) nombres.push(textEl.textContent);
+            });
+            localStorage.setItem(activeListaKey(), JSON.stringify(nombres));
+            saveSeries();
+            saveNombres();
+            listaModificada[currentProfile] = false;
+            listaAplicada[currentProfile] = true;
+            actualizarBotonGuardarLista();
+            if (btnGuardarLista) {
+              var texto = btnGuardarLista.textContent;
+              btnGuardarLista.textContent = '¡Ejercicios guardados!';
+              setTimeout(function () { btnGuardarLista.textContent = texto; }, 2000);
+            }
+          } catch (e) { /* sin almacenamiento: la lista solo dura la sesión */ }
+        }
+        function cargarListaGuardada() {
+          if (listaAplicada[currentProfile]) return;
+          listaAplicada[currentProfile] = true;
+          try {
+            var guardada = JSON.parse(localStorage.getItem(activeListaKey()) || 'null');
+            if (!Array.isArray(guardada)) return;
+            var lista = activeExList();
+            lista.innerHTML = '';
+            guardada.forEach(function (nombre) {
+              var item = buildExercise(String(nombre));
+              lista.appendChild(item);
+              setupExercise(item);
+            });
+            renumberExercises();
+          } catch (e) { /* sin lista guardada: se queda la lista original */ }
+        }
+        if (btnGuardarLista) btnGuardarLista.addEventListener('click', guardarListaEjercicios);
         function bindSerieBtn(btn) {
           btn.addEventListener('click', function () {
             var on = btn.getAttribute('aria-pressed') === 'true';
@@ -1903,6 +1977,10 @@
         loadSeries();
         loadNombres();
         document.querySelectorAll('.serie-btn').forEach(bindSerieBtn);
+        cargarListaGuardada();
+        loadSeries();
+        loadNombres();
+        actualizarBotonGuardarLista();
         var clearSeriesBtn = document.getElementById('clearSeries');
         if (clearSeriesBtn) {
           clearSeriesBtn.addEventListener('click', function () {
@@ -1968,6 +2046,7 @@
           renumerarLista(b.lista);
           guardarSeriesDeLista(b.lista, b.marcas);
           saveNombres();
+          marcarListaModificada();
           ocultarBarraDeshacer();
           b.item.scrollIntoView({ block: 'nearest' });
         });
@@ -1980,8 +2059,9 @@
            el ejercicio de la lista. Al borrar aparece la barrita
            Deshacer (8 s) para restaurarlo en su lugar, con su nombre
            y sus series. El nombre editado se guarda en este teléfono
-           (localStorage) y se mantiene al recargar y al día siguiente;
-           borrar un ejercicio solo dura mientras la app está abierta. */
+           (localStorage) y se mantiene al recargar y al día siguiente.
+           Borrar o agregar un ejercicio se guarda con el botón
+           "Guardar ejercicios modificados" de abajo de la lista. */
         function renumberExercises() {
           activeExList().querySelectorAll('.ex-item').forEach(function (it, i) {
             var num = it.querySelector('.ex-num');
@@ -2005,7 +2085,10 @@
           }
           function saveName() {
             var name = input.value.trim();
-            if (name) textEl.textContent = name;
+            if (name && name !== textEl.textContent) {
+              textEl.textContent = name;
+              marcarListaModificada();
+            }
             saveNombres();
             closeForm();
             editBtn.focus();
@@ -2050,6 +2133,7 @@
             saveNombres();
             ultimoBorrado = { lista: lista, item: item, indice: indice, marcas: marcas };
             mostrarBarraDeshacer(nombre);
+            marcarListaModificada();
           });
         }
         document.querySelectorAll('.ex-item').forEach(setupExercise);
@@ -2166,6 +2250,7 @@
           activeExList().appendChild(item);
           setupExercise(item);
           renumberExercises();
+          marcarListaModificada();
           closeAddForm();
           addBtn.focus();
           item.scrollIntoView({ block: 'nearest' });
