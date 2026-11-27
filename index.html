@@ -3010,7 +3010,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v119";
+    const VERSION_APP = "v121";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -8302,6 +8302,39 @@
 
     document.getElementById("gramosCodigoBarras").addEventListener("input", actualizarPreviewCodigoBarras);
 
+    // (v121) Guardar un producto escaneado en el Almacén (tipo "alimento",
+    // con su código de barras) para que se mande con "Enviar almacén al
+    // servidor" y se agregue al catálogo en la próxima actualización.
+    // Devuelve true solo si se guardó nuevo; false si ya existía (mismo
+    // código o mismo nombre normalizado en el combinado — incluido el
+    // catálogo, que no necesita reenvío) y entonces no se duplica.
+    // Los valores por 100 g se guardan tal cual (null cuando no hay dato).
+    function guardarEscaneadoEnAlmacen(nombre, v100, codigo) {
+      const cod = String(codigo || "").trim();
+      const nombreLower = String(nombre || "").toLowerCase();
+      const yaExiste = obtenerCatalogoCombinado().some((x) => (cod && x.codigoBarras && String(x.codigoBarras) === cod) || (nombreLower && x.nombreLower === nombreLower));
+      if (yaExiste) return false;
+      const nulo = (v) => (v == null || v === "" || Number.isNaN(Number(v)) ? null : Number(v));
+      appState.almacen.unshift({
+        id: Date.now().toString(),
+        tipo: "alimento",
+        nombre: String(nombre || "").trim(),
+        kcal100: Number(v100.kcal100) || 0,
+        prot100: Number(v100.prot100) || 0,
+        carb100: Number(v100.carb100) || 0,
+        gras100: Number(v100.gras100) || 0,
+        fibra100: Number(v100.fibra100) || 0,
+        azucar100: nulo(v100.azucar100),
+        sodio100: nulo(v100.sodio100),
+        grasSat100: nulo(v100.grasSat100),
+        colest100: nulo(v100.colest100),
+        codigoBarras: cod || null
+      });
+      guardarEstado();
+      renderizarAlmacen();
+      return true;
+    }
+
     document.getElementById("btnConfirmarCodigoBarras").addEventListener("click", () => {
       if (!comidaActivaModal) { mostrarToast("Elige el apartado donde va"); return; }
       if (productoCodigoBarras) {
@@ -8318,28 +8351,13 @@
           fibra: productoCodigoBarras.fibra100 * f,
           ...extrasPorFactor(productoCodigoBarras, f)
         });
-        // Guardar también en el Almacén para encontrarlo sin internet la próxima vez
-        const codOff = document.getElementById("inputCodigoBarras").value.trim();
-        const yaExisteOff = obtenerCatalogoCombinado().some((x) => (codOff && x.codigoBarras && String(x.codigoBarras) === codOff) || x.nombreLower === productoCodigoBarras.nombre.toLowerCase());
-        if (!yaExisteOff) {
-          appState.almacen.unshift({
-            id: Date.now().toString(),
-            tipo: "alimento",
-            nombre: productoCodigoBarras.nombre,
-            kcal100: productoCodigoBarras.kcal100,
-            prot100: productoCodigoBarras.prot100,
-            carb100: productoCodigoBarras.carb100,
-            gras100: productoCodigoBarras.gras100,
-            fibra100: productoCodigoBarras.fibra100,
-            azucar100: productoCodigoBarras.azucar100 == null ? null : productoCodigoBarras.azucar100,
-            sodio100: productoCodigoBarras.sodio100 == null ? null : productoCodigoBarras.sodio100,
-            grasSat100: productoCodigoBarras.grasSat100 == null ? null : productoCodigoBarras.grasSat100,
-            colest100: productoCodigoBarras.colest100 == null ? null : productoCodigoBarras.colest100,
-            codigoBarras: codOff || null
-          });
-          guardarEstado();
-        }
+        // (v121) El escaneado también se guarda en el Almacén con su código
+        // para que se mande con "Enviar almacén" y se agregue al catálogo.
+        const guardadoAlm = guardarEscaneadoEnAlmacen(productoCodigoBarras.nombre, productoCodigoBarras, document.getElementById("inputCodigoBarras").value.trim());
         productoCodigoBarras = null;
+        // (v121) Un solo aviso: quedó en el diario Y en el Almacén. Si ya
+        // existía, queda el "Agregado a X" del diario (sin mentir).
+        if (guardadoAlm) mostrarToast(`Agregado a ${comidaActivaModal} y guardado en almacén`);
         cerrarModales();
         return;
       }
@@ -8360,26 +8378,9 @@
         const sodio100 = valExtraCb("cbManualSodio");
         const grasSat100 = valExtraCb("cbManualGrasSat");
         const colest100 = valExtraCb("cbManualColest");
-        // Guardar el producto en el Almacén con su nombre y su código de barras, para que la próxima vez se encuentre al escanearlo
-        const yaExiste = obtenerCatalogoCombinado().some((x) => (cod && x.codigoBarras && String(x.codigoBarras) === cod) || x.nombreLower === nombre.toLowerCase());
-        if (!yaExiste) {
-          appState.almacen.unshift({
-            id: Date.now().toString(),
-            tipo: "alimento",
-            nombre,
-            kcal100,
-            prot100,
-            carb100,
-            gras100,
-            fibra100,
-            azucar100,
-            sodio100,
-            grasSat100,
-            colest100,
-            codigoBarras: cod || null
-          });
-          guardarEstado();
-        }
+        // (v121) El producto manual también se guarda en el Almacén con su
+        // código para que se mande con "Enviar almacén" y se agregue al catálogo.
+        const guardadoAlm = guardarEscaneadoEnAlmacen(nombre, { kcal100, prot100, carb100, gras100, fibra100, azucar100, sodio100, grasSat100, colest100 }, cod);
         agregarItemAComida(comidaActivaModal, {
           nombre,
           cantidadLabel: `${fmtNum(gramos, 0)} g`,
@@ -8391,7 +8392,8 @@
           ...extrasPorFactor({ azucar100, sodio100, grasSat100, colest100 }, f)
         });
         ["cbManualNombre", "cbManualKcal", "cbManualProt", "cbManualCarb", "cbManualGras", "cbManualFibra", "cbManualAzucar", "cbManualSodio", "cbManualGrasSat", "cbManualColest", "gramosCodigoBarrasManual"].forEach((id) => { document.getElementById(id).value = ""; });
-        mostrarToast("Producto registrado");
+        // (v121) Un solo aviso: quedó en el diario y, si era nuevo, también en el Almacén.
+        mostrarToast(guardadoAlm ? `Agregado a ${comidaActivaModal} y guardado en almacén` : `Agregado a ${comidaActivaModal}`);
         cerrarModales();
         return;
       }
@@ -8547,6 +8549,9 @@
     }
 
     function abrirDetalleAlimento(it) {
+      // (v120) Mezcla de detalle (bug sombra): si el ítem viene del Almacén
+      // sin secciones, se completan desde el Catálogo (ver completarSeccionesDetalle).
+      it = completarSeccionesDetalle(it);
       alimentoSeleccionadoModal = it;
       document.getElementById("selAlmNombre").textContent = it.nombre;
       const selApartado = document.getElementById("selAlmApartado");
@@ -8677,6 +8682,34 @@
       return `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">${tituloCantidad}</div><table class="tabla-nutri"><tbody>${filas}</tbody></table>`;
     }
 
+    // (v120) Mezcla de detalle (bug sombra): un ítem del catálogo combinado
+    // puede venir del Almacén sin secciones (el mapeo de
+    // obtenerCatalogoCombinado no copia ingredientes / preparacion /
+    // ingredientesEtiqueta) y tapar así la entrada del Catálogo con el
+    // mismo nombre. Si le faltan secciones, se completan desde el Catálogo
+    // SIN tocar sus valores por 100 g (los personalizados del Almacén
+    // siguen ganando). Como las secciones del Catálogo son por 100 g, el
+    // tipo pasa a "alimento" para que escalen por 100 g y no como lote.
+    function completarSeccionesDetalle(it) {
+      if (!it) return it;
+      const nombreLower = String(it.nombre || "").toLowerCase();
+      const cat = BASE_ALIMENTOS.find((x) => String(x.nombre || "").toLowerCase() === nombreLower);
+      if (!cat) return it;
+      const faltaIng = !(Array.isArray(it.ingredientes) && it.ingredientes.length);
+      const faltaPrep = !(it.preparacion && typeof it.preparacion === "object");
+      const faltaEtq = !(Array.isArray(it.ingredientesEtiqueta) && it.ingredientesEtiqueta.length);
+      const tieneCatIng = Array.isArray(cat.ingredientes) && cat.ingredientes.length;
+      const tieneCatPrep = cat.preparacion && typeof cat.preparacion === "object";
+      const tieneCatEtq = Array.isArray(cat.ingredientesEtiqueta) && cat.ingredientesEtiqueta.length;
+      const completaAlgo = (faltaIng && tieneCatIng) || (faltaPrep && tieneCatPrep) || (faltaEtq && tieneCatEtq);
+      if (!completaAlgo) return it;
+      const out = Object.assign({}, it);
+      if (faltaIng && tieneCatIng) { out.ingredientes = cat.ingredientes; out.tipo = "alimento"; }
+      if (faltaPrep && tieneCatPrep) { out.preparacion = cat.preparacion; out.tipo = "alimento"; }
+      if (faltaEtq && tieneCatEtq) out.ingredientesEtiqueta = cat.ingredientesEtiqueta;
+      return out;
+    }
+
     // (v119) Abre el detalle de un registro del Diario al tocar su nombre:
     // los valores guardados a sus gramos, y si el alimento está en el
     // catálogo, sus ingredientes y su receta.
@@ -8687,7 +8720,7 @@
       const gramos = (it.gramos != null && it.gramos > 0) ? Number(it.gramos) : (resolverGramosEdit(it.cantidadLabel, it.nombre) || 0);
       const a100 = (v) => (v == null || !(gramos > 0)) ? null : Number(v) / gramos * 100;
       const per100 = { kcal100: a100(it.kcal), prot100: a100(it.prot), carb100: a100(it.carb), gras100: a100(it.gras), fibra100: a100(it.fibra), azucar100: a100(it.azucar), sodio100: a100(it.sodio), grasSat100: a100(it.grasSat), colest100: a100(it.colest) };
-      const cat = obtenerCatalogoCombinado().find((x) => x.nombreLower === String(it.nombre || "").toLowerCase());
+      const cat = completarSeccionesDetalle(obtenerCatalogoCombinado().find((x) => x.nombreLower === String(it.nombre || "").toLowerCase()));
       const det = cat ? Object.assign({}, cat, per100, { tipo: "alimento" }) : null;
       document.getElementById("detalleAlmTitulo").textContent = it.nombre;
       document.getElementById("detalleAlmContenido").innerHTML = htmlTablaDetalleAlimento(per100, gramos, gramos > 0 ? `Registrado: ${fmtNum(gramos, 0)} g · ${escaparHTML(nombreComida)}` : `Registrado · ${escaparHTML(nombreComida)}`) + (det ? htmlSeccionesDetalleAlimento(det, gramos) : "");
@@ -8698,6 +8731,9 @@
     // valores por 100 g, y si es receta, sus ingredientes y su preparación.
     function abrirDetalleAlmacen(item) {
       if (!item) return;
+      // (v120) Mezcla de detalle (bug sombra): un alimento del Almacén sin
+      // secciones muestra las del Catálogo cuando existen.
+      item = completarSeccionesDetalle(item);
       const per100 = { kcal100: item.kcal100, prot100: item.prot100, carb100: item.carb100, gras100: item.gras100, fibra100: item.fibra100, azucar100: item.azucar100, sodio100: item.sodio100, grasSat100: item.grasSat100, colest100: item.colest100 };
       const infoReceta = item.tipo === "receta" ? `<div style="font-size: 13px; line-height: 1.6; margin-bottom: 6px;">Receta · ${fmtNum(item.pesoFinalG, 0)} g en total${item.numPiezas ? ` · ${fmtNum(item.numPiezas, 0)} piezas` : ""}</div>` : "";
       document.getElementById("detalleAlmTitulo").textContent = item.nombre;
@@ -8959,7 +8995,17 @@
         cont.innerHTML = `<p class="empty-text">Escribe arriba para buscar en el catálogo, o usa la pestaña Recientes.</p>`;
         return;
       }
-      const lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => (it.nombreNorm || normalizarTexto(it.nombre || "")).includes(qn)), q);
+      let lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => (it.nombreNorm || normalizarTexto(it.nombre || "")).includes(qn)), q);
+      // (v120) Sin duplicados: el mismo nombre aparece una sola vez (la
+      // primera entrada, que es la del Almacén cuando existe, para que sus
+      // valores personalizados ganen); las demás filas con ese nombre se ocultan.
+      const vistosBusqueda = new Set();
+      lista = lista.filter((it) => {
+        const k = String(it.nombreLower || it.nombre || "").toLowerCase();
+        if (vistosBusqueda.has(k)) return false;
+        vistosBusqueda.add(k);
+        return true;
+      });
 
       if (!lista.length) {
         cont.innerHTML = `<p class="empty-text">Sin coincidencias.</p>
@@ -9044,7 +9090,7 @@
     function usarReciente(it) {
       if (!it || !it.nombre) return;
       const norm = normalizarTexto(it.nombre);
-      const fuente = obtenerCatalogoCombinado().find((x) => (x.nombreNorm || normalizarTexto(x.nombre)) === norm);
+      const fuente = completarSeccionesDetalle(obtenerCatalogoCombinado().find((x) => (x.nombreNorm || normalizarTexto(x.nombre)) === norm));
       if (fuente) {
         abrirDetalleAlimento(fuente);
         return;
