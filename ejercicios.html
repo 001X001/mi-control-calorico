@@ -1788,6 +1788,8 @@
         var PROFILE_KEY = 'temporizador-perfil-v1';
         var SERIES_KEY_M = 'temporizador-series-2026-11-24-v1';
         var SERIES_KEY_F = 'temporizador-series-2026-11-24-femenino-v1';
+        var NOMBRES_KEY_M = 'temporizador-nombres-2026-11-24-v1';
+        var NOMBRES_KEY_F = 'temporizador-nombres-2026-11-24-femenino-v1';
         var currentProfile = 'masculino';
         var homeView = document.getElementById('homeView');
         var exListM = document.getElementById('exListMasculino');
@@ -1810,6 +1812,7 @@
           if (mv) mv.hidden = false;
           window.scrollTo(0, 0);
           loadSeries();
+          loadNombres();
         }
         (function initProfile() {
           var saved = null;
@@ -1859,6 +1862,37 @@
             localStorage.setItem(activeSeriesKey(), JSON.stringify(state));
           } catch (e) { /* sin almacenamiento: no se puede guardar */ }
         }
+
+        /* ---------- Nombres de ejercicios: se guardan para la próxima sesión ----------
+           Cada ejercicio se identifica por su nombre original (el que trae
+           la lista), así el nombre editado sobrevive al recargar, al
+           cambiar de día y a borrar o reponer otros ejercicios. Se guarda
+           en este teléfono (localStorage, una clave por perfil). */
+        function activeNombresKey() { return currentProfile === 'femenino' ? NOMBRES_KEY_F : NOMBRES_KEY_M; }
+        function loadNombres() {
+          try {
+            var mapa = JSON.parse(localStorage.getItem(activeNombresKey()) || '{}');
+            if (!mapa || typeof mapa !== 'object') return;
+            activeExList().querySelectorAll('.ex-item').forEach(function (item) {
+              var textEl = item.querySelector('.ex-text');
+              if (!textEl) return;
+              if (!item.dataset.nombreBase) item.dataset.nombreBase = textEl.textContent;
+              var guardado = mapa[item.dataset.nombreBase];
+              if (guardado) textEl.textContent = guardado;
+            });
+          } catch (e) { /* sin almacenamiento: los nombres solo duran la sesión */ }
+        }
+        function saveNombres() {
+          try {
+            var mapa = {};
+            activeExList().querySelectorAll('.ex-item').forEach(function (item) {
+              var textEl = item.querySelector('.ex-text');
+              if (!textEl || !item.dataset.nombreBase) return;
+              if (textEl.textContent !== item.dataset.nombreBase) mapa[item.dataset.nombreBase] = textEl.textContent;
+            });
+            localStorage.setItem(activeNombresKey(), JSON.stringify(mapa));
+          } catch (e) { /* sin almacenamiento: no se puede guardar */ }
+        }
         function bindSerieBtn(btn) {
           btn.addEventListener('click', function () {
             var on = btn.getAttribute('aria-pressed') === 'true';
@@ -1867,6 +1901,7 @@
           });
         }
         loadSeries();
+        loadNombres();
         document.querySelectorAll('.serie-btn').forEach(bindSerieBtn);
         var clearSeriesBtn = document.getElementById('clearSeries');
         if (clearSeriesBtn) {
@@ -1932,6 +1967,7 @@
           b.lista.insertBefore(b.item, ref);
           renumerarLista(b.lista);
           guardarSeriesDeLista(b.lista, b.marcas);
+          saveNombres();
           ocultarBarraDeshacer();
           b.item.scrollIntoView({ block: 'nearest' });
         });
@@ -1943,8 +1979,9 @@
            ("¿Borrar este ejercicio?"); solo con "Sí, borrar" se quita
            el ejercicio de la lista. Al borrar aparece la barrita
            Deshacer (8 s) para restaurarlo en su lugar, con su nombre
-           y sus series. Ambos cambios duran mientras la
-           app está abierta. */
+           y sus series. El nombre editado se guarda en este teléfono
+           (localStorage) y se mantiene al recargar y al día siguiente;
+           borrar un ejercicio solo dura mientras la app está abierta. */
         function renumberExercises() {
           activeExList().querySelectorAll('.ex-item').forEach(function (it, i) {
             var num = it.querySelector('.ex-num');
@@ -1960,6 +1997,7 @@
           var delBtn = item.querySelector('.ex-del-btn');
           var confirmBox = item.querySelector('.ex-del-confirm');
           if (!textEl || !row || !editBtn || !form || !input || !delBtn || !confirmBox) return;
+          if (!item.dataset.nombreBase) item.dataset.nombreBase = textEl.textContent;
 
           function closeForm() {
             form.hidden = true;
@@ -1968,6 +2006,7 @@
           function saveName() {
             var name = input.value.trim();
             if (name) textEl.textContent = name;
+            saveNombres();
             closeForm();
             editBtn.focus();
           }
@@ -2008,6 +2047,7 @@
             item.remove();
             renumberExercises();
             saveSeries();
+            saveNombres();
             ultimoBorrado = { lista: lista, item: item, indice: indice, marcas: marcas };
             mostrarBarraDeshacer(nombre);
           });
@@ -2248,6 +2288,7 @@
           });
         }
         function saveLog() {
+            saveNombres();
             var today = new Date();
             var items = [];
             activeExList().querySelectorAll('.ex-item').forEach(function (item) {
