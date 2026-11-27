@@ -129,25 +129,25 @@
        (es el aspecto actual). Cada tema define sus variables sobre html
        y sobre body para ganarle al modo oscuro por especificidad. */
     html[data-tema="navideno"], html[data-tema="navideno"] body {
-      --pastel-purple: #fef3c7;
-      --pastel-purple-text: #14532d;
-      --bg-app: #fffbeb;
+      --pastel-purple: #ffffff;
+      --pastel-purple-text: #991b1b;
+      --bg-app: #fff5f5;
       --bg-card: #ffffff;
-      --bg-soft: #fef9c3;
+      --bg-soft: #fee2e2;
       --text-main: #1c1917;
       --text-muted: #78716c;
-      --border: #e3cf8f;
-      --primary: #166534;
-      --primary-dark: #14532d;
-      --primary-light: #dcfce7;
+      --border: #fecaca;
+      --primary: #b91c1c;
+      --primary-dark: #991b1b;
+      --primary-light: #fee2e2;
       --water: #0284c7;
       --water-bg: #f0f9ff;
       --danger: #dc2626;
       --danger-bg: #fef2f2;
-      --hero-from: #166534;
-      --hero-to: #14532d;
-      --hero-shadow: 0 10px 28px rgba(22, 101, 52, 0.28);
-      --brand-mid: #fef3c7;
+      --hero-from: #b91c1c;
+      --hero-to: #166534;
+      --hero-shadow: 0 10px 28px rgba(185, 28, 28, 0.28);
+      --brand-mid: #fee2e2;
       --toast-bg: #0f172a;
       --toast-ink: #ffffff;
       --water-border: #bae6fd;
@@ -532,9 +532,14 @@
       visibility: visible;
     }
 
-    /* Decoración por tema (v126): capa fija detrás del contenido.
+    /* Decoración por tema (v127): capa fija detrás del contenido.
        Nunca tapa nada (pointer-events: none) y solo anima
-       transform/opacity. Por defecto no hay nada. */
+       transform/opacity. Por defecto no hay nada.
+       FIX v127 (bug de v126): el nombre del keyframe solo iba como
+       CLASE del elemento y el inline solo ponía duration/delay, sin
+       animation-name, así que NADA se movía. Las reglas .decorX de
+       abajo son las que encienden el movimiento; el test v127 exige
+       que existan y que cada keyframe esté a nivel superior. */
     #decoracionTema {
       position: fixed;
       inset: 0;
@@ -545,19 +550,31 @@
     #decoracionTema .dec-el { position: absolute; will-change: transform, opacity; }
     #decoracionTema .dec-el svg { display: block; width: 100%; height: 100%; }
     #decoracionTema .dec-onda { position: absolute; left: 0; bottom: 0; width: 100%; height: 46px; pointer-events: none; }
+    #decoracionTema .decorCaer { animation-name: decorCaer; animation-iteration-count: infinite; animation-timing-function: linear; }
+    #decoracionTema .decorVolar { animation-name: decorVolar; animation-iteration-count: infinite; animation-timing-function: linear; }
+    #decoracionTema .decorSubir { animation-name: decorSubir; animation-iteration-count: infinite; animation-timing-function: linear; }
+    #decoracionTema .decorFlotar { animation-name: decorFlotar; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+    #decoracionTema .decorParpadear { animation-name: decorParpadear; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+    #decoracionTema .decorGirar { animation-name: decorGirar; animation-iteration-count: infinite; animation-timing-function: linear; }
+    #decoracionTema .decorRodar { animation-name: decorRodar; animation-iteration-count: infinite; animation-timing-function: linear; }
+    #decoracionTema .decorBrillo { animation-name: decorBrillo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+    #decoracionTema .decorBalanceo { animation-name: decorBalanceo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; transform-origin: 50% 0; }
+    #decoracionTema .decorFugaz { animation-name: decorFugaz; animation-iteration-count: infinite; animation-timing-function: linear; }
     @keyframes decorCaer { from { transform: translate3d(0, -12vh, 0) rotate(0deg); } to { transform: translate3d(0, 112vh, 0) rotate(320deg); } }
     @keyframes decorVolar { 0% { transform: translate3d(-15vw, 0, 0); } 25% { transform: translate3d(20vw, -16px, 0); } 50% { transform: translate3d(55vw, 8px, 0); } 75% { transform: translate3d(85vw, -12px, 0); } 100% { transform: translate3d(115vw, 0, 0); } }
     @keyframes decorSubir { 0% { transform: translate3d(0, 108vh, 0); opacity: 0; } 10% { opacity: .85; } 90% { opacity: .85; } 100% { transform: translate3d(0, -12vh, 0); opacity: 0; } }
-    @keyframes decorFlotar { 0%, 100% { transform: translateY(-6px); } 50% { transform: translateY(8px); } }
+    @keyframes decorFlotar { 0%, 100% { transform: translateY(-10px); } 50% { transform: translateY(10px); } }
     @keyframes decorParpadear { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
     @keyframes decorGirar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes decorRodar { from { transform: translate3d(-12vw, 0, 0) rotate(0deg); } to { transform: translate3d(112vw, 0, 0) rotate(720deg); } }
     @keyframes decorBrillo { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+    @keyframes decorBalanceo { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+    @keyframes decorFugaz { 0% { transform: translate3d(-10vw, 0, 0); opacity: 0; } 8% { opacity: 1; } 45% { transform: translate3d(55vw, 16vh, 0); opacity: 1; } 60%, 100% { transform: translate3d(110vw, 30vh, 0); opacity: 0; } }
     @media (prefers-reduced-motion: reduce) {
       #decoracionTema .dec-el { animation: none !important; }
     }
     /* Patrones de fondo por tema (baja opacidad, sobre el fondo de la página) */
-    html[data-tema="navideno"] #decoracionTema { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-opacity='.35'%3E%3Cpath d='M36 28v16M28 36h16M30 30l12 12M42 30L30 42'/%3E%3C/g%3E%3C/svg%3E"); }
+    html[data-tema="navideno"] #decoracionTema { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-opacity='.30'%3E%3Cpath d='M36 28v16M28 36h16M30 30l12 12M42 30L30 42'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23166534' fill-opacity='.28'/%3E%3Ccircle cx='60' cy='60' r='2.5' fill='%23166534' fill-opacity='.28'/%3E%3C/svg%3E"); }
     html[data-tema="halloween"] #decoracionTema { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fb923c' fill-opacity='.22'/%3E%3Ccircle cx='48' cy='48' r='3' fill='%23fb923c' fill-opacity='.22'/%3E%3Ccircle cx='48' cy='12' r='2' fill='%23a855f7' fill-opacity='.25'/%3E%3Ccircle cx='12' cy='48' r='2' fill='%23a855f7' fill-opacity='.25'/%3E%3C/svg%3E"); }
     html[data-tema="gatuno"] #decoracionTema { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%237c5a3a' fill-opacity='.13'%3E%3Cellipse cx='18' cy='26' rx='7' ry='5.5'/%3E%3Ccircle cx='10' cy='16' r='3'/%3E%3Ccircle cx='18' cy='13' r='3'/%3E%3Ccircle cx='26' cy='16' r='3'/%3E%3C/g%3E%3Cg fill='%237c5a3a' fill-opacity='.10'%3E%3Cellipse cx='50' cy='58' rx='7' ry='5.5'/%3E%3Ccircle cx='42' cy='48' r='3'/%3E%3Ccircle cx='50' cy='45' r='3'/%3E%3Ccircle cx='58' cy='48' r='3'/%3E%3C/g%3E%3C/svg%3E"); }
     html[data-tema="sirenas"] #decoracionTema { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%230d9488' stroke-opacity='.28'%3E%3Ccircle cx='18' cy='20' r='8' stroke-width='1.5'/%3E%3Ccircle cx='58' cy='52' r='11' stroke-width='1.5'/%3E%3Ccircle cx='62' cy='14' r='4' stroke-width='1.2'/%3E%3Ccircle cx='14' cy='60' r='5' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E"); }
@@ -3484,7 +3501,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v126";
+    const VERSION_APP = "v127";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -8558,7 +8575,7 @@
     /* Temas de la aplicación */
     const TEMAS_APP = [
       { slug: "defecto", nombre: "Por defecto", desc: "El aspecto clásico de la app.", fondo: "#e9d5ff", primario: "#059669", acento: "#ffffff" },
-      { slug: "navideno", nombre: "Navideño", desc: "Rojo, verde y dorado para diciembre.", fondo: "#fef3c7", primario: "#166534", acento: "#dc2626" },
+      { slug: "navideno", nombre: "Navideño", desc: "Rojo, verde y blanco para diciembre.", fondo: "#ffffff", primario: "#b91c1c", acento: "#dc2626" },
       { slug: "halloween", nombre: "Halloween", desc: "Morado oscuro y naranja calabaza.", fondo: "#1e1b2e", primario: "#ea580c", acento: "#a855f7" },
       { slug: "gatuno", nombre: "Gatuno", desc: "Cremas y cafés cálidos como los gatitos.", fondo: "#f3e9dc", primario: "#7c5a3a", acento: "#d9a05b" },
       { slug: "sirenas", nombre: "Sirenas", desc: "Aguas turquesa y coral de mar.", fondo: "#a5f3fc", primario: "#0d9488", acento: "#fb7185" },
@@ -8578,31 +8595,58 @@
       return "defecto";
     }
 
-    /* Decoración por tema (v126): dibujos y animaciones de cada tema
+
+    /* Decoración por tema (v127): dibujos y animaciones de cada tema
        en #decoracionTema, detrás del contenido. Por defecto: nada.
        Solo se animan transform/opacity; nada es tocable. Las
        posiciones son fijas (no aleatorias) para que la vista sea
-       estable y comprobable. */
+       estable y comprobable. 14-20 elementos visibles por tema.
+       FIX v127: las clases .decorX ahora sí tienen su regla CSS con
+       animation-name (ver DECOR_CSS_V127); en v126 no la tenían y
+       nada se movía. Copos navideños en rojo/verde/blanco con
+       contorno (sobre fondo blanco, un copo blanco solo no se ve). */
     var SVG_DECOR = {
-      copo: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#ffffff" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
-      murcielago: '<svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 15 Q8 3 16 11 Q20 5 24 11 Q28 5 32 11 Q40 3 46 15 Q38 13 34 19 Q29 13 24 19 Q19 13 14 19 Q10 13 2 15 Z" fill="#0f0d1a"/></svg>',
+      copoR: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#dc2626" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
+      copoV: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#166534" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
+      copoB: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
+      murcielago: '<svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 15 Q8 3 16 11 Q20 5 24 11 Q28 5 32 11 Q40 3 46 15 Q38 13 34 19 Q29 13 24 19 Q19 13 14 19 Q10 13 2 15 Z" fill="#c4b5fd"/></svg>',
       calabaza: '<svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="23" rx="15" ry="13" fill="#ea580c"/><path d="M20 10 Q22 4 27 3" stroke="#166534" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="21" rx="2" ry="3" fill="#1c1917"/><ellipse cx="26" cy="21" rx="2" ry="3" fill="#1c1917"/><path d="M14 28 Q20 32 26 28" stroke="#1c1917" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
       huella: '<svg viewBox="0 0 36 36" aria-hidden="true"><g fill="#7c5a3a"><ellipse cx="18" cy="24" rx="7" ry="5.5"/><circle cx="10" cy="14" r="3.2"/><circle cx="18" cy="11" r="3.2"/><circle cx="26" cy="14" r="3.2"/></g></svg>',
       ovillo: '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="#db2777"/><path d="M7 14 Q20 20 33 14 M7 22 Q20 28 33 22 M8 30 Q20 34 32 30" stroke="#be185d" stroke-width="2" fill="none"/></svg>',
       pez: '<svg viewBox="0 0 48 24" aria-hidden="true"><ellipse cx="20" cy="12" rx="14" ry="8" fill="#0891b2"/><path d="M32 12 L46 4 L46 20 Z" fill="#0891b2"/><circle cx="12" cy="10" r="2" fill="#ffffff"/></svg>',
       burbuja: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="rgba(255,255,255,.28)" stroke="#0d9488" stroke-width="1.5"/></svg>',
       luna: '<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M38 4 A28 28 0 1 0 38 56 A22 22 0 1 1 38 4 Z" fill="#fde68a"/></svg>',
-      sol: '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#f59e0b" stroke-width="5" stroke-linecap="round"><path d="M50 2v14M50 84v14M2 50h14M84 50h14M15 15l10 10M75 75l10 10M85 15L75 25M25 75L15 85"/></g><circle cx="50" cy="50" r="24" fill="#fbbf24"/></svg>',
+      sol: '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#c2410c" stroke-width="5" stroke-linecap="round"><path d="M50 2v14M50 84v14M2 50h14M84 50h14M15 15l10 10M75 75l10 10M85 15L75 25M25 75L15 85"/></g><circle cx="50" cy="50" r="24" fill="#ea580c"/></svg>',
       palma: '<svg viewBox="0 0 60 80" aria-hidden="true"><g fill="#a855f7"><path d="M28 80 Q30 50 26 28 L32 28 Q34 52 34 80 Z"/><path d="M28 28 Q10 10 2 22 Q16 24 28 32 Z"/><path d="M28 28 Q46 10 58 22 Q44 24 28 32 Z"/><path d="M28 26 Q28 6 20 2 Q24 16 26 28 Z"/><path d="M28 26 Q32 6 42 4 Q34 16 30 28 Z"/></g></svg>',
       solNeon: '<svg viewBox="0 0 100 80" aria-hidden="true"><g><rect x="14" y="4" width="72" height="10" rx="5" fill="#ec4899"/><rect x="10" y="18" width="80" height="10" rx="5" fill="#f472b6"/><rect x="6" y="32" width="88" height="10" rx="5" fill="#fb923c"/><rect x="16" y="46" width="68" height="10" rx="5" fill="#fdba74"/><rect x="28" y="60" width="44" height="10" rx="5" fill="#fed7aa"/></g></svg>',
       adorno: '<svg viewBox="0 0 120 24" aria-hidden="true"><g stroke="#8b5e3c" stroke-width="2" fill="none" stroke-linecap="round"><path d="M4 12 H48 M72 12 H116"/></g><path d="M60 4 L66 12 L60 20 L54 12 Z" fill="#8b5e3c"/><circle cx="60" cy="12" r="2" fill="#fdf8ec"/></svg>',
-      arbol: '<svg viewBox="0 0 60 80" aria-hidden="true"><path d="M30 6 L48 34 H38 L52 58 H8 L22 34 H12 Z" fill="#166534"/><rect x="26" y="58" width="8" height="12" fill="#7c5a3a"/><path d="M30 0 L32 4 L28 4 Z" fill="#f59e0b"/></svg>',
+      arbol: '<svg viewBox="0 0 60 80" aria-hidden="true"><path d="M30 6 L48 34 H38 L52 58 H8 L22 34 H12 Z" fill="#166534"/><rect x="26" y="58" width="8" height="12" fill="#7c5a3a"/><path d="M30 0 L32 4 L28 4 Z" fill="#ffffff"/></svg>',
       estrellaMar: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L24 14 L37 14 L27 22 L30 35 L20 27 L10 35 L13 22 L3 14 L16 14 Z" fill="#fb7185"/></svg>',
       figCirculo: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#000000"/></svg>',
       figCuadro: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="#525252"/></svg>',
       figTriangulo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L21 21 H3 Z" fill="#737373"/></svg>',
       figPunto: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="#a3a3a3"/></svg>',
-      figPuntoSepia: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="#8b5e3c"/></svg>'
+      figPuntoSepia: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="#8b5e3c"/></svg>',
+      gorro: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30 L18 6 Q26 0 32 8 L40 24 Q43 28 38 30 Z" fill="#b91c1c"/><circle cx="40" cy="26" r="5" fill="#ffffff"/><rect x="6" y="29" width="36" height="9" rx="4.5" fill="#ffffff"/><rect x="6" y="29" width="36" height="9" rx="4.5" fill="none" stroke="#e5e7eb" stroke-width="1"/></svg>',
+      baston: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 46 V16 Q20 6 28 6 Q36 6 36 14" stroke="#dc2626" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M15 14 L25 10 M15 22 L25 18 M15 30 L25 26 M15 38 L25 34" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/></svg>',
+      regalo: '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="16" width="28" height="20" rx="2" fill="#b91c1c"/><rect x="4" y="10" width="32" height="8" rx="2" fill="#991b1b"/><rect x="18" y="10" width="4" height="26" fill="#166534"/><path d="M20 10 Q12 2 8 6 Q8 12 20 10 Q28 2 32 6 Q32 12 20 10" fill="#166534"/></svg>',
+      guirnalda: '<svg viewBox="0 0 400 44" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6 Q100 26 200 10 T400 8" stroke="#166534" stroke-width="2.5" fill="none"/><path d="M20 10 V16 M65 18 V24 M110 15 V21 M155 12 V18 M200 10 V16 M245 15 V21 M290 18 V24 M335 13 V19 M380 9 V15" stroke="#166534" stroke-width="1.5"/><circle cx="20" cy="21" r="6" fill="#dc2626"/><circle cx="65" cy="29" r="6" fill="#166534"/><circle cx="110" cy="26" r="6" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/><circle cx="155" cy="23" r="6" fill="#dc2626"/><circle cx="200" cy="21" r="6" fill="#166534"/><circle cx="245" cy="26" r="6" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/><circle cx="290" cy="29" r="6" fill="#dc2626"/><circle cx="335" cy="24" r="6" fill="#166534"/><circle cx="380" cy="20" r="6" fill="#dc2626"/></svg>',
+      reno: '<svg viewBox="0 0 64 56" aria-hidden="true"><g fill="#8b5e3c"><ellipse cx="28" cy="36" rx="18" ry="12"/><circle cx="48" cy="22" r="9"/></g><path d="M46 14 L42 4 M46 14 L50 4 M48 12 L56 6" stroke="#5d4229" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="55" cy="25" rx="5" ry="4" fill="#a07850"/><circle cx="59" cy="24" r="3" fill="#dc2626"/><circle cx="50" cy="20" r="1.6" fill="#1c1917"/><path d="M16 46 V54 M24 46 V54 M34 46 V54 M42 46 V54" stroke="#8b5e3c" stroke-width="3" stroke-linecap="round"/></svg>',
+      muneco: '<svg viewBox="0 0 48 64" aria-hidden="true"><g fill="#ffffff" stroke="#d1d5db" stroke-width="1"><circle cx="24" cy="50" r="13"/><circle cx="24" cy="30" r="10"/><circle cx="24" cy="14" r="8"/></g><path d="M14 22 L8 16 M34 22 L40 16" stroke="#7c5a3a" stroke-width="2" stroke-linecap="round"/><rect x="15" y="21" width="18" height="5" rx="2" fill="#b91c1c"/><rect x="29" y="25" width="5" height="10" rx="2" fill="#991b1b"/><circle cx="21" cy="13" r="1.6" fill="#1c1917"/><circle cx="27" cy="13" r="1.6" fill="#1c1917"/><path d="M24 14 L32 16 L24 18 Z" fill="#dc2626"/><circle cx="24" cy="30" r="1.6" fill="#1c1917"/><circle cx="24" cy="38" r="1.6" fill="#1c1917"/></svg>',
+      fantasma: '<svg viewBox="0 0 40 48" aria-hidden="true"><path d="M8 44 V18 Q8 4 20 4 Q32 4 32 18 V44 Q28 40 24 44 Q20 40 16 44 Q12 40 8 44 Z" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/><ellipse cx="14" cy="18" rx="2.4" ry="3.4" fill="#1c1917"/><ellipse cx="26" cy="18" rx="2.4" ry="3.4" fill="#1c1917"/><ellipse cx="20" cy="28" rx="3" ry="4" fill="#1c1917"/></svg>',
+      telarana: '<svg viewBox="0 0 80 80" aria-hidden="true"><g stroke="#d1d5db" stroke-width="1.5" fill="none"><path d="M0 0 L78 12 M0 0 L58 42 M0 0 L42 58 M0 0 L12 78"/><path d="M26 0 Q26 26 0 26 M52 0 Q52 52 0 52 M78 0 Q78 78 0 78"/></g><circle cx="40" cy="40" r="4" fill="#0f0d1a"/><path d="M36 38 L30 32 M44 38 L50 32 M36 42 L30 48 M44 42 L50 48" stroke="#0f0d1a" stroke-width="1.5" stroke-linecap="round"/></svg>',
+      siluetaGato: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 44 V24 Q14 12 24 12 Q34 12 34 24 V44 Z" fill="#3f2d20"/><circle cx="24" cy="10" r="8" fill="#3f2d20"/><path d="M18 4 L19 10 M30 4 L29 10" stroke="#3f2d20" stroke-width="3" stroke-linecap="round"/><path d="M34 44 Q44 44 44 34" stroke="#3f2d20" stroke-width="4" fill="none" stroke-linecap="round"/></svg>',
+      raton: '<svg viewBox="0 0 48 40" aria-hidden="true"><circle cx="13" cy="10" r="6" fill="#6b7280"/><circle cx="13" cy="10" r="3" fill="#f9a8d4"/><ellipse cx="24" cy="22" rx="15" ry="10" fill="#6b7280"/><circle cx="36" cy="18" r="1.6" fill="#1c1917"/><circle cx="38" cy="21" r="2" fill="#f472b6"/><path d="M9 24 Q2 26 4 18" stroke="#6b7280" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
+      caballito: '<svg viewBox="0 0 40 56" aria-hidden="true"><path d="M22 6 Q30 6 30 13 Q30 19 24 21 Q15 23 15 31 Q15 41 21 45 Q27 49 23 53" stroke="#0891b2" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="24" cy="9" r="6" fill="#0891b2"/><path d="M29 8 L34 10 L29 12 Z" fill="#0e7490"/><path d="M14 26 L19 28 M14 33 L19 35 M16 40 L21 42" stroke="#0e7490" stroke-width="2" stroke-linecap="round"/></svg>',
+      concha: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 L4 14 Q20 2 36 14 Z" fill="#fb7185"/><path d="M20 36 L12 12 M20 36 L20 8 M20 36 L28 12" stroke="#be123c" stroke-width="1.5" fill="none"/></svg>',
+      nube: '<svg viewBox="0 0 64 40" aria-hidden="true"><g fill="#ffffff" stroke="#e5e7eb" stroke-width="1"><circle cx="18" cy="24" r="10"/><circle cx="32" cy="16" r="12"/><circle cx="47" cy="24" r="9"/><rect x="10" y="22" width="46" height="10" rx="5"/></g></svg>',
+      constelacion: '<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M10 12 L28 8 L44 20 L52 40 L30 48 L10 12" stroke="#f1f5f9" stroke-width="1.5" fill="none" opacity=".7"/><g fill="#fde68a"><circle cx="10" cy="12" r="2.6"/><circle cx="28" cy="8" r="2.6"/><circle cx="44" cy="20" r="2.6"/><circle cx="52" cy="40" r="2.6"/><circle cx="30" cy="48" r="2.6"/></g></svg>',
+      fugaz: '<svg viewBox="0 0 80 40" aria-hidden="true"><path d="M4 30 L58 10" stroke="#fde68a" stroke-width="3" stroke-linecap="round" opacity=".8"/><path d="M14 33 L58 12" stroke="#fde68a" stroke-width="1.5" stroke-linecap="round" opacity=".45"/><path d="M66 2 L68.5 9.5 L76 12 L68.5 14.5 L66 22 L63.5 14.5 L56 12 L63.5 9.5 Z" fill="#fde68a"/></svg>',
+      rejilla: '<svg viewBox="0 0 400 60" aria-hidden="true" preserveAspectRatio="none"><g stroke="#ec4899" stroke-width="1.5" opacity=".55"><path d="M0 10 H400 M0 24 H400 M0 40 H400 M0 58 H400"/></g><g stroke="#22d3ee" stroke-width="1.5" opacity=".55"><path d="M200 60 L0 0 M200 60 L80 0 M200 60 L160 0 M200 60 L240 0 M200 60 L320 0 M200 60 L400 0"/></g></svg>',
+      edificio: '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="6" width="24" height="34" fill="#1a0b2e" stroke="#ec4899" stroke-width="2"/><g fill="#22d3ee"><rect x="13" y="11" width="4" height="4"/><rect x="23" y="11" width="4" height="4"/><rect x="13" y="19" width="4" height="4"/><rect x="23" y="19" width="4" height="4"/></g><rect x="13" y="27" width="4" height="4" fill="#f472b6"/><rect x="23" y="27" width="4" height="4" fill="#f472b6"/></svg>',
+      marco: '<svg viewBox="0 0 80 80" aria-hidden="true"><path d="M4 76 V20 Q4 4 20 4 H76" stroke="#8b5e3c" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="3" fill="#8b5e3c"/><path d="M20 20 Q30 12 38 20" stroke="#8b5e3c" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+      marcoD: '<svg viewBox="0 0 80 80" aria-hidden="true"><g transform="translate(80,0) scale(-1,1)"><path d="M4 76 V20 Q4 4 20 4 H76" stroke="#8b5e3c" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="3" fill="#8b5e3c"/><path d="M20 20 Q30 12 38 20" stroke="#8b5e3c" stroke-width="2" fill="none" stroke-linecap="round"/></g></svg>',
+      flor: '<svg viewBox="0 0 40 40" aria-hidden="true"><g fill="#b45309"><ellipse cx="20" cy="10" rx="5" ry="8"/><ellipse cx="20" cy="30" rx="5" ry="8"/><ellipse cx="10" cy="20" rx="8" ry="5"/><ellipse cx="30" cy="20" rx="8" ry="5"/></g><circle cx="20" cy="20" r="5" fill="#78350f"/></svg>'
     };
     function svgEstrellaDecor(color) {
       return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" fill="' + color + '"/></svg>';
@@ -8610,53 +8654,102 @@
     function decEl(svg, left, top, tam, anim, dur, delay, op) {
       return '<span class="dec-el ' + anim + '" style="left:' + left + '%;top:' + top + '%;width:' + tam + 'px;height:' + tam + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
     }
+    function decAncho(svg, top, alto, anim, dur, delay, op) {
+      return '<span class="dec-el ' + anim + '" style="left:0;top:' + top + '%;width:100%;height:' + alto + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
+    }
     function decorElementosTema(slug) {
       var h = "";
       if (slug === "navideno") {
-        var copos = [[4, 16, 12, -12], [13, 22, 16, -4], [23, 14, 11, -16], [32, 26, 18, -8], [41, 18, 13, -2], [51, 24, 15, -14], [61, 15, 12, -6], [70, 20, 17, -18], [79, 17, 14, -10], [90, 25, 16, -1]];
-        for (var i = 0; i < copos.length; i++) h += decEl(SVG_DECOR.copo, copos[i][0], 0, copos[i][1], "decorCaer", copos[i][2], copos[i][3], ".85");
-        h += decEl(SVG_DECOR.arbol, 4, 82, 54, "decorFlotar", 6, 0, ".85");
+        var copos = [[4, 30, 10, -10, 0], [13, 36, 13, -3, 1], [23, 26, 11, -13, 2], [32, 38, 14, -6, 0], [41, 28, 10, -1, 1], [51, 34, 12, -11, 2], [61, 26, 9, -4, 0], [70, 36, 13, -14, 1], [79, 30, 11, -7, 2], [90, 38, 14, -2, 0]];
+        var copoVar = ["copoR", "copoV", "copoB"];
+        for (var i = 0; i < copos.length; i++) h += decEl(SVG_DECOR[copoVar[copos[i][4]]], copos[i][0], 0, copos[i][1], "decorCaer", copos[i][2], copos[i][3], ".95");
+        h += decAncho(SVG_DECOR.guirnalda, 0, 44, "decorFlotar", 6, 0, ".95");
+        h += decEl(SVG_DECOR.arbol, 4, 80, 64, "decorBalanceo", 5, 0, ".95");
+        h += decEl(SVG_DECOR.gorro, 78, 8, 46, "decorBalanceo", 4, -1, ".95");
+        h += decEl(SVG_DECOR.baston, 86, 76, 44, "decorFlotar", 5, 0, ".95");
+        h += decEl(SVG_DECOR.baston, 12, 60, 40, "decorFlotar", 6, -2, ".95");
+        h += decEl(SVG_DECOR.regalo, 70, 78, 44, "decorBalanceo", 4, -2, ".95");
+        h += decEl(SVG_DECOR.regalo, 88, 60, 38, "decorFlotar", 5, -1, ".95");
+        h += decEl(SVG_DECOR.reno, 58, 74, 60, "decorFlotar", 6, 0, ".95");
+        h += decEl(SVG_DECOR.muneco, 26, 76, 52, "decorBalanceo", 5, -2, ".95");
       } else if (slug === "halloween") {
-        var murc = [[10, 36, 18, -18], [24, 44, 22, -9], [38, 34, 16, -22], [52, 42, 24, -4], [66, 38, 20, -14], [80, 46, 17, -20]];
-        for (var j = 0; j < murc.length; j++) h += decEl(SVG_DECOR.murcielago, 0, murc[j][0], murc[j][1], "decorVolar", murc[j][2], murc[j][3], ".9");
-        h += decEl(SVG_DECOR.calabaza, 6, 84, 44, "decorFlotar", 5, 0, ".9");
-        h += decEl(SVG_DECOR.calabaza, 86, 80, 38, "decorFlotar", 6, -2, ".9");
+        var murc = [[8, 40, 9, -2], [16, 48, 11, -7], [24, 36, 8, -4], [32, 52, 12, -1], [40, 44, 10, -9], [48, 38, 9, -5], [56, 46, 11, -3], [64, 40, 10, -8]];
+        for (var j = 0; j < murc.length; j++) h += decEl(SVG_DECOR.murcielago, 0, murc[j][0], murc[j][1], "decorVolar", murc[j][2], murc[j][3], ".95");
+        h += decEl(SVG_DECOR.calabaza, 6, 84, 46, "decorFlotar", 5, 0, ".95");
+        h += decEl(SVG_DECOR.calabaza, 50, 88, 40, "decorFlotar", 6, -2, ".95");
+        h += decEl(SVG_DECOR.calabaza, 86, 80, 44, "decorFlotar", 5, -1, ".95");
+        h += decEl(SVG_DECOR.fantasma, 22, 70, 44, "decorFlotar", 5, -1, ".95");
+        h += decEl(SVG_DECOR.fantasma, 66, 66, 40, "decorFlotar", 6, -2, ".95");
+        h += decEl(SVG_DECOR.telarana, 0, 0, 90, "", 0, 0, ".8");
+        h += decEl(SVG_DECOR.luna, 76, 6, 60, "", 0, 0, ".95");
+        h += decEl(svgEstrellaDecor("#fb923c"), 12, 30, 18, "decorParpadear", 3, 0, ".9");
+        h += decEl(svgEstrellaDecor("#fb923c"), 88, 44, 16, "decorParpadear", 2.5, -1, ".9");
       } else if (slug === "gatuno") {
-        var huellas = [[8, 14, 20, 5, 0], [24, 30, 24, 6, -2], [40, 12, 18, 5, -1], [56, 34, 26, 7, -3], [72, 16, 20, 6, 0], [86, 30, 24, 5, -2], [16, 58, 22, 6, -1], [64, 62, 20, 7, -3]];
-        for (var k = 0; k < huellas.length; k++) h += decEl(SVG_DECOR.huella, huellas[k][0], huellas[k][1], huellas[k][2], "decorFlotar", huellas[k][3], huellas[k][4], ".45");
-        h += decEl(SVG_DECOR.ovillo, 0, 76, 34, "decorRodar", 26, -8, ".9");
-        h += decEl(SVG_DECOR.pez, 78, 70, 40, "decorFlotar", 5, -1, ".8");
+        var huellas = [[8, 12, 24, 5, 0], [22, 28, 28, 6, -2], [36, 10, 22, 5, -1], [50, 32, 30, 7, -3], [64, 14, 24, 6, 0], [78, 30, 28, 5, -2], [12, 54, 26, 6, -1], [30, 66, 24, 7, -3], [58, 58, 28, 5, 0], [84, 62, 24, 6, -2]];
+        for (var k = 0; k < huellas.length; k++) h += decEl(SVG_DECOR.huella, huellas[k][0], huellas[k][1], huellas[k][2], "decorFlotar", huellas[k][3], huellas[k][4], ".55");
+        h += decEl(SVG_DECOR.ovillo, 0, 74, 36, "decorRodar", 18, -6, ".95");
+        h += decEl(SVG_DECOR.ovillo, 76, 82, 30, "decorFlotar", 5, -1, ".9");
+        h += decEl(SVG_DECOR.pez, 72, 68, 42, "decorFlotar", 5, 0, ".9");
+        h += decEl(SVG_DECOR.pez, 10, 80, 38, "decorFlotar", 6, -2, ".85");
+        h += decEl(SVG_DECOR.raton, 44, 84, 40, "decorFlotar", 5, -1, ".9");
+        h += decEl(SVG_DECOR.siluetaGato, 86, 84, 48, "decorFlotar", 6, 0, ".95");
       } else if (slug === "sirenas") {
-        var burb = [[6, 14, 10, -10], [16, 20, 13, -3], [28, 12, 9, -13], [40, 24, 14, -6], [52, 16, 11, -1], [64, 22, 15, -11], [76, 13, 10, -5], [88, 18, 12, -8]];
-        for (var b = 0; b < burb.length; b++) h += decEl(SVG_DECOR.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".85");
+        var burb = [[6, 18, 10, -10], [14, 24, 13, -2], [24, 15, 9, -12], [34, 26, 14, -5], [44, 17, 11, -1], [54, 22, 13, -9], [64, 16, 10, -4], [74, 25, 14, -11], [84, 18, 11, -6], [92, 22, 12, -3]];
+        for (var b = 0; b < burb.length; b++) h += decEl(SVG_DECOR.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".9");
         h += '<svg class="dec-onda" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 V12 H0 Z" fill="#0d9488" opacity=".18"/></svg>';
-        h += decEl(SVG_DECOR.estrellaMar, 82, 12, 30, "decorFlotar", 5, 0, ".85");
+        h += decEl(SVG_DECOR.estrellaMar, 82, 10, 32, "decorFlotar", 5, 0, ".9");
+        h += decEl(SVG_DECOR.estrellaMar, 8, 44, 28, "decorFlotar", 6, -2, ".85");
+        h += decEl(SVG_DECOR.concha, 68, 80, 38, "decorFlotar", 5, -1, ".9");
+        h += decEl(SVG_DECOR.caballito, 14, 72, 44, "decorFlotar", 6, 0, ".9");
+        h += decEl(SVG_DECOR.pez, 56, 62, 40, "decorFlotar", 5, 0, ".85");
+        h += decEl(SVG_DECOR.pez, 88, 70, 36, "decorFlotar", 6, -2, ".85");
       } else if (slug === "solar") {
-        h += decEl(SVG_DECOR.sol, 68, 6, 110, "decorGirar", 70, 0, ".9");
-        var chispas = [[10, 20, 14, 3, 0], [22, 44, 12, 4, -1], [36, 12, 16, 2.5, -2], [48, 60, 12, 3.5, 0], [62, 26, 14, 3, -1], [78, 48, 12, 4, -2], [88, 16, 16, 2.5, 0], [14, 72, 12, 3.5, -1]];
-        for (var s = 0; s < chispas.length; s++) h += decEl(svgEstrellaDecor("#f59e0b"), chispas[s][0], chispas[s][1], chispas[s][2], "decorParpadear", chispas[s][3], chispas[s][4], ".9");
+        h += decEl(SVG_DECOR.sol, 68, 4, 110, "decorGirar", 24, 0, ".95");
+        var chispas = [[8, 18, 16, 3, 0], [20, 42, 14, 2.5, -1], [34, 10, 18, 3.5, -2], [46, 58, 14, 3, 0], [58, 24, 16, 2.5, -1], [72, 46, 14, 3.5, -2], [86, 14, 18, 3, 0], [12, 70, 14, 2.5, -1], [30, 78, 16, 3, -2], [52, 84, 14, 3.5, 0]];
+        for (var s = 0; s < chispas.length; s++) h += decEl(svgEstrellaDecor("#b45309"), chispas[s][0], chispas[s][1], chispas[s][2], "decorParpadear", chispas[s][3], chispas[s][4], ".9");
+        h += decEl(SVG_DECOR.nube, 10, 30, 56, "decorFlotar", 6, 0, ".9");
+        h += decEl(SVG_DECOR.nube, 70, 68, 48, "decorFlotar", 7, -2, ".9");
+        h += decEl(SVG_DECOR.sol, 16, 52, 44, "decorFlotar", 5, -1, ".85");
+        h += decEl(SVG_DECOR.sol, 84, 80, 40, "decorFlotar", 6, 0, ".85");
       } else if (slug === "nocturno") {
-        h += decEl(SVG_DECOR.luna, 74, 6, 64, "", 0, 0, ".95");
-        var estrellas = [[6, 10, 12, 3, 0], [18, 26, 16, 4, -1], [30, 8, 10, 2.5, -2], [44, 30, 14, 3.5, 0], [56, 12, 12, 3, -1], [68, 34, 16, 4, -2], [82, 10, 12, 2.5, 0], [90, 28, 14, 3.5, -1], [12, 52, 10, 3, -2], [38, 48, 12, 4, 0]];
+        h += decEl(SVG_DECOR.luna, 74, 4, 64, "", 0, 0, ".95");
+        var estrellas = [[6, 8, 14, 3, 0], [16, 24, 18, 4, -1], [28, 6, 12, 2.5, -2], [40, 28, 16, 3.5, 0], [52, 10, 14, 3, -1], [62, 32, 18, 4, -2], [72, 8, 12, 2.5, 0], [84, 26, 16, 3.5, -1], [92, 12, 14, 3, -2], [10, 50, 12, 3, 0], [34, 46, 14, 4, -1], [58, 52, 12, 2.5, -2]];
         for (var e = 0; e < estrellas.length; e++) h += decEl(svgEstrellaDecor("#f1f5f9"), estrellas[e][0], estrellas[e][1], estrellas[e][2], "decorParpadear", estrellas[e][3], estrellas[e][4], ".9");
+        h += decEl(SVG_DECOR.constelacion, 20, 56, 56, "decorFlotar", 6, 0, ".8");
+        h += decEl(SVG_DECOR.constelacion, 66, 58, 52, "decorFlotar", 7, -2, ".8");
+        h += decEl(SVG_DECOR.fugaz, 0, 14, 70, "decorFugaz", 9, -3, ".95");
+        h += decEl(SVG_DECOR.nube, 40, 76, 56, "decorFlotar", 6, -1, ".5");
       } else if (slug === "gta6") {
-        h += decEl(SVG_DECOR.solNeon, 30, 4, 120, "decorBrillo", 3, 0, ".9");
-        h += decEl(SVG_DECOR.palma, 4, 68, 70, "decorFlotar", 6, 0, ".85");
-        h += decEl(SVG_DECOR.palma, 84, 72, 60, "decorFlotar", 7, -2, ".85");
-        h += decEl(SVG_DECOR.palma, 46, 78, 54, "decorFlotar", 5, -1, ".7");
-        var neon = [[12, 16, 12, 3, 0], [26, 40, 14, 4, -1], [70, 22, 12, 3, -2], [88, 44, 16, 4, 0]];
+        h += decEl(SVG_DECOR.solNeon, 30, 2, 120, "decorBrillo", 3, 0, ".95");
+        var palmas = [[2, 66, 72, 6, 0], [22, 74, 60, 5, -2], [46, 70, 66, 7, -1], [68, 76, 58, 6, 0], [86, 68, 64, 5, -3]];
+        for (var pm = 0; pm < palmas.length; pm++) h += decEl(SVG_DECOR.palma, palmas[pm][0], palmas[pm][1], palmas[pm][2], "decorFlotar", palmas[pm][3], palmas[pm][4], ".85");
+        var neon = [[10, 14, 14, 3, 0], [24, 38, 16, 4, -1], [40, 18, 12, 3, -2], [60, 42, 14, 4, 0], [76, 20, 16, 3, -1], [90, 46, 14, 4, -2]];
         for (var n = 0; n < neon.length; n++) h += decEl(svgEstrellaDecor("#22d3ee"), neon[n][0], neon[n][1], neon[n][2], "decorParpadear", neon[n][3], neon[n][4], ".9");
+        h += decAncho(SVG_DECOR.rejilla, 86, 60, "", 0, 0, ".8");
+        h += decEl(SVG_DECOR.edificio, 8, 78, 44, "decorFlotar", 6, 0, ".85");
+        h += decEl(SVG_DECOR.edificio, 38, 82, 40, "decorFlotar", 5, -2, ".8");
+        h += decEl(SVG_DECOR.edificio, 72, 80, 46, "decorFlotar", 7, -1, ".85");
       } else if (slug === "blanco-negro") {
-        h += decEl(SVG_DECOR.figCirculo, 10, 20, 34, "decorFlotar", 6, 0, ".7");
-        h += decEl(SVG_DECOR.figCuadro, 78, 16, 30, "decorFlotar", 5, -2, ".7");
-        h += decEl(SVG_DECOR.figTriangulo, 60, 64, 36, "decorFlotar", 7, -1, ".7");
-        var puntos = [[22, 44, 10, 5, 0], [36, 70, 12, 6, -2], [50, 30, 8, 5, -1], [68, 52, 10, 7, 0], [84, 68, 12, 6, -3], [16, 82, 10, 5, -1]];
+        h += decEl(SVG_DECOR.figCirculo, 8, 18, 36, "decorFlotar", 6, 0, ".7");
+        h += decEl(SVG_DECOR.figCirculo, 70, 62, 34, "decorFlotar", 5, -2, ".7");
+        h += decEl(SVG_DECOR.figCuadro, 78, 14, 32, "decorFlotar", 7, -1, ".7");
+        h += decEl(SVG_DECOR.figCuadro, 16, 66, 30, "decorFlotar", 6, 0, ".7");
+        h += decEl(SVG_DECOR.figTriangulo, 58, 30, 38, "decorFlotar", 5, -2, ".7");
+        h += decEl(SVG_DECOR.figTriangulo, 36, 78, 34, "decorFlotar", 7, -1, ".7");
+        var puntos = [[20, 42, 12, 5, 0], [34, 68, 14, 6, -2], [48, 26, 10, 5, -1], [64, 50, 12, 7, 0], [82, 66, 14, 6, -3], [14, 82, 12, 5, -1], [44, 88, 10, 6, -2], [88, 36, 12, 5, 0]];
         for (var p = 0; p < puntos.length; p++) h += decEl(SVG_DECOR.figPunto, puntos[p][0], puntos[p][1], puntos[p][2], "decorFlotar", puntos[p][3], puntos[p][4], ".7");
+        h += decEl(svgEstrellaDecor("#000000"), 26, 56, 20, "decorParpadear", 3, 0, ".8");
+        h += decEl(svgEstrellaDecor("#000000"), 74, 84, 18, "decorParpadear", 2.5, -1, ".8");
       } else if (slug === "vintage") {
         h += '<span class="dec-el" style="left:50%;top:4%;width:120px;height:24px;margin-left:-60px;opacity:.8;">' + SVG_DECOR.adorno + '</span>';
         h += '<span class="dec-el" style="left:50%;top:94%;width:120px;height:24px;margin-left:-60px;opacity:.8;">' + SVG_DECOR.adorno + '</span>';
-        var motas = [[10, 20, 8, 5, 0], [24, 52, 10, 6, -2], [38, 30, 8, 5, -1], [62, 44, 10, 7, 0], [76, 18, 8, 6, -3], [88, 62, 10, 5, -1]];
+        var motas = [[10, 18, 10, 5, 0], [22, 50, 12, 6, -2], [36, 28, 10, 5, -1], [52, 60, 12, 7, 0], [66, 16, 10, 6, -3], [80, 42, 12, 5, -1], [16, 76, 10, 6, -2], [74, 72, 12, 5, 0]];
         for (var m = 0; m < motas.length; m++) h += decEl(SVG_DECOR.figPuntoSepia, motas[m][0], motas[m][1], motas[m][2], "decorFlotar", motas[m][3], motas[m][4], ".6");
+        h += decEl(SVG_DECOR.marco, 2, 2, 60, "", 0, 0, ".7");
+        h += decEl(SVG_DECOR.marcoD, 80, 2, 60, "", 0, 0, ".7");
+        h += decEl(SVG_DECOR.flor, 24, 84, 30, "decorFlotar", 5, 0, ".8");
+        h += decEl(SVG_DECOR.flor, 48, 88, 26, "decorFlotar", 6, -2, ".8");
+        h += decEl(SVG_DECOR.flor, 72, 86, 30, "decorFlotar", 5, -1, ".8");
       }
       return h;
     }

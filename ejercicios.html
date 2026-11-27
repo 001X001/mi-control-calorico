@@ -61,18 +61,18 @@
         --shadow: 0 1px 2px rgba(28, 26, 23, .06), 0 8px 24px rgba(28, 26, 23, .06);
       }
       html[data-tema="navideno"] {
-        --bg: #fef3c7;
-        --panel: #fffbeb;
+        --bg: #ffffff;
+        --panel: #fff5f5;
         --ink: #1c1917;
         --ink-soft: #57534e;
-        --line: #d6cfa8;
-        --accent: #166534;
+        --line: #fecaca;
+        --accent: #b91c1c;
         --accent-ink: #ffffff;
         --green: #166534;
         --alarm: #b91c1c;
         --alarm-soft: #fee2e2;
-        --chip: #fef9c3;
-        --chip-on: #166534;
+        --chip: #fee2e2;
+        --chip-on: #b91c1c;
         --chip-on-ink: #ffffff;
         --shadow: 0 1px 2px rgba(28, 26, 23, .06), 0 8px 24px rgba(28, 26, 23, .06);
       }
@@ -218,9 +218,12 @@
       html[data-tema="gta6"] .log-confirm-yes { color: #0c1712; }
       /* El contenido queda por encima de la decoración del tema. */
       .wrap { position: relative; z-index: 1; }
-      /* Capa de decoración por tema (v126), detrás del contenido.
+      /* Capa de decoración por tema (v127), detrás del contenido.
          Nunca tapa nada (pointer-events: none) y solo anima
-         transform/opacity. Por defecto no hay nada. */
+         transform/opacity. Por defecto no hay nada.
+         FIX v127 (mismo bug que en la app de calorías): las clases
+         .decorX no tenían regla CSS con animation-name y nada se
+         movía. Las reglas de abajo encienden el movimiento. */
       #decoracionTemaEjercicio {
         position: fixed;
         inset: 0;
@@ -231,18 +234,31 @@
       #decoracionTemaEjercicio .dec-el { position: absolute; will-change: transform, opacity; }
       #decoracionTemaEjercicio .dec-el svg { display: block; width: 100%; height: 100%; }
       #decoracionTemaEjercicio .dec-onda { position: absolute; left: 0; bottom: 0; width: 100%; height: 46px; pointer-events: none; }
+      #decoracionTemaEjercicio .decorCaer { animation-name: decorCaer; animation-iteration-count: infinite; animation-timing-function: linear; }
+      #decoracionTemaEjercicio .decorVolar { animation-name: decorVolar; animation-iteration-count: infinite; animation-timing-function: linear; }
+      #decoracionTemaEjercicio .decorSubir { animation-name: decorSubir; animation-iteration-count: infinite; animation-timing-function: linear; }
+      #decoracionTemaEjercicio .decorFlotar { animation-name: decorFlotar; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+      #decoracionTemaEjercicio .decorParpadear { animation-name: decorParpadear; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+      #decoracionTemaEjercicio .decorGirar { animation-name: decorGirar; animation-iteration-count: infinite; animation-timing-function: linear; }
+      #decoracionTemaEjercicio .decorRodar { animation-name: decorRodar; animation-iteration-count: infinite; animation-timing-function: linear; }
+      #decoracionTemaEjercicio .decorBrillo { animation-name: decorBrillo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+      #decoracionTemaEjercicio .decorBalanceo { animation-name: decorBalanceo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; transform-origin: 50% 0; }
+      #decoracionTemaEjercicio .decorFugaz { animation-name: decorFugaz; animation-iteration-count: infinite; animation-timing-function: linear; }
       @keyframes decorCaer { from { transform: translate3d(0, -12vh, 0) rotate(0deg); } to { transform: translate3d(0, 112vh, 0) rotate(320deg); } }
       @keyframes decorVolar { 0% { transform: translate3d(-15vw, 0, 0); } 25% { transform: translate3d(20vw, -16px, 0); } 50% { transform: translate3d(55vw, 8px, 0); } 75% { transform: translate3d(85vw, -12px, 0); } 100% { transform: translate3d(115vw, 0, 0); } }
       @keyframes decorSubir { 0% { transform: translate3d(0, 108vh, 0); opacity: 0; } 10% { opacity: .85; } 90% { opacity: .85; } 100% { transform: translate3d(0, -12vh, 0); opacity: 0; } }
-      @keyframes decorFlotar { 0%, 100% { transform: translateY(-6px); } 50% { transform: translateY(8px); } }
+      @keyframes decorFlotar { 0%, 100% { transform: translateY(-10px); } 50% { transform: translateY(10px); } }
       @keyframes decorParpadear { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
       @keyframes decorGirar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes decorRodar { from { transform: translate3d(-12vw, 0, 0) rotate(0deg); } to { transform: translate3d(112vw, 0, 0) rotate(720deg); } }
       @keyframes decorBrillo { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+      @keyframes decorBalanceo { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+      @keyframes decorFugaz { 0% { transform: translate3d(-10vw, 0, 0); opacity: 0; } 8% { opacity: 1; } 45% { transform: translate3d(55vw, 16vh, 0); opacity: 1; } 60%, 100% { transform: translate3d(110vw, 30vh, 0); opacity: 0; } }
       @media (prefers-reduced-motion: reduce) {
         #decoracionTemaEjercicio .dec-el { animation: none !important; }
       }
       /* Patrones de fondo por tema (baja opacidad) */
-      html[data-tema="navideno"] #decoracionTemaEjercicio { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-opacity='.35'%3E%3Cpath d='M36 28v16M28 36h16M30 30l12 12M42 30L30 42'/%3E%3C/g%3E%3C/svg%3E"); }
+      html[data-tema="navideno"] #decoracionTemaEjercicio { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-opacity='.30'%3E%3Cpath d='M36 28v16M28 36h16M30 30l12 12M42 30L30 42'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23166534' fill-opacity='.28'/%3E%3Ccircle cx='60' cy='60' r='2.5' fill='%23166534' fill-opacity='.28'/%3E%3C/svg%3E"); }
       html[data-tema="halloween"] #decoracionTemaEjercicio { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fb923c' fill-opacity='.22'/%3E%3Ccircle cx='48' cy='48' r='3' fill='%23fb923c' fill-opacity='.22'/%3E%3Ccircle cx='48' cy='12' r='2' fill='%23a855f7' fill-opacity='.25'/%3E%3Ccircle cx='12' cy='48' r='2' fill='%23a855f7' fill-opacity='.25'/%3E%3C/svg%3E"); }
       html[data-tema="gatuno"] #decoracionTemaEjercicio { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%237c5a3a' fill-opacity='.13'%3E%3Cellipse cx='18' cy='26' rx='7' ry='5.5'/%3E%3Ccircle cx='10' cy='16' r='3'/%3E%3Ccircle cx='18' cy='13' r='3'/%3E%3Ccircle cx='26' cy='16' r='3'/%3E%3C/g%3E%3Cg fill='%237c5a3a' fill-opacity='.10'%3E%3Cellipse cx='50' cy='58' rx='7' ry='5.5'/%3E%3Ccircle cx='42' cy='48' r='3'/%3E%3Ccircle cx='50' cy='45' r='3'/%3E%3Ccircle cx='58' cy='48' r='3'/%3E%3C/g%3E%3C/svg%3E"); }
       html[data-tema="sirenas"] #decoracionTemaEjercicio { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%230d9488' stroke-opacity='.28'%3E%3Ccircle cx='18' cy='20' r='8' stroke-width='1.5'/%3E%3Ccircle cx='58' cy='52' r='11' stroke-width='1.5'/%3E%3Ccircle cx='62' cy='14' r='4' stroke-width='1.2'/%3E%3Ccircle cx='14' cy='60' r='5' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E"); }
@@ -1866,20 +1882,39 @@
            y animaciones son las mismas que en la app de calorías,
            adaptadas a esta vista. */
         var SVG_DECOR_EJ = {
-          copo: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#ffffff" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
-          murcielago: '<svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 15 Q8 3 16 11 Q20 5 24 11 Q28 5 32 11 Q40 3 46 15 Q38 13 34 19 Q29 13 24 19 Q19 13 14 19 Q10 13 2 15 Z" fill="#0f0d1a"/></svg>',
+          copoR: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#dc2626" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
+          copoV: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#166534" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
+          copoB: '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></g></svg>',
+          murcielago: '<svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 15 Q8 3 16 11 Q20 5 24 11 Q28 5 32 11 Q40 3 46 15 Q38 13 34 19 Q29 13 24 19 Q19 13 14 19 Q10 13 2 15 Z" fill="#c4b5fd"/></svg>',
           calabaza: '<svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="23" rx="15" ry="13" fill="#ea580c"/><path d="M20 10 Q22 4 27 3" stroke="#166534" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="21" rx="2" ry="3" fill="#1c1917"/><ellipse cx="26" cy="21" rx="2" ry="3" fill="#1c1917"/><path d="M14 28 Q20 32 26 28" stroke="#1c1917" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
           huella: '<svg viewBox="0 0 36 36" aria-hidden="true"><g fill="#7c5a3a"><ellipse cx="18" cy="24" rx="7" ry="5.5"/><circle cx="10" cy="14" r="3.2"/><circle cx="18" cy="11" r="3.2"/><circle cx="26" cy="14" r="3.2"/></g></svg>',
+          pez: '<svg viewBox="0 0 48 24" aria-hidden="true"><ellipse cx="20" cy="12" rx="14" ry="8" fill="#0891b2"/><path d="M32 12 L46 4 L46 20 Z" fill="#0891b2"/><circle cx="12" cy="10" r="2" fill="#ffffff"/></svg>',
           burbuja: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="rgba(255,255,255,.28)" stroke="#0d9488" stroke-width="1.5"/></svg>',
           luna: '<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M38 4 A28 28 0 1 0 38 56 A22 22 0 1 1 38 4 Z" fill="#fde68a"/></svg>',
-          sol: '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#f59e0b" stroke-width="5" stroke-linecap="round"><path d="M50 2v14M50 84v14M2 50h14M84 50h14M15 15l10 10M75 75l10 10M85 15L75 25M25 75L15 85"/></g><circle cx="50" cy="50" r="24" fill="#fbbf24"/></svg>',
+          sol: '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#c2410c" stroke-width="5" stroke-linecap="round"><path d="M50 2v14M50 84v14M2 50h14M84 50h14M15 15l10 10M75 75l10 10M85 15L75 25M25 75L15 85"/></g><circle cx="50" cy="50" r="24" fill="#ea580c"/></svg>',
           palma: '<svg viewBox="0 0 60 80" aria-hidden="true"><g fill="#a855f7"><path d="M28 80 Q30 50 26 28 L32 28 Q34 52 34 80 Z"/><path d="M28 28 Q10 10 2 22 Q16 24 28 32 Z"/><path d="M28 28 Q46 10 58 22 Q44 24 28 32 Z"/><path d="M28 26 Q28 6 20 2 Q24 16 26 28 Z"/><path d="M28 26 Q32 6 42 4 Q34 16 30 28 Z"/></g></svg>',
           solNeon: '<svg viewBox="0 0 100 80" aria-hidden="true"><g><rect x="14" y="4" width="72" height="10" rx="5" fill="#ec4899"/><rect x="10" y="18" width="80" height="10" rx="5" fill="#f472b6"/><rect x="6" y="32" width="88" height="10" rx="5" fill="#fb923c"/><rect x="16" y="46" width="68" height="10" rx="5" fill="#fdba74"/><rect x="28" y="60" width="44" height="10" rx="5" fill="#fed7aa"/></g></svg>',
           adorno: '<svg viewBox="0 0 120 24" aria-hidden="true"><g stroke="#8b5e3c" stroke-width="2" fill="none" stroke-linecap="round"><path d="M4 12 H48 M72 12 H116"/></g><path d="M60 4 L66 12 L60 20 L54 12 Z" fill="#8b5e3c"/><circle cx="60" cy="12" r="2" fill="#fdf8ec"/></svg>',
-          arbol: '<svg viewBox="0 0 60 80" aria-hidden="true"><path d="M30 6 L48 34 H38 L52 58 H8 L22 34 H12 Z" fill="#166534"/><rect x="26" y="58" width="8" height="12" fill="#7c5a3a"/><path d="M30 0 L32 4 L28 4 Z" fill="#f59e0b"/></svg>',
+          arbol: '<svg viewBox="0 0 60 80" aria-hidden="true"><path d="M30 6 L48 34 H38 L52 58 H8 L22 34 H12 Z" fill="#166534"/><rect x="26" y="58" width="8" height="12" fill="#7c5a3a"/><path d="M30 0 L32 4 L28 4 Z" fill="#ffffff"/></svg>',
+          estrellaMar: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L24 14 L37 14 L27 22 L30 35 L20 27 L10 35 L13 22 L3 14 L16 14 Z" fill="#fb7185"/></svg>',
           figCirculo: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#000000"/></svg>',
+          figCuadro: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="#525252"/></svg>',
+          figTriangulo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L21 21 H3 Z" fill="#737373"/></svg>',
           figPunto: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="#a3a3a3"/></svg>',
-          figPuntoSepia: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="#8b5e3c"/></svg>'
+          figPuntoSepia: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="#8b5e3c"/></svg>',
+          gorro: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30 L18 6 Q26 0 32 8 L40 24 Q43 28 38 30 Z" fill="#b91c1c"/><circle cx="40" cy="26" r="5" fill="#ffffff"/><rect x="6" y="29" width="36" height="9" rx="4.5" fill="#ffffff"/><rect x="6" y="29" width="36" height="9" rx="4.5" fill="none" stroke="#e5e7eb" stroke-width="1"/></svg>',
+          regalo: '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="16" width="28" height="20" rx="2" fill="#b91c1c"/><rect x="4" y="10" width="32" height="8" rx="2" fill="#991b1b"/><rect x="18" y="10" width="4" height="26" fill="#166534"/><path d="M20 10 Q12 2 8 6 Q8 12 20 10 Q28 2 32 6 Q32 12 20 10" fill="#166534"/></svg>',
+          guirnalda: '<svg viewBox="0 0 400 44" aria-hidden="true" preserveAspectRatio="none"><path d="M0 6 Q100 26 200 10 T400 8" stroke="#166534" stroke-width="2.5" fill="none"/><path d="M20 10 V16 M65 18 V24 M110 15 V21 M155 12 V18 M200 10 V16 M245 15 V21 M290 18 V24 M335 13 V19 M380 9 V15" stroke="#166534" stroke-width="1.5"/><circle cx="20" cy="21" r="6" fill="#dc2626"/><circle cx="65" cy="29" r="6" fill="#166534"/><circle cx="110" cy="26" r="6" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/><circle cx="155" cy="23" r="6" fill="#dc2626"/><circle cx="200" cy="21" r="6" fill="#166534"/><circle cx="245" cy="26" r="6" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/><circle cx="290" cy="29" r="6" fill="#dc2626"/><circle cx="335" cy="24" r="6" fill="#166534"/><circle cx="380" cy="20" r="6" fill="#dc2626"/></svg>',
+          fantasma: '<svg viewBox="0 0 40 48" aria-hidden="true"><path d="M8 44 V18 Q8 4 20 4 Q32 4 32 18 V44 Q28 40 24 44 Q20 40 16 44 Q12 40 8 44 Z" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/><ellipse cx="14" cy="18" rx="2.4" ry="3.4" fill="#1c1917"/><ellipse cx="26" cy="18" rx="2.4" ry="3.4" fill="#1c1917"/><ellipse cx="20" cy="28" rx="3" ry="4" fill="#1c1917"/></svg>',
+          telarana: '<svg viewBox="0 0 80 80" aria-hidden="true"><g stroke="#d1d5db" stroke-width="1.5" fill="none"><path d="M0 0 L78 12 M0 0 L58 42 M0 0 L42 58 M0 0 L12 78"/><path d="M26 0 Q26 26 0 26 M52 0 Q52 52 0 52 M78 0 Q78 78 0 78"/></g><circle cx="40" cy="40" r="4" fill="#0f0d1a"/><path d="M36 38 L30 32 M44 38 L50 32 M36 42 L30 48 M44 42 L50 48" stroke="#0f0d1a" stroke-width="1.5" stroke-linecap="round"/></svg>',
+          raton: '<svg viewBox="0 0 48 40" aria-hidden="true"><circle cx="13" cy="10" r="6" fill="#6b7280"/><circle cx="13" cy="10" r="3" fill="#f9a8d4"/><ellipse cx="24" cy="22" rx="15" ry="10" fill="#6b7280"/><circle cx="36" cy="18" r="1.6" fill="#1c1917"/><circle cx="38" cy="21" r="2" fill="#f472b6"/><path d="M9 24 Q2 26 4 18" stroke="#6b7280" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
+          concha: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 L4 14 Q20 2 36 14 Z" fill="#fb7185"/><path d="M20 36 L12 12 M20 36 L20 8 M20 36 L28 12" stroke="#be123c" stroke-width="1.5" fill="none"/></svg>',
+          nube: '<svg viewBox="0 0 64 40" aria-hidden="true"><g fill="#ffffff" stroke="#e5e7eb" stroke-width="1"><circle cx="18" cy="24" r="10"/><circle cx="32" cy="16" r="12"/><circle cx="47" cy="24" r="9"/><rect x="10" y="22" width="46" height="10" rx="5"/></g></svg>',
+          constelacion: '<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M10 12 L28 8 L44 20 L52 40 L30 48 L10 12" stroke="#f1f5f9" stroke-width="1.5" fill="none" opacity=".7"/><g fill="#fde68a"><circle cx="10" cy="12" r="2.6"/><circle cx="28" cy="8" r="2.6"/><circle cx="44" cy="20" r="2.6"/><circle cx="52" cy="40" r="2.6"/><circle cx="30" cy="48" r="2.6"/></g></svg>',
+          fugaz: '<svg viewBox="0 0 80 40" aria-hidden="true"><path d="M4 30 L58 10" stroke="#fde68a" stroke-width="3" stroke-linecap="round" opacity=".8"/><path d="M14 33 L58 12" stroke="#fde68a" stroke-width="1.5" stroke-linecap="round" opacity=".45"/><path d="M66 2 L68.5 9.5 L76 12 L68.5 14.5 L66 22 L63.5 14.5 L56 12 L63.5 9.5 Z" fill="#fde68a"/></svg>',
+          rejilla: '<svg viewBox="0 0 400 60" aria-hidden="true" preserveAspectRatio="none"><g stroke="#ec4899" stroke-width="1.5" opacity=".55"><path d="M0 10 H400 M0 24 H400 M0 40 H400 M0 58 H400"/></g><g stroke="#22d3ee" stroke-width="1.5" opacity=".55"><path d="M200 60 L0 0 M200 60 L80 0 M200 60 L160 0 M200 60 L240 0 M200 60 L320 0 M200 60 L400 0"/></g></svg>',
+          marco: '<svg viewBox="0 0 80 80" aria-hidden="true"><path d="M4 76 V20 Q4 4 20 4 H76" stroke="#8b5e3c" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="3" fill="#8b5e3c"/><path d="M20 20 Q30 12 38 20" stroke="#8b5e3c" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+          flor: '<svg viewBox="0 0 40 40" aria-hidden="true"><g fill="#b45309"><ellipse cx="20" cy="10" rx="5" ry="8"/><ellipse cx="20" cy="30" rx="5" ry="8"/><ellipse cx="10" cy="20" rx="8" ry="5"/><ellipse cx="30" cy="20" rx="8" ry="5"/></g><circle cx="20" cy="20" r="5" fill="#78350f"/></svg>'
         };
         function svgEstrellaEj(color) {
           return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" fill="' + color + '"/></svg>';
@@ -1887,45 +1922,71 @@
         function decElEj(svg, left, top, tam, anim, dur, delay, op) {
           return '<span class="dec-el ' + anim + '" style="left:' + left + '%;top:' + top + '%;width:' + tam + 'px;height:' + tam + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
         }
+        function decAnchoEj(svg, top, alto, anim, dur, delay, op) {
+          return '<span class="dec-el ' + anim + '" style="left:0;top:' + top + '%;width:100%;height:' + alto + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
+        }
         function decorElementosEjercicio(slug) {
           var h = "";
           if (slug === "navideno") {
-            var copos = [[8, 16, 12, -8], [26, 22, 16, -3], [44, 14, 11, -14], [62, 24, 15, -6], [84, 18, 13, -11]];
-            for (var i = 0; i < copos.length; i++) h += decElEj(SVG_DECOR_EJ.copo, copos[i][0], 0, copos[i][1], "decorCaer", copos[i][2], copos[i][3], ".85");
-            h += decElEj(SVG_DECOR_EJ.arbol, 6, 80, 48, "decorFlotar", 6, 0, ".85");
+            var copos = [[8, 30, 10, -8, 0], [22, 36, 13, -3, 1], [38, 26, 11, -13, 2], [52, 34, 12, -6, 0], [66, 28, 10, -1, 1], [78, 36, 13, -11, 2], [90, 30, 11, -4, 0], [14, 32, 12, -9, 1]];
+            var copoVar = ["copoR", "copoV", "copoB"];
+            for (var i = 0; i < copos.length; i++) h += decElEj(SVG_DECOR_EJ[copoVar[copos[i][4]]], copos[i][0], 0, copos[i][1], "decorCaer", copos[i][2], copos[i][3], ".95");
+            h += decAnchoEj(SVG_DECOR_EJ.guirnalda, 0, 44, "decorFlotar", 6, 0, ".95");
+            h += decElEj(SVG_DECOR_EJ.arbol, 6, 78, 52, "decorBalanceo", 5, 0, ".95");
+            h += decElEj(SVG_DECOR_EJ.gorro, 76, 8, 44, "decorBalanceo", 4, -1, ".95");
+            h += decElEj(SVG_DECOR_EJ.regalo, 70, 80, 40, "decorBalanceo", 4, -2, ".95");
           } else if (slug === "halloween") {
-            var murc = [[14, 38, 18, -14], [34, 44, 22, -6], [54, 36, 16, -20]];
-            for (var j = 0; j < murc.length; j++) h += decElEj(SVG_DECOR_EJ.murcielago, 0, murc[j][0], murc[j][1], "decorVolar", murc[j][2], murc[j][3], ".9");
-            h += decElEj(SVG_DECOR_EJ.calabaza, 84, 82, 40, "decorFlotar", 5, 0, ".9");
+            var murc = [[12, 40, 9, -3], [28, 46, 11, -7], [46, 38, 9, -1], [64, 44, 10, -5], [82, 40, 9, -8]];
+            for (var j = 0; j < murc.length; j++) h += decElEj(SVG_DECOR_EJ.murcielago, 0, murc[j][0], murc[j][1], "decorVolar", murc[j][2], murc[j][3], ".95");
+            h += decElEj(SVG_DECOR_EJ.calabaza, 6, 82, 42, "decorFlotar", 5, 0, ".95");
+            h += decElEj(SVG_DECOR_EJ.calabaza, 86, 80, 40, "decorFlotar", 6, -2, ".95");
+            h += decElEj(SVG_DECOR_EJ.fantasma, 40, 68, 40, "decorFlotar", 5, -1, ".95");
+            h += decElEj(SVG_DECOR_EJ.telarana, 0, 0, 80, "", 0, 0, ".8");
+            h += decElEj(SVG_DECOR_EJ.luna, 76, 6, 56, "", 0, 0, ".95");
           } else if (slug === "gatuno") {
-            var huellas = [[10, 20, 20, 5, 0], [32, 44, 24, 6, -2], [58, 18, 20, 5, -1], [80, 40, 24, 6, -3]];
-            for (var k = 0; k < huellas.length; k++) h += decElEj(SVG_DECOR_EJ.huella, huellas[k][0], huellas[k][1], huellas[k][2], "decorFlotar", huellas[k][3], huellas[k][4], ".45");
-            h += decElEj(SVG_DECOR_EJ.figPunto, 46, 70, 12, "decorFlotar", 5, 0, ".7");
+            var huellas = [[10, 18, 22, 5, 0], [30, 42, 26, 6, -2], [52, 16, 22, 5, -1], [72, 40, 26, 6, -3], [16, 64, 24, 5, 0], [64, 62, 22, 6, -2]];
+            for (var k = 0; k < huellas.length; k++) h += decElEj(SVG_DECOR_EJ.huella, huellas[k][0], huellas[k][1], huellas[k][2], "decorFlotar", huellas[k][3], huellas[k][4], ".55");
+            h += decElEj(SVG_DECOR_EJ.ovillo, 0, 74, 34, "decorRodar", 18, -6, ".95");
+            h += decElEj(SVG_DECOR_EJ.pez, 74, 70, 40, "decorFlotar", 5, 0, ".9");
+            h += decElEj(SVG_DECOR_EJ.raton, 44, 84, 38, "decorFlotar", 5, -1, ".9");
           } else if (slug === "sirenas") {
-            var burb = [[12, 16, 11, -6], [32, 20, 13, -2], [56, 14, 10, -10], [80, 22, 14, -4]];
-            for (var b = 0; b < burb.length; b++) h += decElEj(SVG_DECOR_EJ.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".85");
+            var burb = [[10, 18, 11, -6], [26, 24, 13, -2], [46, 15, 10, -10], [62, 22, 14, -4], [78, 17, 11, -8], [90, 22, 12, -3]];
+            for (var b = 0; b < burb.length; b++) h += decElEj(SVG_DECOR_EJ.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".9");
             h += '<svg class="dec-onda" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 V12 H0 Z" fill="#0d9488" opacity=".18"/></svg>';
+            h += decElEj(SVG_DECOR_EJ.estrellaMar, 82, 10, 30, "decorFlotar", 5, 0, ".9");
+            h += decElEj(SVG_DECOR_EJ.concha, 66, 80, 36, "decorFlotar", 5, -1, ".9");
           } else if (slug === "solar") {
-            h += decElEj(SVG_DECOR_EJ.sol, 70, 6, 100, "decorGirar", 70, 0, ".9");
-            var chispas = [[12, 22, 14, 3, 0], [30, 52, 12, 4, -1], [86, 30, 16, 2.5, -2]];
-            for (var s = 0; s < chispas.length; s++) h += decElEj(svgEstrellaEj("#f59e0b"), chispas[s][0], chispas[s][1], chispas[s][2], "decorParpadear", chispas[s][3], chispas[s][4], ".9");
+            h += decElEj(SVG_DECOR_EJ.sol, 70, 4, 100, "decorGirar", 24, 0, ".95");
+            var chispas = [[12, 20, 16, 3, 0], [28, 50, 14, 2.5, -1], [52, 16, 18, 3.5, -2], [86, 34, 14, 3, 0], [16, 72, 16, 2.5, -1]];
+            for (var s = 0; s < chispas.length; s++) h += decElEj(svgEstrellaEj("#b45309"), chispas[s][0], chispas[s][1], chispas[s][2], "decorParpadear", chispas[s][3], chispas[s][4], ".9");
+            h += decElEj(SVG_DECOR_EJ.nube, 12, 60, 52, "decorFlotar", 6, 0, ".9");
           } else if (slug === "nocturno") {
-            h += decElEj(SVG_DECOR_EJ.luna, 76, 6, 60, "", 0, 0, ".95");
-            var estrellas = [[8, 14, 12, 3, 0], [24, 34, 14, 4, -1], [48, 12, 10, 2.5, -2], [66, 40, 12, 3.5, 0]];
+            h += decElEj(SVG_DECOR_EJ.luna, 76, 4, 60, "", 0, 0, ".95");
+            var estrellas = [[8, 12, 14, 3, 0], [22, 32, 16, 4, -1], [40, 10, 12, 2.5, -2], [56, 36, 14, 3.5, 0], [70, 14, 12, 3, -1], [86, 30, 16, 4, -2], [14, 52, 12, 3, 0]];
             for (var e = 0; e < estrellas.length; e++) h += decElEj(svgEstrellaEj("#f1f5f9"), estrellas[e][0], estrellas[e][1], estrellas[e][2], "decorParpadear", estrellas[e][3], estrellas[e][4], ".9");
+            h += decElEj(SVG_DECOR_EJ.constelacion, 30, 56, 52, "decorFlotar", 6, 0, ".8");
+            h += decElEj(SVG_DECOR_EJ.fugaz, 0, 12, 64, "decorFugaz", 9, -3, ".95");
           } else if (slug === "gta6") {
-            h += decElEj(SVG_DECOR_EJ.solNeon, 32, 4, 110, "decorBrillo", 3, 0, ".9");
-            h += decElEj(SVG_DECOR_EJ.palma, 6, 70, 64, "decorFlotar", 6, 0, ".85");
-            h += decElEj(SVG_DECOR_EJ.palma, 84, 74, 56, "decorFlotar", 7, -2, ".85");
-            h += decElEj(svgEstrellaEj("#22d3ee"), 20, 40, 14, "decorParpadear", 3, 0, ".9");
+            h += decElEj(SVG_DECOR_EJ.solNeon, 32, 2, 110, "decorBrillo", 3, 0, ".95");
+            h += decElEj(SVG_DECOR_EJ.palma, 4, 68, 66, "decorFlotar", 6, 0, ".85");
+            h += decElEj(SVG_DECOR_EJ.palma, 46, 74, 60, "decorFlotar", 5, -2, ".85");
+            h += decElEj(SVG_DECOR_EJ.palma, 84, 70, 62, "decorFlotar", 7, -1, ".85");
+            h += decElEj(svgEstrellaEj("#22d3ee"), 14, 18, 14, "decorParpadear", 3, 0, ".9");
+            h += decElEj(svgEstrellaEj("#22d3ee"), 60, 40, 16, "decorParpadear", 4, -1, ".9");
+            h += decElEj(svgEstrellaEj("#22d3ee"), 86, 22, 14, "decorParpadear", 3, -2, ".9");
+            h += decAnchoEj(SVG_DECOR_EJ.rejilla, 86, 60, "", 0, 0, ".8");
           } else if (slug === "blanco-negro") {
-            h += decElEj(SVG_DECOR_EJ.figCirculo, 12, 20, 32, "decorFlotar", 6, 0, ".7");
-            h += decElEj(SVG_DECOR_EJ.figPunto, 70, 60, 12, "decorFlotar", 5, -2, ".7");
-            h += decElEj(SVG_DECOR_EJ.figPunto, 40, 78, 10, "decorFlotar", 7, -1, ".7");
+            h += decElEj(SVG_DECOR_EJ.figCirculo, 10, 18, 34, "decorFlotar", 6, 0, ".7");
+            h += decElEj(SVG_DECOR_EJ.figCuadro, 78, 14, 30, "decorFlotar", 5, -2, ".7");
+            h += decElEj(SVG_DECOR_EJ.figTriangulo, 58, 62, 34, "decorFlotar", 7, -1, ".7");
+            var puntos = [[22, 44, 12, 5, 0], [40, 72, 12, 6, -2], [68, 48, 10, 5, -1], [84, 68, 12, 6, 0]];
+            for (var p = 0; p < puntos.length; p++) h += decElEj(SVG_DECOR_EJ.figPunto, puntos[p][0], puntos[p][1], puntos[p][2], "decorFlotar", puntos[p][3], puntos[p][4], ".7");
           } else if (slug === "vintage") {
             h += '<span class="dec-el" style="left:50%;top:4%;width:120px;height:24px;margin-left:-60px;opacity:.8;">' + SVG_DECOR_EJ.adorno + '</span>';
-            h += decElEj(SVG_DECOR_EJ.figPuntoSepia, 14, 30, 10, "decorFlotar", 6, 0, ".6");
-            h += decElEj(SVG_DECOR_EJ.figPuntoSepia, 78, 52, 8, "decorFlotar", 5, -2, ".6");
+            var motas = [[12, 22, 10, 5, 0], [30, 52, 12, 6, -2], [60, 30, 10, 5, -1], [80, 58, 12, 6, 0]];
+            for (var m = 0; m < motas.length; m++) h += decElEj(SVG_DECOR_EJ.figPuntoSepia, motas[m][0], motas[m][1], motas[m][2], "decorFlotar", motas[m][3], motas[m][4], ".6");
+            h += decElEj(SVG_DECOR_EJ.marco, 2, 2, 56, "", 0, 0, ".7");
+            h += decElEj(SVG_DECOR_EJ.flor, 40, 84, 28, "decorFlotar", 5, 0, ".8");
           }
           return h;
         }
