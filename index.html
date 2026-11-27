@@ -118,6 +118,320 @@
       background: var(--bg-card);
     }
 
+    /* Temas de la aplicación (v125): el tema por defecto no tiene reglas
+       (es el aspecto actual). Cada tema define sus variables sobre html
+       y sobre body para ganarle al modo oscuro por especificidad. */
+    html[data-tema="navideno"], html[data-tema="navideno"] body {
+      --pastel-purple: #fef3c7;
+      --pastel-purple-text: #14532d;
+      --bg-app: #fffbeb;
+      --bg-card: #ffffff;
+      --bg-soft: #fef9c3;
+      --text-main: #1c1917;
+      --text-muted: #78716c;
+      --border: #e3cf8f;
+      --primary: #166534;
+      --primary-dark: #14532d;
+      --primary-light: #dcfce7;
+      --water: #0284c7;
+      --water-bg: #f0f9ff;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+    }
+    html[data-tema="halloween"], html[data-tema="halloween"] body {
+      --pastel-purple: #1e1b2e;
+      --pastel-purple-text: #fbbf24;
+      --bg-app: #17131f;
+      --bg-card: #241d33;
+      --bg-soft: #2e2547;
+      --text-main: #f5f3ff;
+      --text-muted: #a8a0c0;
+      --border: #4c4266;
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --primary-light: #431407;
+      --protein-bg: #1e3a8a;
+      --carbs-bg: #78350f;
+      --fat-bg: #881337;
+      --fiber-bg: #4c1d95;
+      --sugar-bg: #831843;
+      --sodium-bg: #164e63;
+      --satfat-bg: #7c2d12;
+      --cholest-bg: #365314;
+      --water: #38bdf8;
+      --water-bg: #0c2d48;
+      --danger: #f87171;
+      --danger-bg: #450a0a;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    html[data-tema="gatuno"], html[data-tema="gatuno"] body {
+      --pastel-purple: #f3e9dc;
+      --pastel-purple-text: #5d4229;
+      --bg-app: #faf5ec;
+      --bg-card: #fffdf8;
+      --bg-soft: #f3e9dc;
+      --text-main: #3e2723;
+      --text-muted: #8d6e63;
+      --border: #e0d3c0;
+      --primary: #7c5a3a;
+      --primary-dark: #5d4229;
+      --primary-light: #f5e9d8;
+      --water: #0284c7;
+      --water-bg: #e8f4f8;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+    }
+    html[data-tema="sirenas"], html[data-tema="sirenas"] body {
+      --pastel-purple: #a5f3fc;
+      --pastel-purple-text: #0f766e;
+      --bg-app: #f0fdfa;
+      --bg-card: #ffffff;
+      --bg-soft: #ecfeff;
+      --text-main: #134e4a;
+      --text-muted: #5b8a8a;
+      --border: #99f6e4;
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #ccfbf1;
+      --water: #0891b2;
+      --water-bg: #ecfeff;
+      --danger: #e11d48;
+      --danger-bg: #fff1f2;
+    }
+    html[data-tema="solar"], html[data-tema="solar"] body {
+      --pastel-purple: #fde68a;
+      --pastel-purple-text: #92400e;
+      --bg-app: #fffbeb;
+      --bg-card: #ffffff;
+      --bg-soft: #fef9c3;
+      --text-main: #451a03;
+      --text-muted: #92400e;
+      --border: #fcd34d;
+      --primary: #d97706;
+      --primary-dark: #b45309;
+      --primary-light: #fef3c7;
+      --water: #0284c7;
+      --water-bg: #f0f9ff;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+    }
+    html[data-tema="nocturno"], html[data-tema="nocturno"] body {
+      --pastel-purple: #0b1220;
+      --pastel-purple-text: #c4b5fd;
+      --bg-app: #0f172a;
+      --bg-card: #1e293b;
+      --bg-soft: #263449;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #064e3b;
+      --protein-bg: #1e3a8a;
+      --carbs-bg: #78350f;
+      --fat-bg: #881337;
+      --fiber-bg: #4c1d95;
+      --sugar-bg: #831843;
+      --sodium-bg: #164e63;
+      --satfat-bg: #7c2d12;
+      --cholest-bg: #365314;
+      --water: #38bdf8;
+      --water-bg: #0c4a6e;
+      --danger: #f87171;
+      --danger-bg: #450a0a;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    html[data-tema="gta6"], html[data-tema="gta6"] body {
+      --pastel-purple: #1a0b2e;
+      --pastel-purple-text: #f0abfc;
+      --bg-app: #150826;
+      --bg-card: #22103d;
+      --bg-soft: #2d1550;
+      --text-main: #fdf4ff;
+      --text-muted: #c4b5fd;
+      --border: #4c1d95;
+      --primary: #ec4899;
+      --primary-dark: #db2777;
+      --primary-light: #500724;
+      --protein-bg: #1e3a8a;
+      --carbs-bg: #78350f;
+      --fat-bg: #881337;
+      --fiber-bg: #4c1d95;
+      --sugar-bg: #831843;
+      --sodium-bg: #164e63;
+      --satfat-bg: #7c2d12;
+      --cholest-bg: #365314;
+      --water: #22d3ee;
+      --water-bg: #083344;
+      --danger: #f87171;
+      --danger-bg: #450a0a;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    html[data-tema="blanco-negro"], html[data-tema="blanco-negro"] body {
+      --pastel-purple: #e5e5e5;
+      --pastel-purple-text: #000000;
+      --bg-app: #f5f5f5;
+      --bg-card: #ffffff;
+      --bg-soft: #fafafa;
+      --text-main: #000000;
+      --text-muted: #525252;
+      --border: #d4d4d4;
+      --primary: #000000;
+      --primary-dark: #000000;
+      --primary-light: #e5e5e5;
+      --protein: #404040;
+      --protein-bg: #f5f5f5;
+      --carbs: #737373;
+      --carbs-bg: #fafafa;
+      --fat: #171717;
+      --fat-bg: #e5e5e5;
+      --fiber: #525252;
+      --fiber-bg: #f5f5f5;
+      --sugar: #404040;
+      --sugar-bg: #fafafa;
+      --sodium: #737373;
+      --sodium-bg: #f5f5f5;
+      --satfat: #262626;
+      --satfat-bg: #e5e5e5;
+      --cholest: #525252;
+      --cholest-bg: #fafafa;
+      --water: #404040;
+      --water-bg: #f5f5f5;
+      --danger: #000000;
+      --danger-bg: #e5e5e5;
+    }
+    html[data-tema="vintage"], html[data-tema="vintage"] body {
+      --pastel-purple: #e8dcc3;
+      --pastel-purple-text: #6b4423;
+      --bg-app: #f7f1e3;
+      --bg-card: #fdf8ec;
+      --bg-soft: #f1e7d0;
+      --text-main: #3b2f23;
+      --text-muted: #8a7a63;
+      --border: #d8c9a8;
+      --primary: #8b5e3c;
+      --primary-dark: #6b4423;
+      --primary-light: #f5eeda;
+      --water: #5b7d8a;
+      --water-bg: #eef2f0;
+      --danger: #a44a3f;
+      --danger-bg: #f7e8e4;
+    }
+    /* Solo Vintage cambia la fuente */
+    html[data-tema="vintage"] body {
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    /* Temas oscuros: mismos ajustes extra que body.modo-oscuro */
+    html[data-tema="halloween"] .input, html[data-tema="halloween"] .select,
+    html[data-tema="halloween"] select, html[data-tema="halloween"] input,
+    html[data-tema="halloween"] textarea,
+    html[data-tema="nocturno"] .input, html[data-tema="nocturno"] .select,
+    html[data-tema="nocturno"] select, html[data-tema="nocturno"] input,
+    html[data-tema="nocturno"] textarea,
+    html[data-tema="gta6"] .input, html[data-tema="gta6"] .select,
+    html[data-tema="gta6"] select, html[data-tema="gta6"] input,
+    html[data-tema="gta6"] textarea {
+      background: var(--bg-soft);
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+    html[data-tema="halloween"] .input::placeholder,
+    html[data-tema="halloween"] input::placeholder,
+    html[data-tema="halloween"] textarea::placeholder,
+    html[data-tema="nocturno"] .input::placeholder,
+    html[data-tema="nocturno"] input::placeholder,
+    html[data-tema="nocturno"] textarea::placeholder,
+    html[data-tema="gta6"] .input::placeholder,
+    html[data-tema="gta6"] input::placeholder,
+    html[data-tema="gta6"] textarea::placeholder {
+      color: var(--text-muted);
+    }
+    html[data-tema="halloween"] .modal-box,
+    html[data-tema="nocturno"] .modal-box,
+    html[data-tema="gta6"] .modal-box {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+    html[data-tema="halloween"] .tabla-nutri,
+    html[data-tema="nocturno"] .tabla-nutri,
+    html[data-tema="gta6"] .tabla-nutri {
+      background: var(--bg-card);
+    }
+    html[data-tema="halloween"] .tab-btn.activa,
+    html[data-tema="nocturno"] .tab-btn.activa,
+    html[data-tema="gta6"] .tab-btn.activa {
+      background: var(--bg-soft);
+      color: var(--primary);
+    }
+    html[data-tema="halloween"] .top-brand-bar,
+    html[data-tema="nocturno"] .top-brand-bar,
+    html[data-tema="gta6"] .top-brand-bar {
+      background: linear-gradient(90deg, var(--pastel-purple), var(--primary-light), var(--pastel-purple));
+      color: var(--pastel-purple-text);
+    }
+    html[data-tema="halloween"] .hero-panel,
+    html[data-tema="nocturno"] .hero-panel,
+    html[data-tema="gta6"] .hero-panel {
+      background: var(--bg-card);
+    }
+
+    /* Filas del selector de temas */
+    .tema-fila {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      background: var(--bg-soft);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tema-fila.activo {
+      border: 2px solid var(--primary);
+    }
+    .tema-muestras {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .tema-muestra {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+    }
+    .tema-texto {
+      flex: 1;
+      min-width: 0;
+    }
+    .tema-nombre {
+      display: block;
+    }
+    .tema-desc {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+    .tema-check {
+      font-size: 18px;
+      color: var(--primary);
+      visibility: hidden;
+      flex-shrink: 0;
+    }
+    .tema-fila.activo .tema-check {
+      visibility: visible;
+    }
+
 
     * {
       box-sizing: border-box;
@@ -1364,6 +1678,13 @@
     @keyframes gatitoPuntitas { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-3px) scaleY(1.05); } }
     @keyframes gatitoZoomies { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
 </style>
+  <script>
+    // Tema guardado: se aplica antes de pintar para no parpadear el tema por defecto.
+    try {
+      var _t = localStorage.getItem("temaAplicacion-v1");
+      if (_t && ["defecto", "navideno", "halloween", "gatuno", "sirenas", "solar", "nocturno", "gta6", "blanco-negro", "vintage"].indexOf(_t) !== -1) document.documentElement.dataset.tema = _t;
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <div class="app-container">
@@ -1492,7 +1813,8 @@
           <div class="calendar-weekday">D</div>
         </div>
         <div id="calendarioDias" class="calendar-days"></div>
-        <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+        <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" id="btnCerrarCalendario" class="btn btn-soft" style="padding: 6px 12px; font-size: 12px;">Cerrar calendario</button>
           <button type="button" id="btnIrHoy" class="btn btn-soft" style="padding: 6px 12px; font-size: 12px;">Ir a hoy</button>
         </div>
       </div>
@@ -1918,6 +2240,8 @@
             </div>
           </div>
 
+          <button type="button" id="btnAbrirTemas" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">Temas de la aplicación</button>
+
           <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px; margin-bottom: 12px;">
             <div class="form-label" style="margin-bottom: 0;">Respaldo de datos</div>
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Guarda todo (perfil, diario, almacén y recetas) en un archivo .json. Guárdalo fuera del teléfono; con Cargar lo restauras en este u otro dispositivo.</div>
@@ -1946,6 +2270,15 @@
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Borra solo los registros hechos en el Diario (alimentos, agua y actividad física de todos los días) y tu registro de peso y medidas. No borra tus alimentos ni recetas guardados en Almacén, ni tu perfil, ni tus apartados.</div>
             <button type="button" id="btnReiniciarDatosDiario" class="btn" style="width: 100%; background: var(--danger); color: #ffffff;">Reiniciar datos guardados en la app</button>
           </div>
+      </div>
+    </section>
+
+    <section id="vista-temas" class="vista">
+      <div class="card">
+        <button type="button" id="btnVolverAjustesTemas" class="btn btn-soft" style="margin-bottom: 10px;">← Volver a Ajustes</button>
+        <h2 class="section-title">Temas de la aplicación</h2>
+        <p class="section-subtitle">Toca un tema para aplicarlo al instante.</p>
+        <div id="listaTemas" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
     </section>
 
@@ -3013,7 +3346,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v123";
+    const VERSION_APP = "v125";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -7648,6 +7981,10 @@
       renderizarCalendario();
     });
 
+    document.getElementById("btnCerrarCalendario").addEventListener("click", () => {
+      document.getElementById("calendarioDrawer").classList.remove("open");
+    });
+
     function cambiarDiaSeleccionado(direccion) {
       confirmarBorradoPendiente();
       fechaSeleccionada = obtenerFechaISO(direccion, fechaSeleccionada);
@@ -7803,7 +8140,7 @@
        sexo, edad, estatura, peso, pasos de la semana pasada y ejercicio
        (días, horas, tipo). Calcula el metabolismo basal (BMR, siempre
        Mifflin-St Jeor) y el gasto total (TDEE) y muestra mantenimiento,
-       3 déficits y 3 superávits con su cambio de peso aprox. por semana.
+       4 déficits y 4 superávits con su cambio de peso aprox. por semana.
        Cada opción muestra además los macros recomendados (P/C/G en gramos y % de kcal).
        Son estimaciones, no una prescripción. Los datos se guardan en
        este teléfono (localStorage, clave calculadora-calorias-v1).
@@ -7958,7 +8295,7 @@
         pal = Math.min(1.9, pal + Math.min(0.3, dias * horas * factorTipo));
       }
       const tdee = Math.round(bmr * pal);
-      calcMostrarResultados({ objetivo, bmr, pal, tdee, diasAsumidos, peso });
+      calcMostrarResultados({ objetivo, bmr, pal, tdee, diasAsumidos, peso, dias, horas });
     }
     /* Macros recomendados por objetivo (v117): proteína fija 2 g/kg de
        peso actual en las 7 opciones; grasa 25% de las kcal del objetivo;
@@ -7979,20 +8316,49 @@
     }
     function calcLineaMacros(kcal, peso) {
       const m = calcMacrosObjetivo(kcal, peso);
-      return `P ${fmtNum(m.prot, 0)} g (${m.pctP}%) · C ${fmtNum(m.carb, 0)} g (${m.pctC}%) · G ${fmtNum(m.gras, 0)} g (${m.pctG}%)`;
+      return `<span style="white-space: nowrap;">P ${fmtNum(m.prot, 0)} g (${m.pctP}%)</span> · <span style="white-space: nowrap;">C ${fmtNum(m.carb, 0)} g (${m.pctC}%)</span> · <span style="white-space: nowrap;">G ${fmtNum(m.gras, 0)} g (${m.pctG}%)</span>`;
+    }
+    /* Nutrientes recomendados por objetivo (v125): fibra es objetivo
+       diario (14 g por cada 1000 kcal); azúcar y grasa saturada son
+       máximos del 10% de las kcal (OMS); sodio 2,300 mg y colesterol
+       300 mg son máximos fijos. Se calculan con las kcal FINALES que
+       se muestran (el déficit agresivo usa el valor ajustado al BMR). */
+    function calcLineaNutrientes(kcal) {
+      const fibra = Math.round(14 * kcal / 1000);
+      const azucar = Math.round(0.10 * kcal / 4);
+      const grasaSat = Math.round(0.10 * kcal / 9);
+      return `<span style="white-space: nowrap;">Fibra ${fmtNum(fibra, 0)} g</span> · <span style="white-space: nowrap;">Azúcar máx ${fmtNum(azucar, 0)} g</span> · <span style="white-space: nowrap;">Sodio máx 2,300 mg</span> · <span style="white-space: nowrap;">Grasa sat. máx ${fmtNum(grasaSat, 0)} g</span> · <span style="white-space: nowrap;">Colesterol máx 300 mg</span>`;
+    }
+    /* Agua recomendada en la calculadora (v125): base peso x 35 ml/kg
+       (misma regla de la app, redondeada a múltiplos de 50 ml) + 500 ml
+       por cada hora de ejercicio al día en promedio semanal
+       (días x horas / 7). Sin peso válido -> 2000 ml; sin ejercicio,
+       solo la base. El desglose mostrado es total - base. */
+    function calcAguaRecomendada(peso, dias, horas) {
+      const base = calcularAguaRecomendadaMlPeso(peso);
+      const p = Number(peso) || 0;
+      if (p <= 0) return { total: 2000, base: 2000, extra: 0 };
+      let extra = 0;
+      if (Number.isFinite(dias) && Number.isFinite(horas) && dias > 0 && horas > 0) {
+        extra = (dias * horas / 7) * 500;
+      }
+      const total = Math.round((p * 35 + extra) / 50) * 50;
+      return { total, base, extra: total - base };
     }
     function calcMostrarResultados(r) {
       const kgSem = (d) => fmtNum(Math.abs(d) * 7 / 7700, 2);
+      const aguaCalc = calcAguaRecomendada(r.peso, r.dias, r.horas);
+      const vasosCalc = Math.round(aguaCalc.total / 250);
       const filaDeficit = (deficit, nombre) => {
         let kcal = r.tdee - deficit;
         let real = deficit;
         let ajustado = false;
         if (kcal < r.bmr) { kcal = r.bmr; real = r.tdee - r.bmr; ajustado = true; }
-        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span></span></div>`;
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span><br /><span style="font-size: 12px;">${calcLineaNutrientes(kcal)}</span></span></div>`;
       };
       const filaSuperavit = (sup, nombre) => {
         const kcal = r.tdee + sup;
-        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span></span></div>`;
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span><br /><span style="font-size: 12px;">${calcLineaNutrientes(kcal)}</span></span></div>`;
       };
       const cont = document.getElementById("calcResultados");
       if (!cont) return;
@@ -8000,26 +8366,30 @@
         <div style="font-size: 13px; line-height: 1.7;">
           <div>Tu metabolismo basal (BMR): <strong>${fmtNum(r.bmr, 0)} kcal/día</strong></div>
           <div>Tu gasto total estimado (TDEE): <strong>${fmtNum(r.tdee, 0)} kcal/día</strong> · factor de actividad ${fmtNum(r.pal, 2)}</div>
+          <div>Agua recomendada: <strong>${fmtNum(aguaCalc.total, 0)} ml/día</strong>${aguaCalc.extra > 0 ? ` (${fmtNum(aguaCalc.base, 0)} base + ${fmtNum(aguaCalc.extra, 0)} por ejercicio)` : ""} (≈ ${vasosCalc} vasos de 250 ml)</div>
           ${r.diasAsumidos ? `<div style="font-size: 12px; color: var(--text-muted);">No escribiste cuántos días haces ejercicio, así que se asumieron 3 días por semana.</div>` : ""}
         </div>
         <div class="calc-resultado-grupo${r.objetivo === "mantenimiento" ? " destacado" : ""}">
           <div style="font-weight: 800;">Mantenimiento${r.objetivo === "mantenimiento" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
           <div style="margin-top: 4px;"><strong>${fmtNum(r.tdee, 0)} kcal/día</strong></div>
           <div style="font-size: 12px; margin-top: 2px;">${calcLineaMacros(r.tdee, r.peso)}</div>
+          <div style="font-size: 12px; margin-top: 2px;">${calcLineaNutrientes(r.tdee)}</div>
         </div>
         <div class="calc-resultado-grupo${r.objetivo === "bajar" ? " destacado" : ""}">
           <div style="font-weight: 800;">Para bajar de peso${r.objetivo === "bajar" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
           ${filaDeficit(250, "Suave (−250 kcal)")}
           ${filaDeficit(500, "Moderado (−500 kcal)")}
           ${filaDeficit(750, "Agresivo (−750 kcal)")}
+          ${filaDeficit(1000, "Súper agresivo (−1000 kcal)")}
         </div>
         <div class="calc-resultado-grupo${r.objetivo === "subir" ? " destacado" : ""}">
           <div style="font-weight: 800;">Para subir de peso${r.objetivo === "subir" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
           ${filaSuperavit(250, "Suave (+250 kcal)")}
           ${filaSuperavit(500, "Moderado (+500 kcal)")}
           ${filaSuperavit(750, "Alto (+750 kcal)")}
+          ${filaSuperavit(1000, "Súper agresivo (+1000 kcal)")}
         </div>
-        <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0;">Son estimaciones, no una prescripción.</p>`;
+        <p style="font-size: 12px; color: var(--text-muted); margin: 10px 0 0;">Son estimaciones, no una prescripción. Fibra es objetivo diario; azúcar, sodio, grasa saturada y colesterol son máximos diarios recomendados.</p>`;
       cont.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     calcConectarChips("grupoCalcObjetivo", "objetivo");
@@ -8034,6 +8404,90 @@
       window.scrollTo(0, 0);
     });
     document.getElementById("btnVolverAjustesCalc").addEventListener("click", () => {
+      confirmarBorradoPendiente();
+      document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-ajustes"));
+      window.scrollTo(0, 0);
+    });
+
+    /* Temas de la aplicación */
+    const TEMAS_APP = [
+      { slug: "defecto", nombre: "Por defecto", desc: "El aspecto clásico de la app.", fondo: "#e9d5ff", primario: "#059669", acento: "#ffffff" },
+      { slug: "navideno", nombre: "Navideño", desc: "Rojo, verde y dorado para diciembre.", fondo: "#fef3c7", primario: "#166534", acento: "#dc2626" },
+      { slug: "halloween", nombre: "Halloween", desc: "Morado oscuro y naranja calabaza.", fondo: "#1e1b2e", primario: "#ea580c", acento: "#a855f7" },
+      { slug: "gatuno", nombre: "Gatuno", desc: "Cremas y cafés cálidos como los gatitos.", fondo: "#f3e9dc", primario: "#7c5a3a", acento: "#d9a05b" },
+      { slug: "sirenas", nombre: "Sirenas", desc: "Aguas turquesa y coral de mar.", fondo: "#a5f3fc", primario: "#0d9488", acento: "#fb7185" },
+      { slug: "solar", nombre: "Solar", desc: "Amarillo sol y ámbar brillante.", fondo: "#fde68a", primario: "#d97706", acento: "#f59e0b" },
+      { slug: "nocturno", nombre: "Nocturno", desc: "Azul noche oscuro, suave para la vista.", fondo: "#0b1220", primario: "#10b981", acento: "#38bdf8" },
+      { slug: "gta6", nombre: "GTA 6", desc: "Neón rosa y cian estilo Vice City.", fondo: "#1a0b2e", primario: "#ec4899", acento: "#22d3ee" },
+      { slug: "blanco-negro", nombre: "Blanco y negro", desc: "Todo en escala de grises.", fondo: "#e5e5e5", primario: "#000000", acento: "#737373" },
+      { slug: "vintage", nombre: "Vintage", desc: "Sepia y letra clásica de otra época.", fondo: "#e8dcc3", primario: "#8b5e3c", acento: "#c9a86a" }
+    ];
+    const CLAVE_TEMA_APP = "temaAplicacion-v1";
+    function temaValidoApp(slug) { return TEMAS_APP.some((t) => t.slug === slug); }
+    function obtenerTemaGuardado() {
+      try {
+        const g = localStorage.getItem(CLAVE_TEMA_APP);
+        if (g && temaValidoApp(g)) return g;
+      } catch (e) {}
+      return "defecto";
+    }
+    function aplicarTema(slug) {
+      if (!temaValidoApp(slug)) slug = "defecto";
+      document.documentElement.dataset.tema = slug;
+      try { localStorage.setItem(CLAVE_TEMA_APP, slug); } catch (e) {}
+      const metaTema = document.querySelector('meta[name="theme-color"]');
+      const tema = TEMAS_APP.find((t) => t.slug === slug);
+      if (metaTema && tema) metaTema.setAttribute("content", tema.fondo);
+      marcarTemaActivo(slug);
+    }
+    function marcarTemaActivo(slug) {
+      document.querySelectorAll("#listaTemas .tema-fila").forEach((b) => b.classList.toggle("activo", b.dataset.tema === slug));
+    }
+    function renderizarListaTemas() {
+      const lista = document.getElementById("listaTemas");
+      if (!lista) return;
+      lista.innerHTML = "";
+      TEMAS_APP.forEach((t) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "tema-fila";
+        b.dataset.tema = t.slug;
+        const muestras = document.createElement("span");
+        muestras.className = "tema-muestras";
+        [t.fondo, t.primario, t.acento].forEach((c) => {
+          const d = document.createElement("span");
+          d.className = "tema-muestra";
+          d.style.background = c;
+          muestras.appendChild(d);
+        });
+        const texto = document.createElement("span");
+        texto.className = "tema-texto";
+        const nom = document.createElement("span");
+        nom.className = "tema-nombre";
+        nom.textContent = t.nombre;
+        const des = document.createElement("span");
+        des.className = "tema-desc";
+        des.textContent = t.desc;
+        texto.appendChild(nom);
+        texto.appendChild(des);
+        const check = document.createElement("span");
+        check.className = "tema-check";
+        check.textContent = "✓";
+        b.appendChild(muestras);
+        b.appendChild(texto);
+        b.appendChild(check);
+        b.addEventListener("click", () => aplicarTema(t.slug));
+        lista.appendChild(b);
+      });
+      marcarTemaActivo(obtenerTemaGuardado());
+    }
+    document.getElementById("btnAbrirTemas").addEventListener("click", () => {
+      confirmarBorradoPendiente();
+      renderizarListaTemas();
+      document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-temas"));
+      window.scrollTo(0, 0);
+    });
+    document.getElementById("btnVolverAjustesTemas").addEventListener("click", () => {
       confirmarBorradoPendiente();
       document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-ajustes"));
       window.scrollTo(0, 0);
@@ -10717,12 +11171,17 @@
     });
 
     /* Perfil y Agua */
-    function calcularAguaRecomendadaMl() {
-      const peso = Number(appState.perfil.peso) || 0;
+    /* Agua recomendada (v125): peso x 35 ml/kg, redondeado a multiplos
+       de 50 ml; sin peso, 2000 ml. La calculadora usa su propio peso. */
+    function calcularAguaRecomendadaMlPeso(pesoKg) {
+      const peso = Number(pesoKg) || 0;
       if (peso > 0) {
         return Math.round((peso * 35) / 50) * 50;
       }
       return 2000;
+    }
+    function calcularAguaRecomendadaMl() {
+      return calcularAguaRecomendadaMlPeso(appState.perfil.peso);
     }
 
     function actualizarSugerenciaAguaPerfil() {
@@ -11918,8 +12377,8 @@
       { n: "Correr en círculos", d: 3000, cls: "comp-zoomies" },
       { n: "Mirar la luna", d: 3500, cls: "comp-mirar", prop: "luna", b: "¡Luna!" },
       { n: "Perseguir su reflejo", d: 3500, cls: "comp-cazar", prop: "espejo" },
-      { n: "Cantar su cancion", d: 6000, cls: "comp-baile", b: "Nana nanita porque estas tan bonita", b2: "Nana nanita pesosa bebe", solo: "blanco" },
-      { n: "Beerus cabron", d: 4000, vel: 3.2, cls: "comp-parkour", b: "Beerus cabron", solo: "cafe" }
+      { n: "Cantar su cancion", d: 6000, cls: "comp-baile", b: "♪ Nana nanita porque estas tan bonita ♫", b2: "♪ Nana nanita pesosa bebe ♫", solo: "blanco" },
+      { n: "Beerus cabron", d: 4000, vel: 3.2, cls: "comp-parkour", b: "¡Beerus cabron!", solo: "cafe" }
     ];
     function htmlPropGato(tipo) {
       if (tipo === "mariposa") return '<svg viewBox="0 0 30 24" width="30" height="24"><ellipse cx="10" cy="10" rx="7" ry="9" fill="#f9a8d4"/><ellipse cx="20" cy="10" rx="7" ry="9" fill="#f9a8d4"/><ellipse cx="15" cy="12" rx="2" ry="7" fill="#4a2c17"/></svg>';
@@ -12561,6 +13020,7 @@
         const vista = vistaActivaId();
         if (vista === "vista-calculadora") { document.getElementById("btnVolverAjustesCalc").click(); ultimoToqueAtras = 0; reponerEstadoAtras(); return; }
         if (vista === "vista-perfil") { document.getElementById("btnVolverAjustes").click(); ultimoToqueAtras = 0; reponerEstadoAtras(); return; }
+        if (vista === "vista-temas") { document.getElementById("btnVolverAjustesTemas").click(); ultimoToqueAtras = 0; reponerEstadoAtras(); return; }
         if (vista === "vista-detalle-alimento" || vista === "vista-nuevo-alimento") { volverAListaAlimento(); ultimoToqueAtras = 0; reponerEstadoAtras(); return; }
         // 4. Otra pestana principal: volver al Diario.
         if (vista && vista !== "vista-diario") {
@@ -12583,6 +13043,7 @@
       window.scrollTo(0, 0);
       window.addEventListener("load", () => window.scrollTo(0, 0));
       try {
+        aplicarTema(obtenerTemaGuardado());
         cargarFormularioPerfil();
         renderizarDiario();
         renderizarAlmacen();
