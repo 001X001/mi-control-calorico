@@ -2994,7 +2994,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v116";
+    const VERSION_APP = "v117";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -5719,6 +5719,8 @@
       "mandarina": [["1 mandarina chica", 80], ["1 mandarina mediana", 110], ["1 mandarina grande", 140]],
       "toronja": [["1 toronja chica", 200], ["1 toronja mediana", 250], ["1 toronja grande", 330]],
       "kiwi": [["1 kiwi chico", 60], ["1 kiwi mediano", 75], ["1 kiwi grande", 100]],
+      "clara de huevo": [["1 clara (35 g)", 35], ["2 claras (70 g)", 70], ["3 claras (105 g)", 105]],
+      "yema de huevo": [["1 yema (17 g)", 17], ["2 yemas (34 g)", 34]],
       "huevo": [["1 huevo", 50], ["2 huevos", 100], ["3 huevos", 150]],
       "tortilla de maiz": [["1 tortilla de maiz (10 cm)", 15], ["1 tortilla de maiz (12 cm)", 20], ["1 tortilla de maiz (14 cm)", 25], ["1 tortilla de maiz (16 cm)", 35]],
       "tortilla de harina": [["1 tortilla de harina (10 cm)", 20], ["1 tortilla de harina (12 cm)", 25], ["1 tortilla de harina (14 cm)", 35], ["1 tortilla de harina (16 cm)", 45]],
@@ -7764,12 +7766,13 @@
     document.getElementById("btnCerrarEjercicio").addEventListener("click", () => {
       cerrarEjercicio();
     });
-    /* ---------- Calculadora de calorías (v115) ----------
+    /* ---------- Calculadora de calorías (v117) ----------
        En Ajustes, primer botón: abre esta vista. Pregunta objetivo,
        sexo, edad, estatura, peso, pasos de la semana pasada y ejercicio
        (días, horas, tipo). Calcula el metabolismo basal (BMR, siempre
        Mifflin-St Jeor) y el gasto total (TDEE) y muestra mantenimiento,
        3 déficits y 3 superávits con su cambio de peso aprox. por semana.
+       Cada opción muestra además los macros recomendados (P/C/G en gramos y % de kcal).
        Son estimaciones, no una prescripción. Los datos se guardan en
        este teléfono (localStorage, clave calculadora-calorias-v1).
        El factor de actividad sale de los pasos y del ejercicio (por
@@ -7923,7 +7926,28 @@
         pal = Math.min(1.9, pal + Math.min(0.3, dias * horas * factorTipo));
       }
       const tdee = Math.round(bmr * pal);
-      calcMostrarResultados({ objetivo, bmr, pal, tdee, diasAsumidos });
+      calcMostrarResultados({ objetivo, bmr, pal, tdee, diasAsumidos, peso });
+    }
+    /* Macros recomendados por objetivo (v117): proteína fija 2 g/kg de
+       peso actual en las 7 opciones; grasa 25% de las kcal del objetivo;
+       carbohidratos, el resto. Se calculan con las kcal FINALES que se
+       muestran (el déficit agresivo usa el valor ajustado al BMR). */
+    function calcMacrosObjetivo(kcal, peso) {
+      const prot = Math.round(2 * peso);
+      let gras = Math.round(0.25 * kcal / 9);
+      let carb = Math.round((kcal - prot * 4 - gras * 9) / 4);
+      if (carb < 0) {
+        carb = 0;
+        gras = Math.max(0, Math.floor((kcal - prot * 4) / 9));
+      }
+      const pctP = Math.round(prot * 4 / kcal * 100);
+      const pctG = Math.round(gras * 9 / kcal * 100);
+      const pctC = Math.max(0, 100 - pctP - pctG);
+      return { prot, carb, gras, pctP, pctC, pctG };
+    }
+    function calcLineaMacros(kcal, peso) {
+      const m = calcMacrosObjetivo(kcal, peso);
+      return `P ${fmtNum(m.prot, 0)} g (${m.pctP}%) · C ${fmtNum(m.carb, 0)} g (${m.pctC}%) · G ${fmtNum(m.gras, 0)} g (${m.pctG}%)`;
     }
     function calcMostrarResultados(r) {
       const kgSem = (d) => fmtNum(Math.abs(d) * 7 / 7700, 2);
@@ -7932,9 +7956,12 @@
         let real = deficit;
         let ajustado = false;
         if (kcal < r.bmr) { kcal = r.bmr; real = r.tdee - r.bmr; ajustado = true; }
-        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span></span></div>`;
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span></span></div>`;
       };
-      const filaSuperavit = (sup, nombre) => `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(r.tdee + sup, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span></span></div>`;
+      const filaSuperavit = (sup, nombre) => {
+        const kcal = r.tdee + sup;
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span></span></div>`;
+      };
       const cont = document.getElementById("calcResultados");
       if (!cont) return;
       cont.innerHTML = `
@@ -7946,6 +7973,7 @@
         <div class="calc-resultado-grupo${r.objetivo === "mantenimiento" ? " destacado" : ""}">
           <div style="font-weight: 800;">Mantenimiento${r.objetivo === "mantenimiento" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
           <div style="margin-top: 4px;"><strong>${fmtNum(r.tdee, 0)} kcal/día</strong></div>
+          <div style="font-size: 12px; margin-top: 2px;">${calcLineaMacros(r.tdee, r.peso)}</div>
         </div>
         <div class="calc-resultado-grupo${r.objetivo === "bajar" ? " destacado" : ""}">
           <div style="font-weight: 800;">Para bajar de peso${r.objetivo === "bajar" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
