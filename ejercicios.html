@@ -226,30 +226,56 @@
       .btn[disabled] { opacity: .45; cursor: default; }
       .btn[disabled]:active { transform: none; }
 
-      /* Alarma sonando */
-      .alarm-bar {
-        display: none;
-        margin-top: 6px;
-        background: var(--alarm-soft);
-        border: 1.5px solid var(--alarm);
-        border-radius: 10px;
-        padding: 6px 8px;
+      /* Alarma sonando: botón circular grande al centro; se apaga
+         tocando cualquier parte de la pantalla */
+      #alarmOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        gap: 18px;
+        padding: 20px;
+        text-align: center;
+        background: rgba(28, 26, 23, .55);
+        cursor: pointer;
       }
-      .alarm-bar.show { display: flex; }
-      .alarm-bar p {
+      .alarm-title {
         margin: 0;
-        flex: 1;
+        font-size: 24px;
         font-weight: 800;
-        color: var(--alarm);
-        font-size: 13px;
+        color: #ffffff;
       }
-      .btn-alarm {
+      .alarm-circle {
+        appearance: none;
+        border: none;
+        cursor: pointer;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
         background: var(--alarm);
-        color: #fff;
-        flex: 0 0 auto;
-        min-height: 32px;
+        color: #ffffff;
+        font: inherit;
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.25;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .35), 0 0 0 8px rgba(255, 255, 255, .25);
+      }
+      .alarm-circle:active { transform: scale(.96); }
+      .alarm-hint {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, .85);
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .alarm-circle { animation: alarm-pulse 1.2s ease-in-out infinite; }
+        @keyframes alarm-pulse {
+          0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, .35), 0 0 0 8px rgba(255, 255, 255, .25); }
+          50% { box-shadow: 0 10px 30px rgba(0, 0, 0, .35), 0 0 0 18px rgba(255, 255, 255, .12); }
+        }
       }
       section.ringing { border-color: var(--alarm); }
       section.ringing .display { color: var(--alarm); }
@@ -739,6 +765,11 @@
   </head>
   <body>
     <div id="flashOverlay" aria-hidden="true"></div>
+    <div id="alarmOverlay" hidden role="alertdialog" aria-label="Alarma: se acabó el tiempo">
+      <p class="alarm-title">¡Se acabó el tiempo!</p>
+      <button type="button" id="timerStopAlarm" class="alarm-circle">Detener<br />alarma</button>
+      <p class="alarm-hint">Toca cualquier parte de la pantalla para detenerla</p>
+    </div>
     <main class="wrap">
       <div id="homeView" hidden>
         <section class="panel home-panel" aria-label="Elige tu perfil">
@@ -798,10 +829,6 @@
             <span aria-hidden="true">seg</span>
           </div>
 
-          <div class="alarm-bar" id="timerAlarm" role="alert">
-            <p>¡Se acabó el tiempo!</p>
-            <button type="button" class="btn btn-alarm" id="timerStopAlarm">Detener alarma</button>
-          </div>
           <p class="status" id="timerStatus">Listo: 1 minuto seleccionado</p>
         </div>
 
@@ -1580,7 +1607,7 @@
         var timerBar = document.getElementById('timerBar');
         var timerToggle = document.getElementById('timerToggle');
         var timerResetBtn = document.getElementById('timerReset');
-        var timerAlarmBar = document.getElementById('timerAlarm');
+        var alarmOverlay = document.getElementById('alarmOverlay');
         var timerStatus = document.getElementById('timerStatus');
         var inMin = document.getElementById('inMin');
         var inSec = document.getElementById('inSec');
@@ -1605,7 +1632,7 @@
           alarm.stop();
           panel.classList.remove('ringing');
           document.body.classList.remove('flashing');
-          timerAlarmBar.classList.remove('show');
+          alarmOverlay.hidden = true;
         }
         function finish() {
           running = false;
@@ -1613,7 +1640,7 @@
           timerToggle.textContent = 'Iniciar';
           panel.classList.add('ringing');
           document.body.classList.add('flashing');
-          timerAlarmBar.classList.add('show');
+          alarmOverlay.hidden = false;
           timerStatus.textContent = '¡Tiempo cumplido!';
           alarm.start();
         }
@@ -1662,6 +1689,12 @@
         timerToggle.addEventListener('click', function () { running ? pauseTimer() : startTimer(); });
         timerResetBtn.addEventListener('click', function () { resetTimer(); });
         document.getElementById('timerStopAlarm').addEventListener('click', function () {
+          silence();
+          timerStatus.textContent = 'Alarma detenida';
+        });
+
+        /* Tocar cualquier parte de la pantalla detiene la alarma */
+        alarmOverlay.addEventListener('click', function () {
           silence();
           timerStatus.textContent = 'Alarma detenida';
         });
