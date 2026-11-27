@@ -67,6 +67,8 @@
         --ink-soft: #57534e;
         --line: #fecaca;
         --accent: #b91c1c;
+        --btn-glow: rgba(185, 28, 28, 0.45);
+        --btn-glow2: rgba(22, 101, 52, 0.35);
         --accent-ink: #ffffff;
         --green: #166534;
         --alarm: #b91c1c;
@@ -83,6 +85,8 @@
         --ink-soft: #b8a6d9;
         --line: #3d2b52;
         --accent: #ea580c;
+        --btn-glow: rgba(234, 88, 12, 0.45);
+        --btn-glow2: rgba(234, 88, 12, 0.20);
         --accent-ink: #ffffff;
         --green: #ea580c;
         --alarm: #dc2626;
@@ -99,6 +103,8 @@
         --ink-soft: #7c5a3a;
         --line: #e0d3bd;
         --accent: #7c5a3a;
+        --btn-glow: rgba(124, 90, 58, 0.45);
+        --btn-glow2: rgba(124, 90, 58, 0.20);
         --accent-ink: #ffffff;
         --green: #7c5a3a;
         --alarm: #b91c1c;
@@ -115,6 +121,8 @@
         --ink-soft: #475569;
         --line: #67e8f9;
         --accent: #0d9488;
+        --btn-glow: rgba(13, 148, 136, 0.45);
+        --btn-glow2: rgba(8, 145, 178, 0.30);
         --accent-ink: #ffffff;
         --green: #0d9488;
         --alarm: #0e7490;
@@ -131,6 +139,8 @@
         --ink-soft: #57534e;
         --line: #fbbf24;
         --accent: #d97706;
+        --btn-glow: rgba(217, 119, 6, 0.45);
+        --btn-glow2: rgba(234, 88, 12, 0.30);
         --accent-ink: #ffffff;
         --green: #d97706;
         --alarm: #b45309;
@@ -147,6 +157,8 @@
         --ink-soft: #94a3b8;
         --line: #334155;
         --accent: #10b981;
+        --btn-glow: rgba(16, 185, 129, 0.45);
+        --btn-glow2: rgba(56, 189, 248, 0.30);
         --accent-ink: #0c1712;
         --green: #10b981;
         --alarm: #f43f5e;
@@ -163,6 +175,8 @@
         --ink-soft: #d8b4fe;
         --line: #7e22ce;
         --accent: #ec4899;
+        --btn-glow: rgba(236, 72, 153, 0.50);
+        --btn-glow2: rgba(34, 211, 238, 0.30);
         --accent-ink: #0c1712;
         --green: #ec4899;
         --alarm: #db2777;
@@ -179,6 +193,8 @@
         --ink-soft: #404040;
         --line: #a3a3a3;
         --accent: #000000;
+        --btn-glow: rgba(0, 0, 0, 0.35);
+        --btn-glow2: rgba(0, 0, 0, 0.14);
         --accent-ink: #ffffff;
         --green: #000000;
         --alarm: #000000;
@@ -195,6 +211,8 @@
         --ink-soft: #7a6a54;
         --line: #d8c9a8;
         --accent: #8b5e3c;
+        --btn-glow: rgba(139, 94, 60, 0.45);
+        --btn-glow2: rgba(139, 94, 60, 0.20);
         --accent-ink: #ffffff;
         --green: #8b5e3c;
         --alarm: #991b1b;
@@ -244,7 +262,11 @@
       #decoracionTemaEjercicio .decorBrillo { animation-name: decorBrillo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
       #decoracionTemaEjercicio .decorBalanceo { animation-name: decorBalanceo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; transform-origin: 50% 0; }
       #decoracionTemaEjercicio .decorFugaz { animation-name: decorFugaz; animation-iteration-count: infinite; animation-timing-function: linear; }
-      @keyframes decorCaer { from { transform: translate3d(0, -12vh, 0) rotate(0deg); } to { transform: translate3d(0, 112vh, 0) rotate(320deg); } }
+
+      #decoracionTemaEjercicio .decorNadar { animation-name: decorNadar; animation-iteration-count: infinite; animation-timing-function: linear; }
+      #decoracionTemaEjercicio .dec-onda { animation-name: decorOla; animation-duration: 5s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+      @keyframes decorNadar { 0% { transform: translate3d(-18vw, 0, 0); } 25% { transform: translate3d(20vw, -10px, 0); } 50% { transform: translate3d(50vw, 8px, 0); } 75% { transform: translate3d(82vw, -8px, 0); } 100% { transform: translate3d(118vw, 0, 0); } }
+      @keyframes decorOla { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-16px); } }      @keyframes decorCaer { from { transform: translate3d(0, -12vh, 0) rotate(0deg); } to { transform: translate3d(0, 112vh, 0) rotate(320deg); } }
       @keyframes decorVolar { 0% { transform: translate3d(-15vw, 0, 0); } 25% { transform: translate3d(20vw, -16px, 0); } 50% { transform: translate3d(55vw, 8px, 0); } 75% { transform: translate3d(85vw, -12px, 0); } 100% { transform: translate3d(115vw, 0, 0); } }
       @keyframes decorSubir { 0% { transform: translate3d(0, 108vh, 0); opacity: 0; } 10% { opacity: .85; } 90% { opacity: .85; } 100% { transform: translate3d(0, -12vh, 0); opacity: 0; } }
       @keyframes decorFlotar { 0%, 100% { transform: translateY(-10px); } 50% { transform: translateY(10px); } }
@@ -254,7 +276,9 @@
       @keyframes decorBrillo { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
       @keyframes decorBalanceo { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
       @keyframes decorFugaz { 0% { transform: translate3d(-10vw, 0, 0); opacity: 0; } 8% { opacity: 1; } 45% { transform: translate3d(55vw, 16vh, 0); opacity: 1; } 60%, 100% { transform: translate3d(110vw, 30vh, 0); opacity: 0; } }
-      @media (prefers-reduced-motion: reduce) {
+
+      @keyframes decorNadar { 0% { transform: translate3d(-18vw, 0, 0); } 25% { transform: translate3d(20vw, -10px, 0); } 50% { transform: translate3d(50vw, 8px, 0); } 75% { transform: translate3d(82vw, -8px, 0); } 100% { transform: translate3d(118vw, 0, 0); } }
+      @keyframes decorOla { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-16px); } }      @media (prefers-reduced-motion: reduce) {
         #decoracionTemaEjercicio .dec-el { animation: none !important; }
       }
       /* Patrones de fondo por tema (baja opacidad) */
@@ -436,7 +460,39 @@
         flex: 1;
       }
       .btn:active { transform: scale(.985); }
-      .btn-main { background: var(--accent); color: var(--accent-ink); }
+
+      /* Botones con animación temática (v128): brillo/pulso del tema +
+         sheen en el botón principal + escala al presionar.
+         Solo temas no-defecto. Sin efecto a propósito: .btn-ghost, los
+         botones de cada ejercicio (serie/editar/borrar/mover) y la
+         alarma circular. */
+      html[data-tema]:not([data-tema="defecto"]) .btn-main,
+      html[data-tema]:not([data-tema="defecto"]) .preset[aria-pressed="true"],
+      html[data-tema]:not([data-tema="defecto"]) .serie-btn[aria-pressed="true"],
+      html[data-tema]:not([data-tema="defecto"]) .mode-btn[aria-pressed="true"] {
+        animation: btnGlowTema 3.4s ease-in-out infinite;
+      }
+      html[data-tema]:not([data-tema="defecto"]) .btn-main {
+        position: relative; overflow: hidden; isolation: isolate;
+      }
+      html[data-tema]:not([data-tema="defecto"]) .btn-main::after {
+        content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 34%;
+        background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.30), transparent);
+        transform: translateX(-160%) skewX(-18deg); z-index: -1;
+        animation: btnSheen 6s ease-in-out infinite; pointer-events: none;
+      }
+      html[data-tema]:not([data-tema="defecto"]) .btn-main:active { transform: scale(0.94); }
+      html[data-tema]:not([data-tema="defecto"]) .preset:active,
+      html[data-tema]:not([data-tema="defecto"]) .serie-btn:active,
+      html[data-tema]:not([data-tema="defecto"]) .mode-btn:active { transform: scale(0.95); }
+      @keyframes btnGlowTema { 0%, 100% { box-shadow: 0 4px 14px var(--btn-glow); } 50% { box-shadow: 0 4px 24px var(--btn-glow2), 0 0 0 2px var(--btn-glow); } }
+      @keyframes btnSheen { 0% { transform: translateX(-160%) skewX(-18deg); } 18%, 100% { transform: translateX(160%) skewX(-18deg); } }
+      @media (prefers-reduced-motion: reduce) {
+        html[data-tema]:not([data-tema="defecto"]) .btn-main,
+        html[data-tema]:not([data-tema="defecto"]) .preset[aria-pressed="true"],
+        html[data-tema]:not([data-tema="defecto"]) .serie-btn[aria-pressed="true"],
+        html[data-tema]:not([data-tema="defecto"]) .mode-btn[aria-pressed="true"] { animation: none !important; }
+      }      .btn-main { background: var(--accent); color: var(--accent-ink); }
       .btn-main.sw { background: var(--green); color: #fff; }
       @media (prefers-color-scheme: dark) {
         .btn-main.sw { color: #0c1712; }
@@ -1909,7 +1965,11 @@
           telarana: '<svg viewBox="0 0 80 80" aria-hidden="true"><g stroke="#d1d5db" stroke-width="1.5" fill="none"><path d="M0 0 L78 12 M0 0 L58 42 M0 0 L42 58 M0 0 L12 78"/><path d="M26 0 Q26 26 0 26 M52 0 Q52 52 0 52 M78 0 Q78 78 0 78"/></g><circle cx="40" cy="40" r="4" fill="#0f0d1a"/><path d="M36 38 L30 32 M44 38 L50 32 M36 42 L30 48 M44 42 L50 48" stroke="#0f0d1a" stroke-width="1.5" stroke-linecap="round"/></svg>',
           raton: '<svg viewBox="0 0 48 40" aria-hidden="true"><circle cx="13" cy="10" r="6" fill="#6b7280"/><circle cx="13" cy="10" r="3" fill="#f9a8d4"/><ellipse cx="24" cy="22" rx="15" ry="10" fill="#6b7280"/><circle cx="36" cy="18" r="1.6" fill="#1c1917"/><circle cx="38" cy="21" r="2" fill="#f472b6"/><path d="M9 24 Q2 26 4 18" stroke="#6b7280" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
           concha: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 L4 14 Q20 2 36 14 Z" fill="#fb7185"/><path d="M20 36 L12 12 M20 36 L20 8 M20 36 L28 12" stroke="#be123c" stroke-width="1.5" fill="none"/></svg>',
-          nube: '<svg viewBox="0 0 64 40" aria-hidden="true"><g fill="#ffffff" stroke="#e5e7eb" stroke-width="1"><circle cx="18" cy="24" r="10"/><circle cx="32" cy="16" r="12"/><circle cx="47" cy="24" r="9"/><rect x="10" y="22" width="46" height="10" rx="5"/></g></svg>',
+          sirena: '<svg viewBox="0 0 120 64" aria-hidden="true"><path d="M68 34 Q52 30 40 40 Q30 48 20 46 Q12 44 8 38 Q16 40 22 34 Q30 26 44 28 Q56 30 68 34 Z" fill="#0d9488"/><path d="M20 46 Q10 52 4 48 Q10 44 14 40 Q18 44 20 46 Z" fill="#0891b2"/><path d="M20 46 Q12 40 6 42 Q12 46 16 48 Z" fill="#0e7490"/><path d="M52 34 Q48 38 44 34 M44 36 Q40 40 36 36" stroke="#0f766e" stroke-width="1.5" fill="none"/><path d="M66 34 Q74 30 80 24 Q84 28 80 34 Q74 40 66 34 Z" fill="#f6c89f"/><path d="M80 26 Q92 20 104 18" stroke="#f6c89f" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M78 32 Q88 32 98 28" stroke="#f2c9a0" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M79 9 Q60 2 36 8 Q50 7 52 12 Q46 11 40 17 Q52 15 60 21 Q68 17 74 19 Q79 14 79 9 Z" fill="#0f766e"/><path d="M72 12 Q56 6 42 10 Q54 10 60 15 Q66 13 72 12 Z" fill="#14b8a6"/><circle cx="86" cy="15" r="8" fill="#f6c89f"/><path d="M88 13 Q90 15 92 13" stroke="#7c2d12" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M89 18 Q91 19.5 93 18" stroke="#b45309" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="94" cy="16" r="1.2" fill="#fda4af"/></svg>',
+          sirenaRoca: '<svg viewBox="0 0 80 88" aria-hidden="true"><path d="M6 88 Q4 64 20 58 Q38 52 56 58 Q74 63 74 88 Z" fill="#78716c"/><path d="M20 58 Q38 52 56 58 Q48 62 34 62 Q24 62 20 58 Z" fill="#57534e"/><path d="M33 14 Q30 4 40 3 Q50 4 47 14 Q44 8 40 8 Q36 8 33 14 Z" fill="#0f766e"/><path d="M32 16 Q28 30 30 46 Q34 44 34 34 Q34 24 34 16 Z" fill="#0f766e"/><circle cx="40" cy="20" r="7.5" fill="#f6c89f"/><path d="M36 46 Q34 34 40 28 Q46 34 44 46 Z" fill="#f6c89f"/><path d="M38 32 Q30 38 28 46" stroke="#f6c89f" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M40 44 Q62 44 66 56 Q70 70 60 78 Q56 81 54 75 Q60 66 58 56 Q54 48 40 44 Z" fill="#0d9488"/><path d="M60 78 Q54 88 46 86 Q50 81 54 79 Q58 77 60 78 Z" fill="#0891b2"/><path d="M60 78 Q66 86 72 82 Q66 78 60 78 Z" fill="#0e7490"/><path d="M52 54 Q56 58 54 62 M50 66 Q54 68 53 72" stroke="#0f766e" stroke-width="1.5" fill="none"/><circle cx="37" cy="19" r="1" fill="#1c1917"/><circle cx="43" cy="19" r="1" fill="#1c1917"/><path d="M38 23 Q40 24.5 42 23" stroke="#b45309" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>',
+          coral: '<svg viewBox="0 0 48 56" aria-hidden="true"><g stroke="#fb7185" stroke-width="5" stroke-linecap="round" fill="none"><path d="M24 56 V30"/><path d="M24 40 Q12 34 10 22"/><path d="M24 36 Q36 30 38 18"/><path d="M24 28 Q18 20 16 10"/><path d="M24 24 Q30 16 30 8"/></g><circle cx="10" cy="20" r="3" fill="#fb7185"/><circle cx="38" cy="16" r="3" fill="#f472b6"/><circle cx="16" cy="8" r="3" fill="#fb7185"/><circle cx="30" cy="6" r="3" fill="#f472b6"/><circle cx="24" cy="28" r="3" fill="#f472b6"/></svg>',
+          rayoLuz: '<svg viewBox="0 0 60 120" aria-hidden="true"><path d="M18 0 L42 0 L56 120 L4 120 Z" fill="#ffffff" fill-opacity=".28"/></svg>',
+          caballito: '<svg viewBox="0 0 40 56" aria-hidden="true"><path d="M22 6 Q30 6 30 13 Q30 19 24 21 Q15 23 15 31 Q15 41 21 45 Q27 49 23 53" stroke="#0891b2" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="24" cy="9" r="6" fill="#0891b2"/><path d="M29 8 L34 10 L29 12 Z" fill="#0e7490"/><path d="M14 26 L19 28 M14 33 L19 35 M16 40 L21 42" stroke="#0e7490" stroke-width="2" stroke-linecap="round"/></svg>',          nube: '<svg viewBox="0 0 64 40" aria-hidden="true"><g fill="#ffffff" stroke="#e5e7eb" stroke-width="1"><circle cx="18" cy="24" r="10"/><circle cx="32" cy="16" r="12"/><circle cx="47" cy="24" r="9"/><rect x="10" y="22" width="46" height="10" rx="5"/></g></svg>',
           constelacion: '<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M10 12 L28 8 L44 20 L52 40 L30 48 L10 12" stroke="#f1f5f9" stroke-width="1.5" fill="none" opacity=".7"/><g fill="#fde68a"><circle cx="10" cy="12" r="2.6"/><circle cx="28" cy="8" r="2.6"/><circle cx="44" cy="20" r="2.6"/><circle cx="52" cy="40" r="2.6"/><circle cx="30" cy="48" r="2.6"/></g></svg>',
           fugaz: '<svg viewBox="0 0 80 40" aria-hidden="true"><path d="M4 30 L58 10" stroke="#fde68a" stroke-width="3" stroke-linecap="round" opacity=".8"/><path d="M14 33 L58 12" stroke="#fde68a" stroke-width="1.5" stroke-linecap="round" opacity=".45"/><path d="M66 2 L68.5 9.5 L76 12 L68.5 14.5 L66 22 L63.5 14.5 L56 12 L63.5 9.5 Z" fill="#fde68a"/></svg>',
           rejilla: '<svg viewBox="0 0 400 60" aria-hidden="true" preserveAspectRatio="none"><g stroke="#ec4899" stroke-width="1.5" opacity=".55"><path d="M0 10 H400 M0 24 H400 M0 40 H400 M0 58 H400"/></g><g stroke="#22d3ee" stroke-width="1.5" opacity=".55"><path d="M200 60 L0 0 M200 60 L80 0 M200 60 L160 0 M200 60 L240 0 M200 60 L320 0 M200 60 L400 0"/></g></svg>',
@@ -1921,6 +1981,9 @@
         }
         function decElEj(svg, left, top, tam, anim, dur, delay, op) {
           return '<span class="dec-el ' + anim + '" style="left:' + left + '%;top:' + top + '%;width:' + tam + 'px;height:' + tam + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
+        }
+        function decElEjWH(svg, left, top, w, h, anim, dur, delay, op) {
+          return '<span class="dec-el ' + anim + '" style="left:' + left + '%;top:' + top + '%;width:' + w + 'px;height:' + h + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
         }
         function decAnchoEj(svg, top, alto, anim, dur, delay, op) {
           return '<span class="dec-el ' + anim + '" style="left:0;top:' + top + '%;width:100%;height:' + alto + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
@@ -1950,12 +2013,18 @@
             h += decElEj(SVG_DECOR_EJ.pez, 74, 70, 40, "decorFlotar", 5, 0, ".9");
             h += decElEj(SVG_DECOR_EJ.raton, 44, 84, 38, "decorFlotar", 5, -1, ".9");
           } else if (slug === "sirenas") {
-            var burb = [[10, 18, 11, -6], [26, 24, 13, -2], [46, 15, 10, -10], [62, 22, 14, -4], [78, 17, 11, -8], [90, 22, 12, -3]];
-            for (var b = 0; b < burb.length; b++) h += decElEj(SVG_DECOR_EJ.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".9");
-            h += '<svg class="dec-onda" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 V12 H0 Z" fill="#0d9488" opacity=".18"/></svg>';
-            h += decElEj(SVG_DECOR_EJ.estrellaMar, 82, 10, 30, "decorFlotar", 5, 0, ".9");
-            h += decElEj(SVG_DECOR_EJ.concha, 66, 80, 36, "decorFlotar", 5, -1, ".9");
-          } else if (slug === "solar") {
+          var burb = [[10, 18, 11, -6], [26, 24, 13, -2], [46, 15, 10, -10], [62, 22, 14, -4], [78, 17, 11, -8], [90, 22, 12, -3]];
+          for (var b = 0; b < burb.length; b++) h += decElEj(SVG_DECOR_EJ.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".9");
+          h += decElEjWH(SVG_DECOR_EJ.sirena, 0, 28, 110, 58, "decorNadar", 24, -3, ".95");
+          h += decElEjWH(SVG_DECOR_EJ.sirenaRoca, 72, 68, 56, 62, "decorFlotar", 6, -1, ".95");
+          h += '<svg class="dec-onda" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 V12 H0 Z" fill="#0d9488" opacity=".18"/></svg>';
+          h += decElEj(SVG_DECOR_EJ.estrellaMar, 82, 10, 30, "decorFlotar", 5, 0, ".9");
+          h += decElEj(SVG_DECOR_EJ.caballito, 14, 74, 40, "decorFlotar", 6, 0, ".9");
+          h += decElEj(SVG_DECOR_EJ.pez, 56, 64, 38, "decorFlotar", 5, 0, ".85");
+          h += decElEj(SVG_DECOR_EJ.coral, 8, 80, 42, "decorFlotar", 5, -1, ".9");
+          h += '<span class="dec-el decorFlotar" style="left:60%;top:2%;width:44px;height:100px;opacity:.4;animation-duration:7s;animation-delay:0s;">' + SVG_DECOR_EJ.rayoLuz + '</span>';
+        } else if (slug === "solar") {
+
             h += decElEj(SVG_DECOR_EJ.sol, 70, 4, 100, "decorGirar", 24, 0, ".95");
             var chispas = [[12, 20, 16, 3, 0], [28, 50, 14, 2.5, -1], [52, 16, 18, 3.5, -2], [86, 34, 14, 3, 0], [16, 72, 16, 2.5, -1]];
             for (var s = 0; s < chispas.length; s++) h += decElEj(svgEstrellaEj("#b45309"), chispas[s][0], chispas[s][1], chispas[s][2], "decorParpadear", chispas[s][3], chispas[s][4], ".9");

@@ -138,6 +138,8 @@
       --text-muted: #78716c;
       --border: #fecaca;
       --primary: #b91c1c;
+      --btn-glow: rgba(185, 28, 28, 0.45);
+      --btn-glow2: rgba(22, 101, 52, 0.35);
       --primary-dark: #991b1b;
       --primary-light: #fee2e2;
       --water: #0284c7;
@@ -162,6 +164,8 @@
       --text-muted: #a8a0c0;
       --border: #4c4266;
       --primary: #ea580c;
+      --btn-glow: rgba(234, 88, 12, 0.45);
+      --btn-glow2: rgba(234, 88, 12, 0.20);
       --primary-dark: #c2410c;
       --primary-light: #431407;
       --protein-bg: #1e3a8a;
@@ -196,6 +200,8 @@
       --text-muted: #8d6e63;
       --border: #e0d3c0;
       --primary: #7c5a3a;
+      --btn-glow: rgba(124, 90, 58, 0.45);
+      --btn-glow2: rgba(124, 90, 58, 0.20);
       --primary-dark: #5d4229;
       --primary-light: #f5e9d8;
       --water: #0284c7;
@@ -220,6 +226,8 @@
       --text-muted: #5b8a8a;
       --border: #99f6e4;
       --primary: #0d9488;
+      --btn-glow: rgba(13, 148, 136, 0.45);
+      --btn-glow2: rgba(8, 145, 178, 0.30);
       --primary-dark: #0f766e;
       --primary-light: #ccfbf1;
       --water: #0891b2;
@@ -244,6 +252,8 @@
       --text-muted: #92400e;
       --border: #fcd34d;
       --primary: #d97706;
+      --btn-glow: rgba(217, 119, 6, 0.45);
+      --btn-glow2: rgba(234, 88, 12, 0.30);
       --primary-dark: #b45309;
       --primary-light: #fef3c7;
       --water: #0284c7;
@@ -268,6 +278,8 @@
       --text-muted: #94a3b8;
       --border: #334155;
       --primary: #10b981;
+      --btn-glow: rgba(16, 185, 129, 0.45);
+      --btn-glow2: rgba(56, 189, 248, 0.30);
       --primary-dark: #059669;
       --primary-light: #064e3b;
       --protein-bg: #1e3a8a;
@@ -302,6 +314,8 @@
       --text-muted: #c4b5fd;
       --border: #4c1d95;
       --primary: #ec4899;
+      --btn-glow: rgba(236, 72, 153, 0.50);
+      --btn-glow2: rgba(34, 211, 238, 0.30);
       --primary-dark: #db2777;
       --primary-light: #500724;
       --protein-bg: #1e3a8a;
@@ -336,6 +350,8 @@
       --text-muted: #525252;
       --border: #d4d4d4;
       --primary: #000000;
+      --btn-glow: rgba(0, 0, 0, 0.35);
+      --btn-glow2: rgba(0, 0, 0, 0.14);
       --primary-dark: #000000;
       --primary-light: #e5e5e5;
       --protein: #404040;
@@ -376,6 +392,8 @@
       --text-muted: #8a7a63;
       --border: #d8c9a8;
       --primary: #8b5e3c;
+      --btn-glow: rgba(139, 94, 60, 0.45);
+      --btn-glow2: rgba(139, 94, 60, 0.20);
       --primary-dark: #6b4423;
       --primary-light: #f5eeda;
       --water: #5b7d8a;
@@ -560,7 +578,11 @@
     #decoracionTema .decorBrillo { animation-name: decorBrillo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
     #decoracionTema .decorBalanceo { animation-name: decorBalanceo; animation-iteration-count: infinite; animation-timing-function: ease-in-out; transform-origin: 50% 0; }
     #decoracionTema .decorFugaz { animation-name: decorFugaz; animation-iteration-count: infinite; animation-timing-function: linear; }
-    @keyframes decorCaer { from { transform: translate3d(0, -12vh, 0) rotate(0deg); } to { transform: translate3d(0, 112vh, 0) rotate(320deg); } }
+
+    #decoracionTema .decorNadar { animation-name: decorNadar; animation-iteration-count: infinite; animation-timing-function: linear; }
+    #decoracionTema .dec-onda { animation-name: decorOla; animation-duration: 5s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+    @keyframes decorNadar { 0% { transform: translate3d(-18vw, 0, 0); } 25% { transform: translate3d(20vw, -10px, 0); } 50% { transform: translate3d(50vw, 8px, 0); } 75% { transform: translate3d(82vw, -8px, 0); } 100% { transform: translate3d(118vw, 0, 0); } }
+    @keyframes decorOla { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-16px); } }    @keyframes decorCaer { from { transform: translate3d(0, -12vh, 0) rotate(0deg); } to { transform: translate3d(0, 112vh, 0) rotate(320deg); } }
     @keyframes decorVolar { 0% { transform: translate3d(-15vw, 0, 0); } 25% { transform: translate3d(20vw, -16px, 0); } 50% { transform: translate3d(55vw, 8px, 0); } 75% { transform: translate3d(85vw, -12px, 0); } 100% { transform: translate3d(115vw, 0, 0); } }
     @keyframes decorSubir { 0% { transform: translate3d(0, 108vh, 0); opacity: 0; } 10% { opacity: .85; } 90% { opacity: .85; } 100% { transform: translate3d(0, -12vh, 0); opacity: 0; } }
     @keyframes decorFlotar { 0%, 100% { transform: translateY(-10px); } 50% { transform: translateY(10px); } }
@@ -570,7 +592,9 @@
     @keyframes decorBrillo { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
     @keyframes decorBalanceo { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
     @keyframes decorFugaz { 0% { transform: translate3d(-10vw, 0, 0); opacity: 0; } 8% { opacity: 1; } 45% { transform: translate3d(55vw, 16vh, 0); opacity: 1; } 60%, 100% { transform: translate3d(110vw, 30vh, 0); opacity: 0; } }
-    @media (prefers-reduced-motion: reduce) {
+
+    @keyframes decorNadar { 0% { transform: translate3d(-18vw, 0, 0); } 25% { transform: translate3d(20vw, -10px, 0); } 50% { transform: translate3d(50vw, 8px, 0); } 75% { transform: translate3d(82vw, -8px, 0); } 100% { transform: translate3d(118vw, 0, 0); } }
+    @keyframes decorOla { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-16px); } }    @media (prefers-reduced-motion: reduce) {
       #decoracionTema .dec-el { animation: none !important; }
     }
     /* Patrones de fondo por tema (baja opacidad, sobre el fondo de la página) */
@@ -1530,7 +1554,40 @@
     .nav-btn { transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease; }
     .nav-btn:active { transform: scale(0.93); }
     .nav-btn.activo .nav-icon-svg { animation: popDay 0.22s ease-out; }
-    .tab-btn { transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
+
+    /* Botones con animación temática (v128): brillo/pulso suave del color
+       del tema + sheen que cruza el botón + escala al presionar.
+       Solo temas no-defecto (Por defecto queda exactamente como hoy).
+       .btn-soft/.btn-light-glass/.btn-water/.btn-danger-ghost quedan sin
+       efecto a propósito (acciones secundarias; brillo en todo sería ruido). */
+    html[data-tema]:not([data-tema="defecto"]) .btn-primary,
+    html[data-tema]:not([data-tema="defecto"]) .btn-add-circle,
+    html[data-tema]:not([data-tema="defecto"]) .calc-chip.sel {
+      animation: btnGlowTema 3.4s ease-in-out infinite;
+    }
+    html[data-tema]:not([data-tema="defecto"]) .btn-primary {
+      position: relative; overflow: hidden; isolation: isolate;
+    }
+    html[data-tema]:not([data-tema="defecto"]) .btn-primary::after {
+      content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 34%;
+      background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.30), transparent);
+      transform: translateX(-160%) skewX(-18deg); z-index: -1;
+      animation: btnSheen 6s ease-in-out infinite; pointer-events: none;
+    }
+    html[data-tema]:not([data-tema="defecto"]) .btn-primary:active { transform: scale(0.94); }
+    html[data-tema]:not([data-tema="defecto"]) .btn-add-circle:active { transform: scale(0.86); }
+    html[data-tema]:not([data-tema="defecto"]) .nav-btn.activo { box-shadow: inset 0 -3px 0 var(--primary); }
+    @keyframes btnGlowTema { 0%, 100% { box-shadow: 0 4px 14px var(--btn-glow); } 50% { box-shadow: 0 4px 24px var(--btn-glow2), 0 0 0 2px var(--btn-glow); } }
+    @keyframes btnSheen { 0% { transform: translateX(-160%) skewX(-18deg); } 18%, 100% { transform: translateX(160%) skewX(-18deg); } }
+    /* Botón "Temas de la aplicación" (v128): más grande y con franja de
+       10 segmentos (uno por tema, colores fijos) con mini dibujo
+       representativo; la etiqueta queda sobre el fondo sólido del botón,
+       siempre legible. La franja no cambia con el tema activo. */
+    #btnAbrirTemas { flex-direction: column; gap: 0; padding: 0 0 12px; font-size: 16px; }
+    #btnAbrirTemas .temas-franja { display: flex; width: 100%; height: 24px; border-radius: var(--radius-sm) var(--radius-sm) 0 0; overflow: hidden; flex: none; }
+    #btnAbrirTemas .temas-seg { flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-width: 0; }
+    #btnAbrirTemas .temas-seg svg { width: 16px; height: 16px; display: block; }
+    #btnAbrirTemas .temas-etiqueta { padding-top: 10px; }    .tab-btn { transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
     .tab-btn.activa { animation: popDay 0.2s ease-out; }
     .cal-day-btn { transition: transform 0.12s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
     .cal-day-btn:active { transform: scale(0.92); }
@@ -2395,7 +2452,7 @@
             </div>
           </div>
 
-          <button type="button" id="btnAbrirTemas" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">Temas de la aplicación</button>
+          <button type="button" id="btnAbrirTemas" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;"><span class="temas-franja" aria-hidden="true"><span class="temas-seg" data-tema="defecto" style="background:#e9d5ff"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="#7c3aed" stroke-width="2.5"/></svg></span><span class="temas-seg" data-tema="navideno" style="background:#b91c1c"><svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#ffffff" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></g></svg></span><span class="temas-seg" data-tema="halloween" style="background:#1e1b2e"><svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 15 Q8 3 16 11 Q20 5 24 11 Q28 5 32 11 Q40 3 46 15 Q38 13 34 19 Q29 13 24 19 Q19 13 14 19 Q10 13 2 15 Z" fill="#fb923c"/></svg></span><span class="temas-seg" data-tema="gatuno" style="background:#f3e9dc"><svg viewBox="0 0 36 36" aria-hidden="true"><g fill="#7c5a3a"><ellipse cx="18" cy="24" rx="7" ry="5.5"/><circle cx="10" cy="14" r="3.2"/><circle cx="18" cy="11" r="3.2"/><circle cx="26" cy="14" r="3.2"/></g></svg></span><span class="temas-seg" data-tema="sirenas" style="background:#a5f3fc"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="rgba(255,255,255,.35)" stroke="#0d9488" stroke-width="1.8"/></svg></span><span class="temas-seg" data-tema="solar" style="background:#fde68a"><svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#d97706" stroke-width="7" stroke-linecap="round"><path d="M50 6v14M50 80v14M6 50h14M80 50h14M18 18l10 10M72 72l10 10M82 18L72 28M28 72L18 82"/></g><circle cx="50" cy="50" r="22" fill="#ea580c"/></svg></span><span class="temas-seg" data-tema="nocturno" style="background:#0b1220"><svg viewBox="0 0 60 60" aria-hidden="true"><path d="M38 4 A28 28 0 1 0 38 56 A22 22 0 1 1 38 4 Z" fill="#fde68a"/></svg></span><span class="temas-seg" data-tema="gta6" style="background:#1a0b2e"><svg viewBox="0 0 60 80" aria-hidden="true"><g fill="#ec4899"><path d="M28 80 Q30 50 26 28 L32 28 Q34 52 34 80 Z"/><path d="M28 28 Q10 10 2 22 Q16 24 28 32 Z"/><path d="M28 28 Q46 10 58 22 Q44 24 28 32 Z"/><path d="M28 26 Q28 6 20 2 Q24 16 26 28 Z"/><path d="M28 26 Q32 6 42 4 Q34 16 30 28 Z"/></g></svg></span><span class="temas-seg" data-tema="blanco-negro" style="background:#e5e5e5"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="#000000"/></svg></span><span class="temas-seg" data-tema="vintage" style="background:#e8dcc3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L15 12 L12 21 L9 12 Z" fill="#8b5e3c"/><circle cx="12" cy="12" r="2" fill="#fdf8ec"/></svg></span></span><span class="temas-etiqueta">Temas de la aplicación</span></button>
 
           <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px; margin-bottom: 12px;">
             <div class="form-label" style="margin-bottom: 0;">Respaldo de datos</div>
@@ -3501,7 +3558,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v127";
+    const VERSION_APP = "v128";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -8638,7 +8695,11 @@
       siluetaGato: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 44 V24 Q14 12 24 12 Q34 12 34 24 V44 Z" fill="#3f2d20"/><circle cx="24" cy="10" r="8" fill="#3f2d20"/><path d="M18 4 L19 10 M30 4 L29 10" stroke="#3f2d20" stroke-width="3" stroke-linecap="round"/><path d="M34 44 Q44 44 44 34" stroke="#3f2d20" stroke-width="4" fill="none" stroke-linecap="round"/></svg>',
       raton: '<svg viewBox="0 0 48 40" aria-hidden="true"><circle cx="13" cy="10" r="6" fill="#6b7280"/><circle cx="13" cy="10" r="3" fill="#f9a8d4"/><ellipse cx="24" cy="22" rx="15" ry="10" fill="#6b7280"/><circle cx="36" cy="18" r="1.6" fill="#1c1917"/><circle cx="38" cy="21" r="2" fill="#f472b6"/><path d="M9 24 Q2 26 4 18" stroke="#6b7280" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
       caballito: '<svg viewBox="0 0 40 56" aria-hidden="true"><path d="M22 6 Q30 6 30 13 Q30 19 24 21 Q15 23 15 31 Q15 41 21 45 Q27 49 23 53" stroke="#0891b2" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="24" cy="9" r="6" fill="#0891b2"/><path d="M29 8 L34 10 L29 12 Z" fill="#0e7490"/><path d="M14 26 L19 28 M14 33 L19 35 M16 40 L21 42" stroke="#0e7490" stroke-width="2" stroke-linecap="round"/></svg>',
-      concha: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 L4 14 Q20 2 36 14 Z" fill="#fb7185"/><path d="M20 36 L12 12 M20 36 L20 8 M20 36 L28 12" stroke="#be123c" stroke-width="1.5" fill="none"/></svg>',
+      sirena: '<svg viewBox="0 0 120 64" aria-hidden="true"><path d="M68 34 Q52 30 40 40 Q30 48 20 46 Q12 44 8 38 Q16 40 22 34 Q30 26 44 28 Q56 30 68 34 Z" fill="#0d9488"/><path d="M20 46 Q10 52 4 48 Q10 44 14 40 Q18 44 20 46 Z" fill="#0891b2"/><path d="M20 46 Q12 40 6 42 Q12 46 16 48 Z" fill="#0e7490"/><path d="M52 34 Q48 38 44 34 M44 36 Q40 40 36 36" stroke="#0f766e" stroke-width="1.5" fill="none"/><path d="M66 34 Q74 30 80 24 Q84 28 80 34 Q74 40 66 34 Z" fill="#f6c89f"/><path d="M80 26 Q92 20 104 18" stroke="#f6c89f" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M78 32 Q88 32 98 28" stroke="#f2c9a0" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M79 9 Q60 2 36 8 Q50 7 52 12 Q46 11 40 17 Q52 15 60 21 Q68 17 74 19 Q79 14 79 9 Z" fill="#0f766e"/><path d="M72 12 Q56 6 42 10 Q54 10 60 15 Q66 13 72 12 Z" fill="#14b8a6"/><circle cx="86" cy="15" r="8" fill="#f6c89f"/><path d="M88 13 Q90 15 92 13" stroke="#7c2d12" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M89 18 Q91 19.5 93 18" stroke="#b45309" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="94" cy="16" r="1.2" fill="#fda4af"/></svg>',
+      sirenaRoca: '<svg viewBox="0 0 80 88" aria-hidden="true"><path d="M6 88 Q4 64 20 58 Q38 52 56 58 Q74 63 74 88 Z" fill="#78716c"/><path d="M20 58 Q38 52 56 58 Q48 62 34 62 Q24 62 20 58 Z" fill="#57534e"/><path d="M33 14 Q30 4 40 3 Q50 4 47 14 Q44 8 40 8 Q36 8 33 14 Z" fill="#0f766e"/><path d="M32 16 Q28 30 30 46 Q34 44 34 34 Q34 24 34 16 Z" fill="#0f766e"/><circle cx="40" cy="20" r="7.5" fill="#f6c89f"/><path d="M36 46 Q34 34 40 28 Q46 34 44 46 Z" fill="#f6c89f"/><path d="M38 32 Q30 38 28 46" stroke="#f6c89f" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M40 44 Q62 44 66 56 Q70 70 60 78 Q56 81 54 75 Q60 66 58 56 Q54 48 40 44 Z" fill="#0d9488"/><path d="M60 78 Q54 88 46 86 Q50 81 54 79 Q58 77 60 78 Z" fill="#0891b2"/><path d="M60 78 Q66 86 72 82 Q66 78 60 78 Z" fill="#0e7490"/><path d="M52 54 Q56 58 54 62 M50 66 Q54 68 53 72" stroke="#0f766e" stroke-width="1.5" fill="none"/><circle cx="37" cy="19" r="1" fill="#1c1917"/><circle cx="43" cy="19" r="1" fill="#1c1917"/><path d="M38 23 Q40 24.5 42 23" stroke="#b45309" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>',
+      coral: '<svg viewBox="0 0 48 56" aria-hidden="true"><g stroke="#fb7185" stroke-width="5" stroke-linecap="round" fill="none"><path d="M24 56 V30"/><path d="M24 40 Q12 34 10 22"/><path d="M24 36 Q36 30 38 18"/><path d="M24 28 Q18 20 16 10"/><path d="M24 24 Q30 16 30 8"/></g><circle cx="10" cy="20" r="3" fill="#fb7185"/><circle cx="38" cy="16" r="3" fill="#f472b6"/><circle cx="16" cy="8" r="3" fill="#fb7185"/><circle cx="30" cy="6" r="3" fill="#f472b6"/><circle cx="24" cy="28" r="3" fill="#f472b6"/></svg>',
+      rayoLuz: '<svg viewBox="0 0 60 120" aria-hidden="true"><path d="M18 0 L42 0 L56 120 L4 120 Z" fill="#ffffff" fill-opacity=".28"/></svg>',
+      alga: '<svg viewBox="0 0 24 56" aria-hidden="true"><path d="M12 56 Q4 44 12 32 Q20 20 12 8 Q8 2 12 0" stroke="#059669" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M18 56 Q14 48 18 40" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',      concha: '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36 L4 14 Q20 2 36 14 Z" fill="#fb7185"/><path d="M20 36 L12 12 M20 36 L20 8 M20 36 L28 12" stroke="#be123c" stroke-width="1.5" fill="none"/></svg>',
       nube: '<svg viewBox="0 0 64 40" aria-hidden="true"><g fill="#ffffff" stroke="#e5e7eb" stroke-width="1"><circle cx="18" cy="24" r="10"/><circle cx="32" cy="16" r="12"/><circle cx="47" cy="24" r="9"/><rect x="10" y="22" width="46" height="10" rx="5"/></g></svg>',
       constelacion: '<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M10 12 L28 8 L44 20 L52 40 L30 48 L10 12" stroke="#f1f5f9" stroke-width="1.5" fill="none" opacity=".7"/><g fill="#fde68a"><circle cx="10" cy="12" r="2.6"/><circle cx="28" cy="8" r="2.6"/><circle cx="44" cy="20" r="2.6"/><circle cx="52" cy="40" r="2.6"/><circle cx="30" cy="48" r="2.6"/></g></svg>',
       fugaz: '<svg viewBox="0 0 80 40" aria-hidden="true"><path d="M4 30 L58 10" stroke="#fde68a" stroke-width="3" stroke-linecap="round" opacity=".8"/><path d="M14 33 L58 12" stroke="#fde68a" stroke-width="1.5" stroke-linecap="round" opacity=".45"/><path d="M66 2 L68.5 9.5 L76 12 L68.5 14.5 L66 22 L63.5 14.5 L56 12 L63.5 9.5 Z" fill="#fde68a"/></svg>',
@@ -8653,6 +8714,9 @@
     }
     function decEl(svg, left, top, tam, anim, dur, delay, op) {
       return '<span class="dec-el ' + anim + '" style="left:' + left + '%;top:' + top + '%;width:' + tam + 'px;height:' + tam + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
+    }
+    function decElWH(svg, left, top, w, h, anim, dur, delay, op) {
+      return '<span class="dec-el ' + anim + '" style="left:' + left + '%;top:' + top + '%;width:' + w + 'px;height:' + h + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
     }
     function decAncho(svg, top, alto, anim, dur, delay, op) {
       return '<span class="dec-el ' + anim + '" style="left:0;top:' + top + '%;width:100%;height:' + alto + 'px;opacity:' + op + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's;">' + svg + '</span>';
@@ -8694,16 +8758,24 @@
         h += decEl(SVG_DECOR.raton, 44, 84, 40, "decorFlotar", 5, -1, ".9");
         h += decEl(SVG_DECOR.siluetaGato, 86, 84, 48, "decorFlotar", 6, 0, ".95");
       } else if (slug === "sirenas") {
-        var burb = [[6, 18, 10, -10], [14, 24, 13, -2], [24, 15, 9, -12], [34, 26, 14, -5], [44, 17, 11, -1], [54, 22, 13, -9], [64, 16, 10, -4], [74, 25, 14, -11], [84, 18, 11, -6], [92, 22, 12, -3]];
+        var burb = [[6, 18, 10, -10], [14, 24, 13, -2], [24, 15, 9, -12], [34, 26, 14, -5], [44, 17, 11, -1], [54, 22, 13, -9], [64, 16, 10, -4], [74, 25, 14, -11], [84, 18, 11, -6], [92, 22, 12, -3], [10, 20, 12, -7], [40, 19, 10, -8]];
         for (var b = 0; b < burb.length; b++) h += decEl(SVG_DECOR.burbuja, burb[b][0], 0, burb[b][1], "decorSubir", burb[b][2], burb[b][3], ".9");
+        h += '<span class="dec-el decorFlotar" style="left:6%;top:2%;width:54px;height:120px;opacity:.45;animation-duration:7s;animation-delay:0s;">' + SVG_DECOR.rayoLuz + '</span>';
+        h += '<span class="dec-el decorFlotar" style="left:76%;top:0%;width:48px;height:120px;opacity:.4;animation-duration:8s;animation-delay:-2s;">' + SVG_DECOR.rayoLuz + '</span>';
+        h += decElWH(SVG_DECOR.sirena, 0, 26, 132, 70, "decorNadar", 26, -4, ".95");
+        h += decElWH(SVG_DECOR.sirenaRoca, 70, 66, 64, 70, "decorFlotar", 6, -1, ".95");
         h += '<svg class="dec-onda" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q12 0 25 6 T50 6 T75 6 T100 6 V12 H0 Z" fill="#0d9488" opacity=".18"/></svg>';
         h += decEl(SVG_DECOR.estrellaMar, 82, 10, 32, "decorFlotar", 5, 0, ".9");
-        h += decEl(SVG_DECOR.estrellaMar, 8, 44, 28, "decorFlotar", 6, -2, ".85");
         h += decEl(SVG_DECOR.concha, 68, 80, 38, "decorFlotar", 5, -1, ".9");
         h += decEl(SVG_DECOR.caballito, 14, 72, 44, "decorFlotar", 6, 0, ".9");
+        h += decEl(SVG_DECOR.caballito, 88, 58, 40, "decorFlotar", 5, -2, ".85");
         h += decEl(SVG_DECOR.pez, 56, 62, 40, "decorFlotar", 5, 0, ".85");
         h += decEl(SVG_DECOR.pez, 88, 70, 36, "decorFlotar", 6, -2, ".85");
+        h += decEl(SVG_DECOR.coral, 8, 78, 46, "decorFlotar", 5, 0, ".9");
+        h += decEl(SVG_DECOR.alga, 30, 82, 26, "decorFlotar", 6, -1, ".85");
+        h += decEl(SVG_DECOR.alga, 52, 84, 24, "decorFlotar", 5, -2, ".85");
       } else if (slug === "solar") {
+
         h += decEl(SVG_DECOR.sol, 68, 4, 110, "decorGirar", 24, 0, ".95");
         var chispas = [[8, 18, 16, 3, 0], [20, 42, 14, 2.5, -1], [34, 10, 18, 3.5, -2], [46, 58, 14, 3, 0], [58, 24, 16, 2.5, -1], [72, 46, 14, 3.5, -2], [86, 14, 18, 3, 0], [12, 70, 14, 2.5, -1], [30, 78, 16, 3, -2], [52, 84, 14, 3.5, 0]];
         for (var s = 0; s < chispas.length; s++) h += decEl(svgEstrellaDecor("#b45309"), chispas[s][0], chispas[s][1], chispas[s][2], "decorParpadear", chispas[s][3], chispas[s][4], ".9");
