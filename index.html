@@ -1240,6 +1240,7 @@
     @keyframes gatitoRespirarIdle { from { transform: scaleY(1) translateY(0); } to { transform: scaleY(1.035) translateY(-0.8px); } }
     .gatito.comp-salto svg { animation: gatitoSalto .55s ease-in-out 3; }
     .gatito.comp-salto-giro svg { animation: gatitoSaltoGiro .7s ease-in-out 2; }
+    .gatito.comp-parkour svg { animation: gatitoParkour .6s ease-in-out infinite; }
     .gatito.comp-giro svg { animation: gatitoGiro .6s ease-in-out 3; }
     .gatito.comp-rodar svg { animation: gatitoRodar .8s ease-in-out 2; }
     .gatito.comp-baile svg { animation: gatitoBaile .45s ease-in-out infinite; }
@@ -1296,6 +1297,7 @@
     @keyframes gatitoComer { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(9px) rotate(9deg); } }
     @keyframes gatitoSalto { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scaleY(1.05); } 70% { transform: translateY(0) scaleY(.92) scaleX(1.06); } 100% { transform: translateY(0) scale(1); } }
     @keyframes gatitoSaltoGiro { 0% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-14px) rotate(180deg); } 100% { transform: translateY(0) rotate(360deg); } }
+    @keyframes gatitoParkour { 0% { transform: translate(0, 0) rotate(0); } 20% { transform: translate(6px, -14px) rotate(120deg); } 40% { transform: translate(12px, 0) rotate(240deg); } 60% { transform: translate(6px, -14px) rotate(300deg); } 80%, 100% { transform: translate(0, 0) rotate(360deg); } }
     @keyframes gatitoGiro { from { transform: rotate(0); } to { transform: rotate(360deg); } }
     @keyframes gatitoRodar { 0% { transform: translateX(0) rotate(0); } 50% { transform: translateX(14px) rotate(180deg); } 100% { transform: translateX(0) rotate(360deg); } }
     @keyframes gatitoBaile { 0%,100% { transform: translateY(0) rotate(-10deg); } 50% { transform: translateY(-10px) rotate(10deg); } }
@@ -1338,6 +1340,7 @@
     .gatito.gatito-en-aire .gatito-sombra { transform: scale(.55); opacity: .35; }
     .gatito.comp-salto .gatito-sombra { animation: gatitoSombraSalto .55s ease-in-out; }
     .gatito.comp-salto-giro .gatito-sombra { animation: gatitoSombraSalto .7s ease-in-out; }
+    .gatito.comp-parkour .gatito-sombra { animation: gatitoSombraSalto .6s ease-in-out infinite; }
     .gatito.comp-arriba .gatito-sombra { animation: gatitoSombraSalto .7s ease-out; }
     @keyframes gatitoSombraSalto { 0%,100% { transform: scale(1); opacity: .8; } 50% { transform: scale(.55); opacity: .35; } }
     .gatito .gatito-efectos { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
@@ -3010,7 +3013,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v122";
+    const VERSION_APP = "v123";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -11914,7 +11917,9 @@
       { n: "Brincar de alegría", d: 3000, cls: "comp-salto", b: "¡Yay!" },
       { n: "Correr en círculos", d: 3000, cls: "comp-zoomies" },
       { n: "Mirar la luna", d: 3500, cls: "comp-mirar", prop: "luna", b: "¡Luna!" },
-      { n: "Perseguir su reflejo", d: 3500, cls: "comp-cazar", prop: "espejo" }
+      { n: "Perseguir su reflejo", d: 3500, cls: "comp-cazar", prop: "espejo" },
+      { n: "Cantar su cancion", d: 6000, cls: "comp-baile", b: "Nana nanita porque estas tan bonita", b2: "Nana nanita pesosa bebe", solo: "blanco" },
+      { n: "Beerus cabron", d: 4000, vel: 3.2, cls: "comp-parkour", b: "Beerus cabron", solo: "cafe" }
     ];
     function htmlPropGato(tipo) {
       if (tipo === "mariposa") return '<svg viewBox="0 0 30 24" width="30" height="24"><ellipse cx="10" cy="10" rx="7" ry="9" fill="#f9a8d4"/><ellipse cx="20" cy="10" rx="7" ry="9" fill="#f9a8d4"/><ellipse cx="15" cy="12" rx="2" ry="7" fill="#4a2c17"/></svg>';
@@ -11971,7 +11976,7 @@
     function cicloPasoParaVelocidad(vPxS) { return Math.min(0.9, Math.max(0.3, 27 / Math.max(20, vPxS))); }
     function duracionParpadeoMs() { return Math.random() < 0.15 ? 320 + Math.random() * 80 : 120 + Math.random() * 60; }
     function pausaPonderadaMs() { var r = Math.random(); if (r < 0.5) return 1500 + Math.random() * 1500; if (r < 0.85) return 3000 + Math.random() * 1500; return 4500 + Math.random() * 1500; }
-    var CLASES_SALTO_GATO = ["comp-salto", "comp-salto-giro", "comp-arriba"];
+    var CLASES_SALTO_GATO = ["comp-salto", "comp-salto-giro", "comp-arriba", "comp-parkour"];
     var PROPS_CAZA_GATO = ["mariposa", "laser", "mosca", "estambre", "raton", "liga"];
     var MICRO_GATO = [
       { cls: "gatito-micro-oreja", d: 350 },
@@ -12169,9 +12174,15 @@
       g.velProximo = 1;
       iniciarViaje(g, nx, ny, velocidad, function () { alLlegarPaseo(g); });
     }
+    // Solo de un gato: los comportamientos con "solo" solo los puede
+    // hacer ese gato ("blanco" o "cafe"); sin "solo" son de los dos.
+    function comportamientosParaGato(g) {
+      return COMPORTAMIENTOS_GATO.filter(function (c) { return !c.solo || c.solo === g.tipo; });
+    }
     function hacerComportamiento(g) {
       if (movimientoReducidoGatos) return;
-      var comp = COMPORTAMIENTOS_GATO[Math.floor(Math.random() * COMPORTAMIENTOS_GATO.length)];
+      var comps = comportamientosParaGato(g);
+      var comp = comps[Math.floor(Math.random() * comps.length)];
       g.el.classList.remove("gatito-respirar");
       var esSalto = comp.cls && CLASES_SALTO_GATO.indexOf(comp.cls) >= 0;
       var esCaza = comp.prop && PROPS_CAZA_GATO.indexOf(comp.prop) >= 0;
@@ -12195,6 +12206,12 @@
       if (comp.cls) g.el.classList.add(comp.cls);
       if (comp.svg) { g.variante = comp.svg; g.flip.innerHTML = svgGatito(g.cuerpo, g.puntos, comp.svg, g.lejos, g.tipo); refrescarRefsGato(g); }
       if (comp.b) { g.burbuja.textContent = comp.b; g.burbuja.classList.add("ver"); }
+      // Segunda parte del letrero (b2): se muestra la segunda mitad del
+      // comportamiento; p. ej. la cancion del gatito blanco.
+      var b2Timer = null;
+      if (comp.b && comp.b2) {
+        b2Timer = setTimeout(function () { if (g.burbuja) g.burbuja.textContent = comp.b2; }, Math.floor(comp.d / 2));
+      }
       var propEl = null, propTimer = null;
       if (comp.pelea) {
         var otro = null;
@@ -12251,6 +12268,7 @@
         if (comp.svg) { g.variante = "normal"; g.flip.innerHTML = svgGatito(g.cuerpo, g.puntos, "normal", g.lejos, g.tipo); refrescarRefsGato(g); }
         if (comp.b) g.burbuja.classList.remove("ver");
         if (propTimer) clearInterval(propTimer);
+        if (b2Timer) clearTimeout(b2Timer);
         if (g.caza) { g.caza = null; g.el.classList.remove("gatito-meneo"); g.el.classList.remove("gatito-en-aire"); }
         g.el.classList.remove("gatito-caminando");
         g.el.classList.remove("gatito-anticipacion");
