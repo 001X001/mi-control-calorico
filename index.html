@@ -2574,6 +2574,22 @@
     </div>
   </div>
 
+  <!-- MODAL: DETALLE DE ALIMENTO (v119: tocar el nombre en Diario o Almacén) -->
+  <div id="modalDetalleAlimento" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="detalleAlmTitulo">Detalle</h3>
+        <button type="button" class="btn btn-soft" onclick="cerrarModales()">
+          <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div id="detalleAlmContenido"></div>
+    </div>
+  </div>
+
   <!-- MODAL 7: ORDENAR APARTADOS DEL DIARIO -->
   <div id="modalOrdenApartados" class="modal-backdrop">
     <div class="modal-box">
@@ -2994,7 +3010,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v118";
+    const VERSION_APP = "v119";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -6589,7 +6605,7 @@
 
     function construirHTMLPreviewMacros(kcal, prot, carb, gras, fibra, prefijo = "") {
       return `
-        <div style="font-size:12px; font-weight:800; color:var(--text-main);">${prefijo}${fmtNum(kcal, 1)} kcal</div>
+        <div style="font-size:12px; font-weight:800; color:var(--text-main);">${prefijo}${fmtNum(kcal, 0)} kcal</div>
         <div class="preview-pills">
           <div class="preview-pill" style="background:var(--protein-bg); color:var(--protein);">P ${fmtNum(prot, 1)}g</div>
           <div class="preview-pill" style="background:var(--carbs-bg); color:var(--carbs);">C ${fmtNum(carb, 1)}g</div>
@@ -7181,6 +7197,11 @@
             btnsRow[0].onclick = () => abrirModalEditarRegistro(nombreComida, idx);
             btnsRow[1].onclick = () => abrirModalMoverAlimento(nombreComida, idx);
             btnsRow[2].onclick = () => eliminarAlimentoDiario(nombreComida, idx);
+            // (v119) Tocar el nombre abre el detalle del registro; los botones
+            // ✎/⇄/✕ son elementos aparte y no disparan el detalle.
+            const nombreRowEl = row.querySelector(".alimento-nombre");
+            nombreRowEl.style.cursor = "pointer";
+            nombreRowEl.onclick = () => abrirDetalleDiario(nombreComida, idx);
             if (diaBloqueadoActual) { btnsRow[0].style.display = "none"; btnsRow[1].style.display = "none"; btnsRow[2].style.display = "none"; }
             listaItems.appendChild(row);
           });
@@ -7218,6 +7239,10 @@
           card.appendChild(btnToggle);
         }
 
+        // (v119) La línea de macros va FUERA de la card, directamente debajo
+        // de ella (v63): X rechazó la versión dentro de la card (v62) y volvió
+        // a quedar dentro; se guarda en resumenMacrosEl y se cuelga del contenedor.
+        let resumenMacrosEl = null;
         if (items.length) {
           const resumenMacros = document.createElement("div");
           resumenMacros.className = "apartado-macros";
@@ -7228,10 +7253,11 @@
             return `<span class="am-${clave}">${info.corta} ${fmtNum(valoresComida[clave] || 0, info.dec)} ${info.unidad}</span>`;
           }).filter(Boolean);
           resumenMacros.innerHTML = `Total: <span class="am-kcal">${fmtNum(kcalComida, 0)} kcal</span>` + (partesMacros.length ? " · " + partesMacros.join(" · ") : "");
-          card.appendChild(resumenMacros);
+          resumenMacrosEl = resumenMacros;
         }
 
         cont.appendChild(card);
+        if (resumenMacrosEl) cont.appendChild(resumenMacrosEl);
       });
 
       renderizarAguaDiario(tot.aguaMl);
@@ -7283,6 +7309,7 @@
       if (!it) { cerrarModales(); return; }
       lista.splice(alimentoMover.idx, 1);
       if (!dia.comidas[destino]) dia.comidas[destino] = [];
+      it.comida = destino;
       dia.comidas[destino].push(it);
       guardarEstado();
       cerrarModales();
@@ -8590,6 +8617,94 @@
       abrirDetalleAlimento({ ...nuevo, nombreLower: nombre.toLowerCase(), origen: "Almacén" });
     });
 
+    // (v119) Secciones de Ingredientes / Receta / Ingredientes (según etiqueta)
+    // de un alimento, reutilizadas por el detalle de agregar y por el detalle
+    // que se abre al tocar el nombre en el Diario o en el Almacén. `it` trae
+    // ingredientes por 100 g (catálogo) o el lote entero (receta de Almacén);
+    // `gramos` es la cantidad a la que se escalan los ingredientes del catálogo.
+    function htmlSeccionesDetalleAlimento(it, gramos) {
+      if (!it) return "";
+      const esReceta = it.tipo === "receta";
+      const rinde = it.preparacion && it.preparacion.rinde && Number(it.preparacion.rinde.porciones) > 0 && Number(it.preparacion.rinde.gramosPorcion) > 0 ? it.preparacion.rinde : null;
+      const totalRinde = rinde ? Math.round(Number(rinde.porciones) * Number(rinde.gramosPorcion)) : 0;
+      let seccionIngredientes = "";
+      if (Array.isArray(it.ingredientes) && it.ingredientes.length) {
+        const baseGramosIng = esReceta ? 0 : (gramos > 0 ? gramos : (rinde ? totalRinde : 100));
+        const factorIng = esReceta ? 1 : baseGramosIng / 100;
+        const filasIng = it.ingredientes.map((ing) => `<tr><td>${escaparHTML(ing.nombre || "")}</td><td>${fmtNum((Number(ing.gramos) || 0) * factorIng, 0)} g</td></tr>`).join("");
+        const tituloIng = esReceta ? "Ingredientes · para toda la receta" : (rinde && gramos <= 0 ? `Ingredientes · para toda la receta (${fmtNum(baseGramosIng, 0)} g)` : `Ingredientes · para ${fmtNum(baseGramosIng, 0)} g`);
+        seccionIngredientes = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">${tituloIng}</div><table class="tabla-nutri"><tbody>${filasIng}</tbody></table>`;
+      }
+      let seccionReceta = "";
+      const prep = it.preparacion;
+      if (prep && typeof prep === "object") {
+        const metodos = [];
+        if (prep.horno && Number(prep.horno.minutos) > 0) metodos.push(`Horno: ${fmtNum(Number(prep.horno.grados) || 0, 0)} °C · ${fmtNum(Number(prep.horno.minutos), 0)} min`);
+        if (prep.freidora && Number(prep.freidora.minutos) > 0) metodos.push(`Freidora de aire: ${fmtNum(Number(prep.freidora.grados) || 0, 0)} °C · ${fmtNum(Number(prep.freidora.minutos), 0)} min`);
+        if (prep.sarten && Number(prep.sarten.minutos) > 0) metodos.push(`Sartén: fuego ${escaparHTML(String(prep.sarten.fuego || "medio"))} · ${fmtNum(Number(prep.sarten.minutos), 0)} min`);
+        const pasos = Array.isArray(prep.pasos) ? prep.pasos.map((x) => String(x || "").trim()).filter(Boolean) : [];
+        const lineaRinde = rinde ? `<div>Rinde: ${fmtNum(Number(rinde.porciones), 0)} porciones de ${fmtNum(Number(rinde.gramosPorcion), 0)} g · total ${fmtNum(totalRinde, 0)} g</div>` : "";
+        if (metodos.length || pasos.length || rinde) {
+          const htmlPasos = pasos.length ? `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">Preparación</div><ol style="font-size: 13px; line-height: 1.6; margin: 0; padding-left: 18px;">${pasos.map((p) => `<li style="margin-bottom: 4px;">${escaparHTML(p)}</li>`).join("")}</ol>` : "";
+          seccionReceta = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">Receta</div>${lineaRinde ? `<div style="font-size: 13px; line-height: 1.6;">${lineaRinde}</div>` : ""}${metodos.length ? `<div style="font-size: 13px; line-height: 1.6;">${metodos.map((m) => `<div>${m}</div>`).join("")}</div>` : ""}${htmlPasos}`;
+        }
+      }
+      let seccionEtiqueta = "";
+      if (Array.isArray(it.ingredientesEtiqueta) && it.ingredientesEtiqueta.length) {
+        seccionEtiqueta = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">Ingredientes (según etiqueta)</div><div style="font-size: 13px; line-height: 1.6;">${it.ingredientesEtiqueta.map((x) => escaparHTML(String(x))).join(", ")}</div>`;
+      }
+      return seccionIngredientes + seccionReceta + seccionEtiqueta;
+    }
+
+    // (v119) Tabla de nutrientes para el detalle que se abre al tocar un
+    // nombre: `per100` trae los valores por 100 g (null = sin dato) y
+    // `gramos` la cantidad a la que se muestran los totales.
+    function htmlTablaDetalleAlimento(per100, gramos, tituloCantidad) {
+      const factor = gramos > 0 ? gramos / 100 : 1;
+      const extra = (v) => v == null || v === "" || Number.isNaN(Number(v)) ? null : Number(v);
+      const fila = (nombre, valor, unidad, total) => valor == null ? `<tr${total ? ' class="total"' : ''}><td>${nombre}</td><td style="color: var(--text-muted);">—</td></tr>` : `<tr${total ? ' class="total"' : ''}><td>${nombre}</td><td>${valor} ${unidad}</td></tr>`;
+      const az = extra(per100.azucar100), so = extra(per100.sodio100), gs = extra(per100.grasSat100), co = extra(per100.colest100);
+      let filas = "";
+      filas += fila("Calorías", fmtNum((Number(per100.kcal100) || 0) * factor, 0), "kcal", true);
+      filas += fila("Proteínas", fmtNum((Number(per100.prot100) || 0) * factor, 1), "g");
+      filas += fila("Carbohidratos", fmtNum((Number(per100.carb100) || 0) * factor, 1), "g");
+      filas += fila("Grasas", fmtNum((Number(per100.gras100) || 0) * factor, 1), "g");
+      filas += fila("Fibra", fmtNum((Number(per100.fibra100) || 0) * factor, 1), "g");
+      filas += fila("Azúcar", az == null ? null : fmtNum(az * factor, 1), "g");
+      filas += fila("Sodio", so == null ? null : fmtNum(so * factor, 0), "mg");
+      filas += fila("Grasa saturada", gs == null ? null : fmtNum(gs * factor, 1), "g");
+      filas += fila("Colesterol", co == null ? null : fmtNum(co * factor, 0), "mg");
+      return `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">${tituloCantidad}</div><table class="tabla-nutri"><tbody>${filas}</tbody></table>`;
+    }
+
+    // (v119) Abre el detalle de un registro del Diario al tocar su nombre:
+    // los valores guardados a sus gramos, y si el alimento está en el
+    // catálogo, sus ingredientes y su receta.
+    function abrirDetalleDiario(nombreComida, idx) {
+      const dia = asegurarDia(fechaSeleccionada);
+      const it = (dia.comidas[nombreComida] || [])[idx];
+      if (!it) return;
+      const gramos = (it.gramos != null && it.gramos > 0) ? Number(it.gramos) : (resolverGramosEdit(it.cantidadLabel, it.nombre) || 0);
+      const a100 = (v) => (v == null || !(gramos > 0)) ? null : Number(v) / gramos * 100;
+      const per100 = { kcal100: a100(it.kcal), prot100: a100(it.prot), carb100: a100(it.carb), gras100: a100(it.gras), fibra100: a100(it.fibra), azucar100: a100(it.azucar), sodio100: a100(it.sodio), grasSat100: a100(it.grasSat), colest100: a100(it.colest) };
+      const cat = obtenerCatalogoCombinado().find((x) => x.nombreLower === String(it.nombre || "").toLowerCase());
+      const det = cat ? Object.assign({}, cat, per100, { tipo: "alimento" }) : null;
+      document.getElementById("detalleAlmTitulo").textContent = it.nombre;
+      document.getElementById("detalleAlmContenido").innerHTML = htmlTablaDetalleAlimento(per100, gramos, gramos > 0 ? `Registrado: ${fmtNum(gramos, 0)} g · ${escaparHTML(nombreComida)}` : `Registrado · ${escaparHTML(nombreComida)}`) + (det ? htmlSeccionesDetalleAlimento(det, gramos) : "");
+      document.getElementById("modalDetalleAlimento").classList.add("open");
+    }
+
+    // (v119) Abre el detalle de un elemento del Almacén al tocar su nombre:
+    // valores por 100 g, y si es receta, sus ingredientes y su preparación.
+    function abrirDetalleAlmacen(item) {
+      if (!item) return;
+      const per100 = { kcal100: item.kcal100, prot100: item.prot100, carb100: item.carb100, gras100: item.gras100, fibra100: item.fibra100, azucar100: item.azucar100, sodio100: item.sodio100, grasSat100: item.grasSat100, colest100: item.colest100 };
+      const infoReceta = item.tipo === "receta" ? `<div style="font-size: 13px; line-height: 1.6; margin-bottom: 6px;">Receta · ${fmtNum(item.pesoFinalG, 0)} g en total${item.numPiezas ? ` · ${fmtNum(item.numPiezas, 0)} piezas` : ""}</div>` : "";
+      document.getElementById("detalleAlmTitulo").textContent = item.nombre;
+      document.getElementById("detalleAlmContenido").innerHTML = htmlTablaDetalleAlimento(per100, 100, "Por 100 g") + infoReceta + htmlSeccionesDetalleAlimento(item, 100);
+      document.getElementById("modalDetalleAlimento").classList.add("open");
+    }
+
     function renderizarTablaNutrientesSel() {
       const it = alimentoSeleccionadoModal;
       const cont = document.getElementById("tablaNutrientesSel");
@@ -8609,37 +8724,9 @@
       filas += fila("Sodio", so == null ? null : fmtNum(so * factor, 0), "mg");
       filas += fila("Grasa saturada", gs == null ? null : fmtNum(gs * factor, 1), "g");
       filas += fila("Colesterol", co == null ? null : fmtNum(co * factor, 0), "mg");
-      const esRecetaSel = it.tipo === "receta";
-      const rindeSel = it.preparacion && it.preparacion.rinde && Number(it.preparacion.rinde.porciones) > 0 && Number(it.preparacion.rinde.gramosPorcion) > 0 ? it.preparacion.rinde : null;
-      const totalRindeSel = rindeSel ? Math.round(Number(rindeSel.porciones) * Number(rindeSel.gramosPorcion)) : 0;
-      let seccionIngredientesSel = "";
-      if (Array.isArray(it.ingredientes) && it.ingredientes.length) {
-        const baseGramosIng = esRecetaSel ? 0 : (gramos > 0 ? gramos : (rindeSel ? totalRindeSel : 100));
-        const factorIng = esRecetaSel ? 1 : baseGramosIng / 100;
-        const filasIng = it.ingredientes.map((ing) => `<tr><td>${escaparHTML(ing.nombre || "")}</td><td>${fmtNum((Number(ing.gramos) || 0) * factorIng, 0)} g</td></tr>`).join("");
-        const tituloIng = esRecetaSel ? "Ingredientes · para toda la receta" : (rindeSel && gramos <= 0 ? `Ingredientes · para toda la receta (${fmtNum(baseGramosIng, 0)} g)` : `Ingredientes · para ${fmtNum(baseGramosIng, 0)} g`);
-        seccionIngredientesSel = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">${tituloIng}</div><table class="tabla-nutri"><tbody>${filasIng}</tbody></table>`;
-      }
-      let seccionRecetaSel = "";
-      const prepSel = it.preparacion;
-      if (prepSel && typeof prepSel === "object") {
-        const metodosSel = [];
-        if (prepSel.horno && Number(prepSel.horno.minutos) > 0) metodosSel.push(`Horno: ${fmtNum(Number(prepSel.horno.grados) || 0, 0)} °C · ${fmtNum(Number(prepSel.horno.minutos), 0)} min`);
-        if (prepSel.freidora && Number(prepSel.freidora.minutos) > 0) metodosSel.push(`Freidora de aire: ${fmtNum(Number(prepSel.freidora.grados) || 0, 0)} °C · ${fmtNum(Number(prepSel.freidora.minutos), 0)} min`);
-        if (prepSel.sarten && Number(prepSel.sarten.minutos) > 0) metodosSel.push(`Sartén: fuego ${escaparHTML(String(prepSel.sarten.fuego || "medio"))} · ${fmtNum(Number(prepSel.sarten.minutos), 0)} min`);
-        const pasosSel = Array.isArray(prepSel.pasos) ? prepSel.pasos.map((x) => String(x || "").trim()).filter(Boolean) : [];
-        const lineaRindeSel = rindeSel ? `<div>Rinde: ${fmtNum(Number(rindeSel.porciones), 0)} porciones de ${fmtNum(Number(rindeSel.gramosPorcion), 0)} g · total ${fmtNum(totalRindeSel, 0)} g</div>` : "";
-        if (metodosSel.length || pasosSel.length || rindeSel) {
-          const htmlPasosSel = pasosSel.length ? `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">Preparación</div><ol style="font-size: 13px; line-height: 1.6; margin: 0; padding-left: 18px;">${pasosSel.map((p) => `<li style="margin-bottom: 4px;">${escaparHTML(p)}</li>`).join("")}</ol>` : "";
-          seccionRecetaSel = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">Receta</div>${lineaRindeSel ? `<div style="font-size: 13px; line-height: 1.6;">${lineaRindeSel}</div>` : ""}${metodosSel.length ? `<div style="font-size: 13px; line-height: 1.6;">${metodosSel.map((m) => `<div>${m}</div>`).join("")}</div>` : ""}${htmlPasosSel}`;
-        }
-      }
-      let seccionEtiquetaSel = "";
-      if (Array.isArray(it.ingredientesEtiqueta) && it.ingredientesEtiqueta.length) {
-        seccionEtiquetaSel = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin: 10px 0 6px;">Ingredientes (según etiqueta)</div><div style="font-size: 13px; line-height: 1.6;">${it.ingredientesEtiqueta.map((x) => escaparHTML(String(x))).join(", ")}</div>`;
-      }
+      const seccionesDetalleSel = htmlSeccionesDetalleAlimento(it, gramos);
       const seccionGuardarReceta = (Array.isArray(it.ingredientes) && it.ingredientes.length && it.tipo !== "receta") ? `<button id="btnGuardarRecetaAlmacen" class="btn-primary" style="width: 100%; margin-top: 14px;">Guardar esta receta en Almacén</button>` : "";
-      cont.innerHTML = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">Para ${fmtNum(gramos, 0)} g${it.origen ? " · " + escaparHTML(it.origen) : ""}</div><table class="tabla-nutri"><tbody>${filas}</tbody></table>${it.codigoBarras ? `<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0;">Código de barras: ${escaparHTML(String(it.codigoBarras))}</p>` : ""}${seccionIngredientesSel}${seccionRecetaSel}${seccionEtiquetaSel}${seccionGuardarReceta}`;
+      cont.innerHTML = `<div style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">Para ${fmtNum(gramos, 0)} g${it.origen ? " · " + escaparHTML(it.origen) : ""}</div><table class="tabla-nutri"><tbody>${filas}</tbody></table>${it.codigoBarras ? `<p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0;">Código de barras: ${escaparHTML(String(it.codigoBarras))}</p>` : ""}${seccionesDetalleSel}${seccionGuardarReceta}`;
       const btnGuardarReceta = document.getElementById("btnGuardarRecetaAlmacen");
       if (btnGuardarReceta) btnGuardarReceta.addEventListener("click", () => guardarRecetaCatalogoEnAlmacen(it));
     }
@@ -9063,12 +9150,17 @@
     }
 
     /* Almacén y Recetas */
+    // (v119) La pestaña activa filtra la lista: "alimentos" muestra solo tipo
+    // "alimento" y "recetas" solo tipo "receta" (antes ambas mostraban todo).
+    let tabAlmacenActiva = "alimentos";
     function cambiarTabAlmacen(tab) {
+      tabAlmacenActiva = tab;
       const esAlm = tab === "alimentos";
       document.getElementById("tabAlmAlimentos").classList.toggle("activa", esAlm);
       document.getElementById("tabAlmRecetas").classList.toggle("activa", !esAlm);
       document.getElementById("panelAlmAlimentos").style.display = esAlm ? "block" : "none";
       document.getElementById("panelAlmRecetas").style.display = esAlm ? "none" : "block";
+      renderizarAlmacen();
     }
 
     document.getElementById("formNuevoAlmacen").addEventListener("submit", (e) => {
@@ -9303,7 +9395,7 @@
 
     function renderizarAlmacen() {
       const q = String(document.getElementById("buscarAlmacen").value || "").trim().toLowerCase();
-      const lista = ordenarResultadosBusqueda(appState.almacen.filter((x) => !q || x.nombre.toLowerCase().includes(q)), q);
+      const lista = ordenarResultadosBusqueda(appState.almacen.filter((x) => (tabAlmacenActiva === "recetas" ? x.tipo === "receta" : x.tipo !== "receta") && (!q || x.nombre.toLowerCase().includes(q))), q);
       const cont = document.getElementById("listaAlmacen");
       cont.innerHTML = "";
 
@@ -9319,7 +9411,7 @@
         div.innerHTML = `
           <div>
             <div class="alimento-nombre">${escaparHTML(item.nombre)} <span style="font-size:11px; color:var(--primary); font-weight:700;">(${badge})</span></div>
-            <div class="alimento-meta">Por 100g: ${fmtNum(item.kcal100, 1)} kcal · P ${fmtNum(item.prot100, 1)}g · C ${fmtNum(item.carb100, 1)}g · G ${fmtNum(item.gras100, 1)}g · Fib ${fmtNum(item.fibra100, 1)}g</div>
+            <div class="alimento-meta">Por 100g: ${fmtNum(item.kcal100, 0)} kcal · P ${fmtNum(item.prot100, 1)}g · C ${fmtNum(item.carb100, 1)}g · G ${fmtNum(item.gras100, 1)}g · Fib ${fmtNum(item.fibra100, 1)}g</div>
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
             <button type="button" class="btn btn-primary btn-usar-alm" style="padding: 6px 10px; font-size: 12px;">Usar</button>
@@ -9328,6 +9420,10 @@
           </div>
         `;
         div.querySelector(".btn-usar-alm").onclick = () => abrirModalUsarAlmacen(item);
+        // (v119) Tocar el nombre abre el detalle del elemento del Almacén.
+        const nombreAlmEl = div.querySelector(".alimento-nombre");
+        nombreAlmEl.style.cursor = "pointer";
+        nombreAlmEl.onclick = () => abrirDetalleAlmacen(item);
         const btnEditar = div.querySelector(".btn-editar-alm");
         if (btnEditar) btnEditar.onclick = () => abrirEditarAlmacen(item);
         div.querySelector(".btn-borrar-alm").onclick = () => {
@@ -9371,7 +9467,7 @@
         });
       } else {
         document.getElementById("usarAlmInfoBase").textContent =
-          `Valores por 100 g: ${fmtNum(item.kcal100, 1)} kcal · P ${fmtNum(item.prot100, 1)}g · C ${fmtNum(item.carb100, 1)}g · G ${fmtNum(item.gras100, 1)}g · Fib ${fmtNum(item.fibra100, 1)}g`;
+          `Valores por 100 g: ${fmtNum(item.kcal100, 0)} kcal · P ${fmtNum(item.prot100, 1)}g · C ${fmtNum(item.carb100, 1)}g · G ${fmtNum(item.gras100, 1)}g · Fib ${fmtNum(item.fibra100, 1)}g`;
         document.getElementById("usarAlmGramos").value = "";
         renderizarOpcionesPieza("opcionesPiezaAlm", "chipsPiezaAlm", "usarAlmGramos", item.nombre);
       }
@@ -11781,6 +11877,11 @@
       { cls: "gatito-micro-mirar", d: 1200 }
     ];
     var GATITO_W = 58, GATITO_H = 44;
+    // (v119) Reserva libre sobre la barra de navegación inferior: los gatitos
+    // (y sus props) nunca bajan hasta taparla ni tapar sus botones. 92 px
+    // cubre la barra (~56 px) más el área segura de los teléfonos.
+    var GATITO_RESERVA_NAV = 92;
+    function maxYGatito() { return Math.max(0, window.innerHeight - GATITO_H - GATITO_RESERVA_NAV); }
     var gatosV60 = [];
     var rafGatitosId = null, rafGatitosActivo = false, ultimoTsGatitos = 0;
     var movimientoReducidoGatos = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -11876,7 +11977,7 @@
           g.el.classList.remove("gatito-meneo");
           c.fase = "salto";
           g.el.classList.add("gatito-en-aire");
-          g.viaje = { x0: g.x, y0: g.y, cx: (g.x + limitar(tx - GATITO_W / 2, 0, Math.max(0, window.innerWidth - GATITO_W))) / 2, cy: Math.min(g.y, limitar(ty - GATITO_H / 2, 0, Math.max(0, window.innerHeight - GATITO_H))) - 22, nx: limitar(tx - GATITO_W / 2, 0, Math.max(0, window.innerWidth - GATITO_W)), ny: limitar(ty - GATITO_H / 2, 0, Math.max(0, window.innerHeight - GATITO_H)), t0: ts, dur: 300, alLlegar: function () { c.fase = "fin"; g.el.classList.remove("gatito-en-aire"); } };
+          g.viaje = { x0: g.x, y0: g.y, cx: (g.x + limitar(tx - GATITO_W / 2, 0, Math.max(0, window.innerWidth - GATITO_W))) / 2, cy: Math.min(g.y, limitar(ty - GATITO_H / 2, 0, maxYGatito())) - 22, nx: limitar(tx - GATITO_W / 2, 0, Math.max(0, window.innerWidth - GATITO_W)), ny: limitar(ty - GATITO_H / 2, 0, maxYGatito()), t0: ts, dur: 300, alLlegar: function () { c.fase = "fin"; g.el.classList.remove("gatito-en-aire"); } };
           pedirBucleGatitos();
         }
         return true;
@@ -11893,7 +11994,7 @@
       var vel = 25;
       var paso = vel * dt;
       g.x = limitar(g.x + (dx / dd) * paso, 0, Math.max(0, window.innerWidth - GATITO_W));
-      g.y = limitar(g.y + (dy / dd) * paso, 0, Math.max(0, window.innerHeight - GATITO_H));
+      g.y = limitar(g.y + (dy / dd) * paso, 0, maxYGatito());
       var nd = tx > cx ? 1 : -1;
       if (nd !== g.dir) girarGato(g, nd);
       return true;
@@ -11959,7 +12060,7 @@
       if (movimientoReducidoGatos) return;
       g.el.classList.remove("gatito-respirar");
       var maxX = Math.max(0, window.innerWidth - GATITO_W);
-      var maxY = Math.max(0, window.innerHeight - GATITO_H);
+      var maxY = maxYGatito();
       var nx = Math.random() * maxX;
       var ny = Math.random() * maxY;
       var velocidad = (40 + Math.random() * 30) * g.velProximo;
@@ -11999,7 +12100,7 @@
         if (otro) {
           var ro = otro.el.getBoundingClientRect();
           var nxP = limitar(ro.left + (ro.left < g.x ? 52 : -52), 0, Math.max(0, window.innerWidth - GATITO_W));
-          var nyP = limitar(ro.top, 0, Math.max(0, window.innerHeight - GATITO_H));
+          var nyP = limitar(ro.top, 0, maxYGatito());
           iniciarViaje(g, nxP, nyP, 110, function () { g.estado = "comportamiento"; }, true);
         }
       }
@@ -12010,7 +12111,7 @@
         var px = limitar(g.x + 45, 4, Math.max(4, window.innerWidth - 50));
         var py = Math.max(4, g.y - 10);
         if (comp.prop === "croquetas" || comp.prop === "agua" || comp.prop === "platito" || comp.prop === "balde" || comp.prop === "camita") {
-          py = limitar(g.y + 28, 4, Math.max(4, window.innerHeight - 30));
+          py = limitar(g.y + 28, 4, Math.max(4, maxYGatito()));
           propEl.classList.add("prop-suelo");
         }
         if (comp.prop === "camita") px = limitar(g.x + 8, 4, Math.max(4, window.innerWidth - 50));
@@ -12020,7 +12121,7 @@
         if (comp.prop === "laser" || comp.prop === "mosca" || comp.prop === "mariposa") {
           propTimer = setInterval(function () {
             var qx = limitar(g.x + (Math.random() * 120 - 20), 4, Math.max(4, window.innerWidth - 40));
-            var qy = limitar(g.y + (Math.random() * 90 - 45), 4, Math.max(4, window.innerHeight - 40));
+            var qy = limitar(g.y + (Math.random() * 90 - 45), 4, Math.max(4, maxYGatito()));
             propEl._pos = { x: qx, y: qy };
             propEl.style.transform = "translate3d(" + qx + "px," + qy + "px,0)";
           }, 320);
@@ -12028,7 +12129,7 @@
           propTimer = setInterval(function () {
             var cur = propEl._pos || { x: px, y: py };
             var qx = limitar(cur.x + (Math.random() * 36 - 18), 4, Math.max(4, window.innerWidth - 40));
-            var qy = limitar(cur.y + (Math.random() * 24 - 12), 4, Math.max(4, window.innerHeight - 40));
+            var qy = limitar(cur.y + (Math.random() * 24 - 12), 4, Math.max(4, maxYGatito()));
             propEl._pos = { x: qx, y: qy };
             propEl.style.transform = "translate3d(" + qx + "px," + qy + "px,0)";
           }, 500);
@@ -12211,7 +12312,7 @@
           return;
         }
         var maxX = Math.max(0, window.innerWidth - GATITO_W);
-        var maxY = Math.max(0, window.innerHeight - GATITO_H);
+        var maxY = maxYGatito();
         g.x = limitar(e.clientX - GATITO_W / 2, 0, maxX);
         g.y = limitar(e.clientY - GATITO_H - 12, 0, maxY);
         g.xAnt = g.x;
@@ -12268,7 +12369,7 @@
         document.body.appendChild(el);
         var W = GATITO_W, H = GATITO_H;
         var x = Math.random() * Math.max(0, window.innerWidth - W);
-        var y = window.innerHeight * (0.25 + Math.random() * 0.6);
+        var y = Math.min(window.innerHeight * (0.25 + Math.random() * 0.6), maxYGatito());
         var g = {
           el: el, flip: flip, burbuja: burbuja, efectos: efectos,
           cuerpo: c.cuerpo, puntos: c.puntos, lejos: c.lejos, tipo: c.tipo,
@@ -12291,7 +12392,7 @@
           var v = g.viaje;
           g.giroToken = (g.giroToken || 0) + 1;
           g.x = Math.min(g.x, Math.max(0, window.innerWidth - W));
-          g.y = Math.min(g.y, Math.max(0, window.innerHeight - H));
+          g.y = Math.min(g.y, maxYGatito());
           g.viaje = null;
           var tf = "translate3d(" + g.x.toFixed(1) + "px," + g.y.toFixed(1) + "px,0)";
           g.tfAplicado = tf;
