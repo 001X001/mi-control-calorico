@@ -2994,7 +2994,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v117";
+    const VERSION_APP = "v118";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -10952,24 +10952,34 @@
     // nunca se vuelve a consultar el catalogo, para que un cambio de calorias
     // o de porciones de hoy no modifique dias ya registrados, y para que
     // borrar un producto de la lista no borre lo registrado con el.
-    function recalcularValoresEdicion() {
-      valoresRecalcEdit = null;
-      if (!registroEditando) return;
+    // Escala los macros guardados (valoresOriginal) a la cantidad que muestra
+    // el campo "Cantidad". Devuelve { gramosNuevos, calc } o null si no se
+    // puede escalar. Lo usan el recalculo en vivo y el guardado, para que
+    // ambos den exactamente lo mismo.
+    function escalarValoresEdit() {
+      if (!registroEditando) return null;
       const dia = asegurarDia(fechaSeleccionada);
       const it = (dia.comidas[registroEditando.nombreComida] || [])[registroEditando.idx];
-      if (!it) return;
+      if (!it) return null;
       const gramosNuevos = resolverGramosEdit(document.getElementById("editCantidad").value, registroEditando.nombreOriginal);
-      if (!(gramosNuevos > 0) || !(registroEditando.gramosOriginal > 0)) return;
+      if (!(gramosNuevos > 0) || !(registroEditando.gramosOriginal > 0)) return null;
       const f = gramosNuevos / registroEditando.gramosOriginal;
       const o = registroEditando.valoresOriginal;
       const esc = (v) => (v == null ? null : Number(v) * f);
-      const calc = { kcal: esc(o.kcal), prot: esc(o.prot), carb: esc(o.carb), gras: esc(o.gras), fibra: esc(o.fibra), azucar: esc(o.azucar), sodio: esc(o.sodio), grasSat: esc(o.grasSat), colest: esc(o.colest) };
-      valoresRecalcEdit = calc;
-      document.getElementById("editKcal").value = Number(calc.kcal.toFixed(0));
-      document.getElementById("editProt").value = Number(calc.prot.toFixed(1));
-      document.getElementById("editCarb").value = Number(calc.carb.toFixed(1));
-      document.getElementById("editGras").value = Number(calc.gras.toFixed(1));
-      document.getElementById("editFibra").value = Number(calc.fibra.toFixed(1));
+      return { gramosNuevos, calc: { kcal: esc(o.kcal), prot: esc(o.prot), carb: esc(o.carb), gras: esc(o.gras), fibra: esc(o.fibra), azucar: esc(o.azucar), sodio: esc(o.sodio), grasSat: esc(o.grasSat), colest: esc(o.colest) } };
+    }
+
+    function recalcularValoresEdicion() {
+      valoresRecalcEdit = null;
+      const r = escalarValoresEdit();
+      if (!r) return;
+      valoresRecalcEdit = r.calc;
+      const calc = r.calc;
+      if (calc.kcal != null) document.getElementById("editKcal").value = Number(calc.kcal.toFixed(0));
+      if (calc.prot != null) document.getElementById("editProt").value = Number(calc.prot.toFixed(1));
+      if (calc.carb != null) document.getElementById("editCarb").value = Number(calc.carb.toFixed(1));
+      if (calc.gras != null) document.getElementById("editGras").value = Number(calc.gras.toFixed(1));
+      if (calc.fibra != null) document.getElementById("editFibra").value = Number(calc.fibra.toFixed(1));
     }
 
     function abrirModalEditarRegistro(nombreComida, idx) {
@@ -10996,6 +11006,8 @@
     }
 
     document.getElementById("editCantidad").addEventListener("input", recalcularValoresEdicion);
+    // Algunos teclados y autocompletados de Android cambian la cantidad sin emitir "input": el "change" cubre esos casos (se dispara al salir del campo).
+    document.getElementById("editCantidad").addEventListener("change", recalcularValoresEdicion);
 
     document.getElementById("btnGuardarEdicionRegistro").addEventListener("click", () => {
       if (!registroEditando) return;
@@ -11007,16 +11019,41 @@
       const cantEditTxt = document.getElementById("editCantidad").value.trim();
       const gCantEdit = extraerGramosEdit(cantEditTxt);
       it.cantidadLabel = (gCantEdit != null && gCantEdit > 0) ? (String(gCantEdit) + " g") : cantEditTxt;
+      // (v118) Guardar los gramos nuevos: antes no se actualizaba it.gramos y
+      // el registro quedaba con la etiqueta nueva pero los gramos viejos, asi
+      // que la siguiente edicion reescalaba desde una base mezclada.
+      const gNuevosEdit = resolverGramosEdit(cantEditTxt, registroEditando.nombreOriginal);
+      if (gNuevosEdit != null && gNuevosEdit > 0) it.gramos = gNuevosEdit;
+      // (v118) Recalculo al guardar: si el recalculo en vivo no se disparo
+      // (la cantidad cambio sin evento "input"), los macros se recalculan
+      // aqui desde los valores originales. Solo se sobrescribe un campo
+      // visible si todavia muestra su valor original (redondeado a lo que se
+      // ve en pantalla); si el usuario lo edito a mano, se respeta su valor.
+      const recalcGuardar = escalarValoresEdit();
+      if (recalcGuardar && recalcGuardar.gramosNuevos !== registroEditando.gramosOriginal) {
+        const oEdit = registroEditando.valoresOriginal;
+        const esOriginalEdit = (id, orig, dec) => {
+          const v = Number(document.getElementById(id).value);
+          if (!isFinite(v)) return false;
+          return Number(v.toFixed(dec)) === Number(Number(orig || 0).toFixed(dec));
+        };
+        if (recalcGuardar.calc.kcal != null && esOriginalEdit("editKcal", oEdit.kcal, 0)) document.getElementById("editKcal").value = Number(recalcGuardar.calc.kcal.toFixed(0));
+        if (recalcGuardar.calc.prot != null && esOriginalEdit("editProt", oEdit.prot, 1)) document.getElementById("editProt").value = Number(recalcGuardar.calc.prot.toFixed(1));
+        if (recalcGuardar.calc.carb != null && esOriginalEdit("editCarb", oEdit.carb, 1)) document.getElementById("editCarb").value = Number(recalcGuardar.calc.carb.toFixed(1));
+        if (recalcGuardar.calc.gras != null && esOriginalEdit("editGras", oEdit.gras, 1)) document.getElementById("editGras").value = Number(recalcGuardar.calc.gras.toFixed(1));
+        if (recalcGuardar.calc.fibra != null && esOriginalEdit("editFibra", oEdit.fibra, 1)) document.getElementById("editFibra").value = Number(recalcGuardar.calc.fibra.toFixed(1));
+      }
       it.kcal = Math.max(0, Number(document.getElementById("editKcal").value) || 0);
       it.prot = Math.max(0, Number(document.getElementById("editProt").value) || 0);
       it.carb = Math.max(0, Number(document.getElementById("editCarb").value) || 0);
       it.gras = Math.max(0, Number(document.getElementById("editGras").value) || 0);
       it.fibra = Math.max(0, Number(document.getElementById("editFibra").value) || 0);
-      if (valoresRecalcEdit) {
-        if (valoresRecalcEdit.azucar != null) it.azucar = valoresRecalcEdit.azucar;
-        if (valoresRecalcEdit.sodio != null) it.sodio = valoresRecalcEdit.sodio;
-        if (valoresRecalcEdit.grasSat != null) it.grasSat = valoresRecalcEdit.grasSat;
-        if (valoresRecalcEdit.colest != null) it.colest = valoresRecalcEdit.colest;
+      const ocultosRecalc = recalcGuardar ? recalcGuardar.calc : valoresRecalcEdit;
+      if (ocultosRecalc) {
+        if (ocultosRecalc.azucar != null) it.azucar = ocultosRecalc.azucar;
+        if (ocultosRecalc.sodio != null) it.sodio = ocultosRecalc.sodio;
+        if (ocultosRecalc.grasSat != null) it.grasSat = ocultosRecalc.grasSat;
+        if (ocultosRecalc.colest != null) it.colest = ocultosRecalc.colest;
       }
       guardarEstado();
       renderizarDiario();
