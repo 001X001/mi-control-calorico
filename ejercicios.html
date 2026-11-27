@@ -450,6 +450,43 @@
       }
       .ex-edit-btn:active { transform: scale(.97); }
 
+      /* Fila para mover el ejercicio: solo se ve en modo acomodo */
+      .ex-move-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .ex-move-row[hidden] { display: none; }
+      .ex-move-btn {
+        appearance: none;
+        border: 1.5px solid var(--line);
+        background: var(--chip);
+        color: var(--ink);
+        border-radius: 8px;
+        min-height: 28px;
+        padding: 2px 10px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .ex-move-btn:active { transform: scale(.96); }
+      .ex-move-btn:disabled { opacity: .35; cursor: default; }
+
+      /* Botón "Acomodo de ejercicios", al final de la lista */
+      .acomodo-btn {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 38px;
+        font-size: 14px;
+      }
+      .acomodo-btn.activo {
+        background: var(--green);
+        border-color: transparent;
+        color: #fff;
+      }
+
       /* Formulario para editar el nombre */
       .ex-edit-form { margin-top: 6px; }
       .ex-edit-input {
@@ -873,6 +910,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -898,6 +939,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -925,6 +970,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -950,6 +999,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -977,6 +1030,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1002,6 +1059,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1029,6 +1090,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1054,6 +1119,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1081,6 +1150,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1106,6 +1179,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1133,6 +1210,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1158,6 +1239,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1187,6 +1272,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1212,6 +1301,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1239,6 +1332,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1264,6 +1361,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1291,6 +1392,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1316,6 +1421,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1343,6 +1452,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1368,6 +1481,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1395,6 +1512,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1420,6 +1541,10 @@
             <div class="ex-edit-row">
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
+            </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
             </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
@@ -1447,6 +1572,10 @@
               <button type="button" class="ex-del-btn" aria-label="Borrar este ejercicio">✕</button>
               <button type="button" class="ex-edit-btn">Editar nombre</button>
             </div>
+            <div class="ex-move-row" hidden>
+              <button type="button" class="ex-move-btn ex-move-up" aria-label="Mover este ejercicio hacia arriba">↑</button>
+              <button type="button" class="ex-move-btn ex-move-down" aria-label="Mover este ejercicio hacia abajo">↓</button>
+            </div>
             <div class="ex-edit-form" hidden>
               <input type="text" class="ex-edit-input" aria-label="Nuevo nombre del ejercicio" />
               <div class="ex-edit-actions">
@@ -1473,6 +1602,7 @@
           </div>
         </div>
         <button type="button" class="btn btn-main save-list-btn" id="btnGuardarLista" disabled>Guardar ejercicios modificados</button>
+        <button type="button" class="btn btn-ghost acomodo-btn" id="btnAcomodo" aria-pressed="false">Acomodo de ejercicios</button>
       </section>
 
       <!-- ===== REGISTRO DEL DÍA ===== -->
@@ -1967,6 +2097,75 @@
           } catch (e) { /* sin lista guardada: se queda la lista original */ }
         }
         if (btnGuardarLista) btnGuardarLista.addEventListener('click', guardarListaEjercicios);
+
+        /* ---------- Acomodo de ejercicios: moverlos hacia arriba o abajo ----------
+           El botón "Acomodo de ejercicios" va al final de la lista, junto al
+           de guardar. Al tocarlo, cada ejercicio muestra dos botones (↑ y ↓)
+           para cambiar su lugar. El ejercicio se mueve con todo y sus
+           marcas de Serie 1/2/3: las marcas viven en el propio ejercicio
+           (aria-pressed de sus botones), así que al mover el nodo entero
+           las series se van con él y al guardar quedan en el orden nuevo.
+           Mover un ejercicio marca la lista como modificada, igual que
+           borrar o agregar uno: hay que tocar "Guardar ejercicios
+           modificados" para que el orden nuevo sobreviva al recargar.
+           El modo es global para los dos perfiles. */
+        var modoAcomodo = false;
+        var btnAcomodo = document.getElementById('btnAcomodo');
+        function actualizarBotonesMover() {
+          [exListM, exListF].forEach(function (lista) {
+            if (!lista) return;
+            var items = lista.querySelectorAll('.ex-item');
+            items.forEach(function (it, i) {
+              var up = it.querySelector('.ex-move-up');
+              var down = it.querySelector('.ex-move-down');
+              if (up) up.disabled = (i === 0);
+              if (down) down.disabled = (i === items.length - 1);
+            });
+          });
+        }
+        function mostrarFilasMover(mostrar) {
+          document.querySelectorAll('.ex-move-row').forEach(function (row) {
+            row.hidden = !mostrar;
+          });
+        }
+        function activarAcomodo() {
+          modoAcomodo = true;
+          if (btnAcomodo) {
+            btnAcomodo.textContent = 'Terminar acomodo';
+            btnAcomodo.classList.add('activo');
+            btnAcomodo.setAttribute('aria-pressed', 'true');
+          }
+          mostrarFilasMover(true);
+          actualizarBotonesMover();
+        }
+        function desactivarAcomodo() {
+          modoAcomodo = false;
+          if (btnAcomodo) {
+            btnAcomodo.textContent = 'Acomodo de ejercicios';
+            btnAcomodo.classList.remove('activo');
+            btnAcomodo.setAttribute('aria-pressed', 'false');
+          }
+          mostrarFilasMover(false);
+        }
+        function moverEjercicio(item, dir) {
+          var lista = item.parentNode;
+          if (!lista || !lista.classList || !lista.classList.contains('ex-list')) return;
+          var hijos = Array.prototype.slice.call(lista.children);
+          var i = hijos.indexOf(item);
+          var j = i + dir;
+          if (i < 0 || j < 0 || j >= hijos.length) return;
+          if (dir < 0) {
+            lista.insertBefore(item, hijos[j]);
+          } else {
+            lista.insertBefore(item, hijos[j].nextSibling);
+          }
+          renumerarLista(lista);
+          saveSeries();
+          marcarListaModificada();
+        }
+        if (btnAcomodo) btnAcomodo.addEventListener('click', function () {
+          if (modoAcomodo) desactivarAcomodo(); else activarAcomodo();
+        });
         function bindSerieBtn(btn) {
           btn.addEventListener('click', function () {
             var on = btn.getAttribute('aria-pressed') === 'true';
@@ -2024,6 +2223,8 @@
             var num = it.querySelector('.ex-num');
             if (num) num.textContent = (i + 1) + '.';
           });
+          mostrarFilasMover(modoAcomodo);
+          actualizarBotonesMover();
         }
         function ocultarBarraDeshacer() {
           if (undoTimer) { clearTimeout(undoTimer); undoTimer = null; }
@@ -2067,6 +2268,8 @@
             var num = it.querySelector('.ex-num');
             if (num) num.textContent = (i + 1) + '.';
           });
+          mostrarFilasMover(modoAcomodo);
+          actualizarBotonesMover();
         }
         function setupExercise(item) {
           var textEl = item.querySelector('.ex-text');
@@ -2077,6 +2280,12 @@
           var delBtn = item.querySelector('.ex-del-btn');
           var confirmBox = item.querySelector('.ex-del-confirm');
           if (!textEl || !row || !editBtn || !form || !input || !delBtn || !confirmBox) return;
+          // setupExercise se llama dos veces para los ejercicios reconstruidos
+          // de una lista guardada (una en cargarListaGuardada y otra en el
+          // barrido global): sin este candado cada botón quedaba con su
+          // acción conectada dos veces (mover saltaba dos lugares).
+          if (item.dataset.configurado) return;
+          item.dataset.configurado = 'true';
           if (!item.dataset.nombreBase) item.dataset.nombreBase = textEl.textContent;
 
           function closeForm() {
@@ -2135,6 +2344,11 @@
             mostrarBarraDeshacer(nombre);
             marcarListaModificada();
           });
+
+          var moveUpBtn = item.querySelector('.ex-move-up');
+          var moveDownBtn = item.querySelector('.ex-move-down');
+          if (moveUpBtn) moveUpBtn.addEventListener('click', function () { moverEjercicio(item, -1); });
+          if (moveDownBtn) moveDownBtn.addEventListener('click', function () { moverEjercicio(item, 1); });
         }
         document.querySelectorAll('.ex-item').forEach(setupExercise);
 
@@ -2190,6 +2404,23 @@
           editRow.appendChild(delB);
           editRow.appendChild(editB);
           li.appendChild(editRow);
+
+          var moveRow = document.createElement('div');
+          moveRow.className = 'ex-move-row';
+          moveRow.hidden = true;
+          var moveUp = document.createElement('button');
+          moveUp.type = 'button';
+          moveUp.className = 'ex-move-btn ex-move-up';
+          moveUp.setAttribute('aria-label', 'Mover este ejercicio hacia arriba');
+          moveUp.textContent = '↑';
+          var moveDown = document.createElement('button');
+          moveDown.type = 'button';
+          moveDown.className = 'ex-move-btn ex-move-down';
+          moveDown.setAttribute('aria-label', 'Mover este ejercicio hacia abajo');
+          moveDown.textContent = '↓';
+          moveRow.appendChild(moveUp);
+          moveRow.appendChild(moveDown);
+          li.appendChild(moveRow);
 
           var eForm = document.createElement('div');
           eForm.className = 'ex-edit-form';
