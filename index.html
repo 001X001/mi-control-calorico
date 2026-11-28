@@ -3558,7 +3558,7 @@
 
   <script>
     const STORAGE_KEY = "contador_calorias_offline_v2";
-    const VERSION_APP = "v128";
+    const VERSION_APP = "v129";
 
     const ICONO_BORRAR_SVG = `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -5273,6 +5273,7 @@
       { nombre: "Kacang (Sabritas)", kcal100: 596.7, prot100: 20.0, carb100: 13.3, gras100: 50.0, fibra100: 6.7 },
       { nombre: "Nature´s Heart Fruit & Nut Collection (Terrafertil)", kcal100: 540.7, prot100: 12.7, carb100: 44.3, gras100: 33.3, fibra100: 6.3 },
       { nombre: "Cheetos Colmillos (Sabritas)", kcal100: 460.0, prot100: 3.3, carb100: 50.0, gras100: 26.7, fibra100: 3.3 },
+      { nombre: "Doraditas tacos", kcal100: 497, prot100: 6.6, carb100: 67.4, gras100: 22.3, fibra100: 4.7, azucar100: 1.2, sodio100: 310, grasSat100: 2.8, colest100: 0 },
       { nombre: "Doritos Nachos", kcal100: 463.3, prot100: 6.7, carb100: 53.3, gras100: 23.3, fibra100: 6.7, codigoBarras: "7501011115231", ingredientesEtiqueta: ["MAÍZ NIXTAMALIZADO", "ACEITE VEGETAL CONDIMENTO [Quesos, Almidón, Sal Yodada, Maltodextrina, Gilutamato Monosódico, Especias, Saborizantes, Harina de Arroz, Chiles Glucosa, Harina de Trigo, Acido Citrico, Inosinato de Sodio, Guanilato de Sodio, Aceite de Soya Parcialmente Hidrogenada Azúcar Proteína Vegetal Hidrolizada de Maíz, Amarilo Ocaso FCE Almidón Modificado, Sólidos de la Leche, Tartrazina, Acido Lactico, ACHIOTE"] },
       { nombre: "Sabritones con Chile sabor Limon (Sabritas)", kcal100: 458.0, prot100: 7.3, carb100: 51.5, gras100: 24.8, fibra100: 1.0 },
       { nombre: "Sabritas Chiles Rojo Receta crujiente", kcal100: 501.0, prot100: 5.7, carb100: 54.9, gras100: 28.7, fibra100: 0.0, codigoBarras: "7501011143265", ingredientesEtiqueta: ["Papa natural", "Aceite Vegetal", "Sazonador (Maltodextrina, Sal Yodada, Glutamato Monosódico, Chile (0.72%), Ácido cítrico, Especias, Saborizantes, Almidón, Jitomate (0.18%), Rojo allura AC, Tartrazina, Amarillo Ocaso FCF"] },
@@ -6656,6 +6657,7 @@
       "donettes": [["1 pieza (40 g)", 40]],
       "donettes old fashion": [["1 pieza (40 g)", 40]],
       "donitas": [["1 pieza (40 g)", 40]],
+      "doraditas": [["1 porcion (30 g)", 30]],
       "dr pepper": [["1 lata (355 ml)", 355]],
       "durazno en almibar": [["1/2 taza (120 g)", 120]],
       "edamame": [["1 taza (150 g)", 150]],
@@ -8294,7 +8296,7 @@
         if (vista === "actividad") renderizarActividad();
         if (vista === "reportes") renderizarReportes();
         if (vista === "almacen") renderizarAlmacen();
-        if (vista === "ajustes") cargarFormularioPerfil();
+        if (vista === "ajustes") { cargarFormularioPerfil(); renderizarMacrosPrioritarios(); }
       });
     });
 
@@ -8574,11 +8576,11 @@
         let real = deficit;
         let ajustado = false;
         if (kcal < r.bmr) { kcal = r.bmr; real = r.tdee - r.bmr; ajustado = true; }
-        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span><br /><span style="font-size: 12px;">${calcLineaNutrientes(kcal)}</span></span></div>`;
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(real)} kg por semana${ajustado ? " · ajustado para no bajar de tu metabolismo basal" : ""}</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span><br /><span style="font-size: 12px;">${calcLineaNutrientes(kcal)}</span><br />${btnUsarMacros(kcal, r.peso)}</span></div>`;
       };
       const filaSuperavit = (sup, nombre) => {
         const kcal = r.tdee + sup;
-        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span><br /><span style="font-size: 12px;">${calcLineaNutrientes(kcal)}</span></span></div>`;
+        return `<div style="display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border);"><span>${nombre}</span><span style="text-align: right;"><strong>${fmtNum(kcal, 0)} kcal/día</strong><br /><span style="font-size: 12px; color: var(--text-muted);">≈ ${kgSem(sup)} kg por semana</span><br /><span style="font-size: 12px;">${calcLineaMacros(kcal, r.peso)}</span><br /><span style="font-size: 12px;">${calcLineaNutrientes(kcal)}</span><br />${btnUsarMacros(kcal, r.peso)}</span></div>`;
       };
       const cont = document.getElementById("calcResultados");
       if (!cont) return;
@@ -8594,6 +8596,7 @@
           <div style="margin-top: 4px;"><strong>${fmtNum(r.tdee, 0)} kcal/día</strong></div>
           <div style="font-size: 12px; margin-top: 2px;">${calcLineaMacros(r.tdee, r.peso)}</div>
           <div style="font-size: 12px; margin-top: 2px;">${calcLineaNutrientes(r.tdee)}</div>
+          <div style="margin-top: 6px;">${btnUsarMacros(r.tdee, r.peso)}</div>
         </div>
         <div class="calc-resultado-grupo${r.objetivo === "bajar" ? " destacado" : ""}">
           <div style="font-weight: 800;">Para bajar de peso${r.objetivo === "bajar" ? '<span class="calc-insignia">Tu objetivo</span>' : ""}</div>
@@ -8627,6 +8630,45 @@
       confirmarBorradoPendiente();
       document.querySelectorAll(".vista").forEach((v) => v.classList.toggle("activa", v.id === "vista-ajustes"));
       window.scrollTo(0, 0);
+    });
+    /* Botón "Usar estos macros" (v129): un botón pequeño en cada una
+       de las 9 filas de resultados de la calculadora. Al tocarlo pide
+       confirmación y, al dar que sí, pone kcal + proteínas +
+       carbohidratos + grasas + fibra de ESA fila como metas del Perfil
+       (misma ruta de guardado que el formulario de Metas: guardarEstado
+       + renderizarDiario + toast). La meta de peso NO se toca. Los
+       valores son los FINALES de la fila (con clamp al BMR si lo hay),
+       calculados con las mismas fórmulas que las líneas que se ven. */
+    function btnUsarMacros(kcal, peso) {
+      const m = calcMacrosObjetivo(kcal, peso);
+      const fibra = Math.round(14 * kcal / 1000);
+      return `<button type="button" class="btn btn-soft" style="margin-top: 6px; padding: 4px 10px; font-size: 12px;" data-usar-macros="1" data-kcal="${kcal}" data-prot="${m.prot}" data-carb="${m.carb}" data-gras="${m.gras}" data-fibra="${fibra}">Usar estos macros</button>`;
+    }
+    function aplicarMacrosComoMetas(kcal, prot, carb, gras, fibra) {
+      appState.perfil.metaKcal = Math.max(500, Math.round(kcal));
+      appState.perfil.metaProt = prot;
+      appState.perfil.metaCarb = carb;
+      appState.perfil.metaGras = gras;
+      appState.perfil.metaFibra = fibra;
+      guardarEstado();
+      renderizarDiario();
+      mostrarToast("Metas actualizadas con los macros recomendados");
+    }
+    document.getElementById("calcResultados").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-usar-macros]");
+      if (!btn) return;
+      const kcal = Number(btn.dataset.kcal);
+      const prot = Number(btn.dataset.prot);
+      const carb = Number(btn.dataset.carb);
+      const gras = Number(btn.dataset.gras);
+      const fibra = Number(btn.dataset.fibra);
+      if (![kcal, prot, carb, gras, fibra].every((n) => Number.isFinite(n) && n >= 0)) return;
+      pedirConfirmacion(
+        "¿Usar estos macros como tus metas diarias?",
+        `${fmtNum(kcal, 0)} kcal/día · Proteínas ${fmtNum(prot, 0)} g · Carbohidratos ${fmtNum(carb, 0)} g · Grasas ${fmtNum(gras, 0)} g · Fibra ${fmtNum(fibra, 0)} g`,
+        "Sí, usarlos",
+        () => aplicarMacrosComoMetas(kcal, prot, carb, gras, fibra)
+      );
     });
 
     /* Temas de la aplicación */
@@ -9898,6 +9940,25 @@
       });
     }
 
+    // (v129) Búsqueda por palabras: cada palabra de la consulta debe aparecer
+    // en el nombre, sin importar el orden. Antes se exigía la frase exacta
+    // contigua, así que "pizza leña", "pizza amarettos" o "la leña" daban
+    // "Sin coincidencias". Se ignoran artículos y preposiciones sueltas.
+    const PALABRAS_IGNORAR_BUSQUEDA = new Set(["la", "el", "de", "los", "las", "un", "una", "unos", "unas", "con", "y", "en", "a", "del", "al"]);
+    function coincideBusqueda(nombreNorm, qn) {
+      if (!qn) return true;
+      if (nombreNorm.includes(qn)) return true;
+      const palabras = qn.split(/\s+/).filter((p) => p && !PALABRAS_IGNORAR_BUSQUEDA.has(p));
+      if (!palabras.length) return false;
+      return palabras.every((p) => nombreNorm.includes(p));
+    }
+
+    // (v129) Tope de resultados por búsqueda: 30 iniciales por rendimiento;
+    // "Ver más" suma 30. Se reinicia cuando cambia la consulta.
+    let limiteResultadosNuevo = 30, ultimoFiltroResultadosNuevo = null;
+    let limiteResultadosAlmacen = 30, ultimoFiltroResultadosAlmacen = null;
+    let limiteIngredientesReceta = 30, ultimoFiltroIngredientesReceta = null;
+
     function renderizarResultadosNuevo(filtro) {
       const q = String(filtro || "").trim().toLowerCase();
       const qn = normalizarTexto(q);
@@ -9908,7 +9969,7 @@
         cont.innerHTML = `<p class="empty-text">Escribe arriba para buscar en el catálogo, o usa la pestaña Recientes.</p>`;
         return;
       }
-      let lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => (it.nombreNorm || normalizarTexto(it.nombre || "")).includes(qn)), q);
+      let lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => coincideBusqueda(it.nombreNorm || normalizarTexto(it.nombre || ""), qn)), q);
       // (v120) Sin duplicados: el mismo nombre aparece una sola vez (la
       // primera entrada, que es la del Almacén cuando existe, para que sus
       // valores personalizados ganen); las demás filas con ese nombre se ocultan.
@@ -9927,24 +9988,30 @@
         return;
       }
 
-      lista.slice(0, 30).forEach((it) => {
-        const row = document.createElement("div");
-        row.className = "alimento-item";
-        row.innerHTML = `
-          <div>
-            <div class="alimento-nombre">${escaparHTML(it.nombre)}</div>
-            <div class="alimento-meta">${it.origen} · 100g: ${fmtNum(it.kcal100, 0)} kcal · P ${fmtNum(it.prot100, 1)}g · C ${fmtNum(it.carb100, 1)}g · G ${fmtNum(it.gras100, 1)}g · Fib ${fmtNum(it.fibra100, 1)}g</div>
-          </div>
-          <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px;">Elegir</button>
-        `;
-        row.querySelector("button").onclick = () => abrirDetalleAlimento(it);
-        cont.appendChild(row);
+      // (v129) Tope inicial 30 por rendimiento; "Ver más" suma 30 más sin
+      // perder la búsqueda. Las filas se arman en un solo innerHTML (antes
+      // eran 30 createElement + innerHTML por tecla).
+      if (filtro !== ultimoFiltroResultadosNuevo) { limiteResultadosNuevo = 30; ultimoFiltroResultadosNuevo = filtro; }
+      const visiblesNuevo = lista.slice(0, limiteResultadosNuevo);
+      cont.innerHTML = visiblesNuevo.map((it) => `
+          <div class="alimento-item">
+            <div>
+              <div class="alimento-nombre">${escaparHTML(it.nombre)}</div>
+              <div class="alimento-meta">${it.origen} · 100g: ${fmtNum(it.kcal100, 0)} kcal · P ${fmtNum(it.prot100, 1)}g · C ${fmtNum(it.carb100, 1)}g · G ${fmtNum(it.gras100, 1)}g · Fib ${fmtNum(it.fibra100, 1)}g</div>
+            </div>
+            <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px;">Elegir</button>
+          </div>`).join("");
+      cont.querySelectorAll(".alimento-item").forEach((row, i) => {
+        row.querySelector("button").onclick = () => abrirDetalleAlimento(visiblesNuevo[i]);
       });
-      if (lista.length > 30) {
-        const nota = document.createElement("p");
-        nota.className = "empty-text";
-        nota.textContent = `Mostrando 30 de ${lista.length} resultados. Escribe más letras para afinar la búsqueda.`;
-        cont.appendChild(nota);
+      if (lista.length > limiteResultadosNuevo) {
+        const btnMas = document.createElement("button");
+        btnMas.type = "button";
+        btnMas.className = "btn btn-soft";
+        btnMas.style.width = "100%";
+        btnMas.textContent = `Ver más (${lista.length - limiteResultadosNuevo} restantes)`;
+        btnMas.onclick = () => { limiteResultadosNuevo += 30; renderizarResultadosNuevo(filtro); };
+        cont.appendChild(btnMas);
       }
     }
 
@@ -9962,7 +10029,7 @@
       const qn = normalizarTexto(q);
       const cont = document.getElementById("listaAlmacenModal");
       cont.innerHTML = "";
-      const lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => (it.origen === "Almacén" || it.origen === "Receta") && (!qn || (it.nombreNorm || normalizarTexto(it.nombre || "")).includes(qn))), q);
+      const lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => (it.origen === "Almacén" || it.origen === "Receta") && coincideBusqueda(it.nombreNorm || normalizarTexto(it.nombre || ""), qn)), q);
       if (!lista.length) {
         cont.innerHTML = q
           ? `<p class="empty-text">Sin coincidencias en tus guardados.</p>
@@ -9972,24 +10039,29 @@
         if (b) b.onclick = () => abrirNuevoAlimento(String(filtro || "").trim());
         return;
       }
-      lista.slice(0, 30).forEach((it) => {
-        const row = document.createElement("div");
-        row.className = "alimento-item";
-        row.innerHTML = `
-          <div>
-            <div class="alimento-nombre">${escaparHTML(it.nombre)}</div>
-            <div class="alimento-meta">${it.origen} · 100g: ${fmtNum(it.kcal100, 0)} kcal · P ${fmtNum(it.prot100, 1)}g · C ${fmtNum(it.carb100, 1)}g · G ${fmtNum(it.gras100, 1)}g · Fib ${fmtNum(it.fibra100, 1)}g</div>
-          </div>
-          <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px;">Elegir</button>
-        `;
-        row.querySelector("button").onclick = () => abrirDetalleAlimento(it);
-        cont.appendChild(row);
+      // (v129) Tope inicial 30 por rendimiento; "Ver más" suma 30 más sin
+      // perder la búsqueda. Las filas se arman en un solo innerHTML.
+      if (filtro !== ultimoFiltroResultadosAlmacen) { limiteResultadosAlmacen = 30; ultimoFiltroResultadosAlmacen = filtro; }
+      const visiblesAlmacen = lista.slice(0, limiteResultadosAlmacen);
+      cont.innerHTML = visiblesAlmacen.map((it) => `
+          <div class="alimento-item">
+            <div>
+              <div class="alimento-nombre">${escaparHTML(it.nombre)}</div>
+              <div class="alimento-meta">${it.origen} · 100g: ${fmtNum(it.kcal100, 0)} kcal · P ${fmtNum(it.prot100, 1)}g · C ${fmtNum(it.carb100, 1)}g · G ${fmtNum(it.gras100, 1)}g · Fib ${fmtNum(it.fibra100, 1)}g</div>
+            </div>
+            <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px;">Elegir</button>
+          </div>`).join("");
+      cont.querySelectorAll(".alimento-item").forEach((row, i) => {
+        row.querySelector("button").onclick = () => abrirDetalleAlimento(visiblesAlmacen[i]);
       });
-      if (lista.length > 30) {
-        const nota = document.createElement("p");
-        nota.className = "empty-text";
-        nota.textContent = `Mostrando 30 de ${lista.length} resultados. Escribe más letras para afinar la búsqueda.`;
-        cont.appendChild(nota);
+      if (lista.length > limiteResultadosAlmacen) {
+        const btnMas = document.createElement("button");
+        btnMas.type = "button";
+        btnMas.className = "btn btn-soft";
+        btnMas.style.width = "100%";
+        btnMas.textContent = `Ver más (${lista.length - limiteResultadosAlmacen} restantes)`;
+        btnMas.onclick = () => { limiteResultadosAlmacen += 30; renderizarAlmacenModal(filtro); };
+        cont.appendChild(btnMas);
       }
     }
 
@@ -10522,7 +10594,7 @@
     function renderizarIngredientesGuardadosReceta(filtro = "") {
       const q = String(filtro || "").trim().toLowerCase();
       const qn = normalizarTexto(q);
-      const lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => !qn || (it.nombreNorm || normalizarTexto(it.nombre || "")).includes(qn)), q);
+      const lista = ordenarResultadosBusqueda(obtenerCatalogoCombinado().filter((it) => coincideBusqueda(it.nombreNorm || normalizarTexto(it.nombre || ""), qn)), q);
       const cont = document.getElementById("listaIngredientesGuardados");
       if (!cont) return;
       cont.innerHTML = "";
@@ -10532,19 +10604,23 @@
         return;
       }
 
-      lista.slice(0, 30).forEach((it) => {
-        const row = document.createElement("div");
-        row.className = "alimento-item";
+      // (v129) Tope inicial 30 por rendimiento; "Ver más" suma 30 más sin
+      // perder la búsqueda. Las filas se arman en un solo innerHTML.
+      if (filtro !== ultimoFiltroIngredientesReceta) { limiteIngredientesReceta = 30; ultimoFiltroIngredientesReceta = filtro; }
+      const visiblesIng = lista.slice(0, limiteIngredientesReceta);
+      cont.innerHTML = visiblesIng.map((it) => `
+          <div class="alimento-item">
+            <div style="min-width:0; flex:1;">
+              <div class="alimento-nombre">${escaparHTML(it.nombre)}</div>
+              <div class="alimento-meta">${it.origen} · 100g: ${fmtNum(it.kcal100, 0)} kcal · P ${fmtNum(it.prot100, 1)}g · C ${fmtNum(it.carb100, 1)}g · G ${fmtNum(it.gras100, 1)}g · Fib ${fmtNum(it.fibra100, 1)}g</div>
+            </div>
+            <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px; flex-shrink:0;">Elegir</button>
+          </div>`).join("");
+      cont.querySelectorAll(".alimento-item").forEach((row, i) => {
         row.style.background = "#ffffff";
         row.style.border = "1px solid var(--border)";
-        row.innerHTML = `
-          <div style="min-width:0; flex:1;">
-            <div class="alimento-nombre">${escaparHTML(it.nombre)}</div>
-            <div class="alimento-meta">${it.origen} · 100g: ${fmtNum(it.kcal100, 0)} kcal · P ${fmtNum(it.prot100, 1)}g · C ${fmtNum(it.carb100, 1)}g · G ${fmtNum(it.gras100, 1)}g · Fib ${fmtNum(it.fibra100, 1)}g</div>
-          </div>
-          <button type="button" class="btn btn-primary" style="padding: 6px 10px; font-size: 12px; flex-shrink:0;">Elegir</button>
-        `;
         row.querySelector("button").onclick = () => {
+          const it = visiblesIng[i];
           document.getElementById("ingNombre").value = it.nombre;
           document.getElementById("ingNombreTexto").textContent = it.nombre;
           document.getElementById("ingNombreTexto").style.color = "var(--text-main)";
@@ -10562,13 +10638,15 @@
           document.getElementById("ingGramos").focus();
           mostrarToast(`Seleccionado: ${it.nombre}`);
         };
-        cont.appendChild(row);
       });
-      if (lista.length > 30) {
-        const nota = document.createElement("p");
-        nota.className = "empty-text";
-        nota.textContent = `Mostrando 30 de ${lista.length} resultados. Escribe más letras para afinar la búsqueda.`;
-        cont.appendChild(nota);
+      if (lista.length > limiteIngredientesReceta) {
+        const btnMas = document.createElement("button");
+        btnMas.type = "button";
+        btnMas.className = "btn btn-soft";
+        btnMas.style.width = "100%";
+        btnMas.textContent = `Ver más (${lista.length - limiteIngredientesReceta} restantes)`;
+        btnMas.onclick = () => { limiteIngredientesReceta += 30; renderizarIngredientesGuardadosReceta(filtro); };
+        cont.appendChild(btnMas);
       }
     }
 
@@ -13446,8 +13524,11 @@
         aplicarTema(obtenerTemaGuardado());
         cargarFormularioPerfil();
         renderizarDiario();
-        renderizarAlmacen();
-        renderizarMacrosPrioritarios();
+        // (v129) Almacén y macros prioritarios ya NO se renderizan al
+        // arrancar: el Almacén se renderiza al abrir su pestaña (y tras
+        // cada cambio) y los macros al abrir Ajustes. El render del
+        // Almacén completo corría en el arranque aunque la vista estuviera
+        // oculta (~48 ms con 40 elementos a CPU x4).
         iniciarGatitos();
         iniciarDobleAtras();
         mostrarCarpetaRespaldo();
